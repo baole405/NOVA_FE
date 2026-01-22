@@ -12,6 +12,7 @@
     "fix-lint": "npx biome check --write --unsafe"
   },
   "dependencies": {
+    "@neondatabase/auth": "^0.1.0-beta.21",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-navigation-menu": "^1.2.14",
     "@radix-ui/react-slot": "^1.2.4",
