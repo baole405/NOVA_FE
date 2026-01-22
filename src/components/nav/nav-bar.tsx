@@ -21,12 +21,12 @@ export function NavBar() {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <Button asChild variant="outline">
-                  <Link href="/signin">Sign In</Link>
+                  <Link href="/login">Sign In</Link>
                 </Button>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <Button asChild>
-                  <Link href="/signup">Sign Up</Link>
+                  <Link href="/auth/sign-up">Sign Up</Link>
                 </Button>
               </NavigationMenuItem>
             </NavigationMenuList>

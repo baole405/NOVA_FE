@@ -1,8 +1,8 @@
-import { NavBar } from "@/components/nav/nav-bar";
-import { authClient } from "@/lib/auth/client";
 import { NeonAuthUIProvider, UserButton } from "@neondatabase/auth/react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { NavBar } from "@/components/nav/nav-bar";
+import { authClient } from "@/lib/auth/client";
 import "./globals.css";
 
 const geistSans = Geist({
