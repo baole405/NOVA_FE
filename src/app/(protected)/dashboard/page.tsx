@@ -1,22 +1,78 @@
-import { AlertCircle, Building2, CheckCircle2, Wallet } from "lucide-react";
+"use client";
+
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { UpcomingBills } from "@/components/dashboard/upcoming-bills";
-import { mockBills, mockUser } from "@/lib/mock-data";
-// import { authClient } from "@/lib/auth/client"; // Use later for real auth
+import { BackendBill, fetchApi, mapBillFromApi } from "@/lib/api-client";
+import { authClient } from "@/lib/auth/client";
+import type { Bill } from "@/types";
+import { AlertCircle, Building2, CheckCircle2, Wallet } from "lucide-react";
+import { useEffect, useState } from "react";
 
-export default async function DashboardPage() {
+export default function DashboardPage() {
+  const [bills, setBills] = useState<Bill[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<{
+    name: string;
+    apartment?: { unitNumber: string; block: string };
+  } | null>(null);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const { data } = await authClient.getSession();
+        setUser({
+          name: data?.user?.email || "Resident",
+          apartment: { unitNumber: "...", block: "..." },
+        });
+
+        // Fetch Bills
+        const billsData = await fetchApi<BackendBill[]>("/bills");
+        const mappedBills = billsData.map(mapBillFromApi);
+        setBills(mappedBills);
+
+        // Fetch Apartment (Optional - for unit info)
+        try {
+          const apt = await fetchApi<any>("/apartments/my");
+          if (apt) {
+            setUser((prev) => ({
+              ...prev!,
+              apartment: { unitNumber: apt.unitNumber, block: apt.blockName },
+            }));
+          }
+        } catch (err) {
+          console.warn("Could not fetch apartment info", err);
+        }
+      } catch (e: any) {
+        console.error("Dashboard Load Error", e);
+        setError("Failed to load dashboard data.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  if (loading) {
+    return <div className="p-8 text-center">Loading dashboard...</div>;
+  }
+
+  if (error) {
+    return <div className="p-8 text-center text-red-500">{error}</div>;
+  }
+
   // --- Logic tính toán Stats ---
 
   // 1. Tổng tiền cần đóng (Pending + Overdue)
-  const totalDue = mockBills
+  const totalDue = bills
     .filter((b) => b.status === "pending" || b.status === "overdue")
     .reduce((acc, curr) => acc + curr.amount, 0);
 
   // 2. Số hóa đơn quá hạn
-  const overdueCount = mockBills.filter((b) => b.status === "overdue").length;
+  const overdueCount = bills.filter((b) => b.status === "overdue").length;
 
   // 3. Số hóa đơn chờ thanh toán (Pending only)
-  const pendingCount = mockBills.filter((b) => b.status === "pending").length;
+  const pendingCount = bills.filter((b) => b.status === "pending").length;
 
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat("vi-VN", {
@@ -33,7 +89,7 @@ export default async function DashboardPage() {
             Overview
           </h2>
           <p className="text-muted-foreground mt-1">
-            Welcome back, {mockUser.name} 👋
+            Welcome back, {user?.name} 👋
           </p>
         </div>
 
@@ -42,10 +98,10 @@ export default async function DashboardPage() {
           <Building2 className="w-5 h-5 text-primary" />
           <div className="text-sm">
             <p className="font-medium text-foreground">
-              Unit {mockUser.apartment?.unitNumber}
+              Unit {user?.apartment?.unitNumber || "N/A"}
             </p>
             <p className="text-xs text-muted-foreground">
-              Block {mockUser.apartment?.block}
+              Block {user?.apartment?.block || "N/A"}
             </p>
           </div>
         </div>
@@ -84,7 +140,7 @@ export default async function DashboardPage() {
         {/* Card 4: Paid (Mock) */}
         <StatsCard
           title="Paid this month"
-          value="1.2M"
+          value="1.2M" // TODO: Calculate this from transaction history
           description="Thank you!"
           icon={CheckCircle2}
           trend="positive"
@@ -94,7 +150,7 @@ export default async function DashboardPage() {
       {/* --- MAIN CONTENT --- */}
       <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-7">
         <div className="col-span-7">
-          <UpcomingBills bills={mockBills} />
+          <UpcomingBills bills={bills} />
         </div>
       </div>
     </div>
