@@ -1,5 +1,5 @@
 // src/lib/mock-data.ts
-import { Apartment, Bill, Transaction, UserProfile } from "@/types";
+import type { Apartment, Bill, Transaction, UserProfile } from "@/types";
 
 // 1. Mock Căn hộ
 export const mockApartment: Apartment = {

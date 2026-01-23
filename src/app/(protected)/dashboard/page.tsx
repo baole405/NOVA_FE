@@ -1,8 +1,7 @@
-import { Wallet, AlertCircle, CheckCircle2, Building2 } from "lucide-react";
-import { mockBills, mockUser } from "@/lib/mock-data";
+import { AlertCircle, Building2, CheckCircle2, Wallet } from "lucide-react";
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { UpcomingBills } from "@/components/dashboard/upcoming-bills";
-import { authClient } from "@/lib/auth/client"; // Nếu cần lấy user thật từ session
+import { mockBills, mockUser } from "@/lib/mock-data";
 
 export default async function DashboardPage() {
   // Logic tính toán thống kê từ Mock Data
