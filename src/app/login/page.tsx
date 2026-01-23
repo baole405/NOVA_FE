@@ -1,33 +1,37 @@
-import { GalleryVerticalEnd } from "lucide-react";
 import Image from "next/image";
-
 import { LoginForm } from "@/components/login-form";
 
 export default function LoginPage() {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
+      {/* Cột bên trái: Logo & Form */}
       <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <a href="/" className="flex items-center gap-2 font-medium">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <GalleryVerticalEnd className="size-4" />
-            </div>
-            NOVA
-          </a>
-        </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
             <LoginForm />
           </div>
         </div>
       </div>
-      <div className="bg-muted relative hidden lg:block">
+
+      {/* Cột bên phải: Hình ảnh Cover */}
+      <div className="relative hidden bg-muted lg:block">
         <Image
-          src="/placeholder.svg"
-          alt="Authentication"
+          src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=2000&auto=format&fit=crop"
+          alt="Nova Apartment Manager"
           fill
-          className="object-cover dark:brightness-[0.2] dark:grayscale"
+          className="object-cover dark:brightness-[0.4] dark:grayscale"
+          priority
         />
+        {/* Lớp phủ gradient và text (Optional - để làm đẹp thêm) */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-10 text-white">
+          <blockquote className="space-y-2">
+            <p className="text-lg font-medium">
+              "Quản lý căn hộ chưa bao giờ dễ dàng đến thế. NOVA mang lại sự
+              minh bạch và tiện lợi cho mọi cư dân."
+            </p>
+            <footer className="text-sm opacity-80">NOVA Team - EXE202</footer>
+          </blockquote>
+        </div>
       </div>
     </div>
   );

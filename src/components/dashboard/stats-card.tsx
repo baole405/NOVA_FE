@@ -8,7 +8,7 @@ interface StatsCardProps {
   description: string;
   icon: LucideIcon;
   className?: string;
-  trend?: "neutral" | "positive" | "negative"; // Để tô màu ngữ nghĩa
+  trend?: "neutral" | "positive" | "negative";
 }
 
 export function StatsCard({
@@ -28,11 +28,12 @@ export function StatsCard({
         <Icon className={cn("h-4 w-4 text-muted-foreground")} />
       </CardHeader>
       <CardContent>
+        {/* Logic màu sắc: Negative = Red (Destructive), Positive = Green, Neutral = Primary */}
         <div
           className={cn("text-2xl font-bold tracking-tight", {
-            "text-destructive": trend === "negative", // Màu đỏ từ globals.css
-            "text-primary": trend === "neutral", // Màu xanh primary
-            "text-green-600": trend === "positive", // Hardcode green cho tích cực hoặc thêm biến success vào css
+            "text-destructive": trend === "negative",
+            "text-primary": trend === "neutral",
+            "text-green-600 dark:text-green-500": trend === "positive",
           })}
         >
           {value}
