@@ -1,7 +1,7 @@
 "use client";
 
-import { SignedIn, SignedOut, UserButton } from "@neondatabase/auth/react";
-import { History, LayoutDashboard, Receipt } from "lucide-react";
+import { SignedIn, SignedOut } from "@neondatabase/auth/react";
+import { LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -13,22 +13,13 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
+import { UserNav } from "./user-nav";
 
 const mainNavItems = [
   {
     title: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
-  },
-  {
-    title: "Bills",
-    href: "/bills",
-    icon: Receipt,
-  },
-  {
-    title: "History",
-    href: "/history",
-    icon: History,
   },
 ];
 
@@ -85,7 +76,7 @@ export function NavBar() {
           <SignedOut>
             <div className="flex items-center gap-2">
               <Button asChild variant="ghost" size="sm">
-                <Link href="/auth/sign-in">Sign in</Link>
+                <Link href="/login">Sign in</Link>
               </Button>
               <Button
                 asChild
@@ -99,7 +90,7 @@ export function NavBar() {
           </SignedOut>
 
           <SignedIn>
-            <UserButton />
+            <UserNav />
           </SignedIn>
         </div>
       </div>
