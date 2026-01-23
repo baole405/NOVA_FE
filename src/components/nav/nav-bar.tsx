@@ -1,8 +1,10 @@
 "use client";
 
+import { SignedIn, SignedOut, UserButton } from "@neondatabase/auth/react";
+import { History, LayoutDashboard, Receipt } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserButton, SignedIn, SignedOut } from "@neondatabase/auth/react";
+import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -10,9 +12,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Receipt, History } from "lucide-react";
 
 const mainNavItems = [
   {

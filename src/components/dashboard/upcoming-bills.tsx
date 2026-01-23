@@ -1,16 +1,16 @@
+import { AlertCircle, ArrowRight, Clock } from "lucide-react";
 import Link from "next/link";
-import { ArrowRight, Clock, AlertCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Bill } from "@/types";
 import { cn } from "@/lib/utils";
+import type { Bill } from "@/types";
 
 // Format tiền tệ VND
 const formatCurrency = (amount: number) => {
