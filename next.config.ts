@@ -1,7 +1,8 @@
-import { dirname } from "node:path";
 import type { NextConfig } from "next";
+import { dirname } from "node:path";
 
 const nextConfig: NextConfig = {
+  output: "standalone", // For Docker deployment
   turbopack: {
     root: dirname(__filename),
   },
