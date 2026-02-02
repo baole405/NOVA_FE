@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Running type check before push..."
+npm run type-check
+
+echo "Running build test..."
+npm run build
