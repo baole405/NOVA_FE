@@ -1,7 +1,12 @@
-// src/lib/mock-data.ts
-import type { Apartment, Bill, Transaction, UserProfile } from "@/types";
+import type {
+  Apartment,
+  Bill,
+  Transaction,
+  UserProfile,
+  Vehicle,
+  FamilyMember,
+} from "@/types";
 
-// 1. Mock Apartment
 export const mockApartment: Apartment = {
   id: "apt_f04_2304",
   unitNumber: "2304",
@@ -10,20 +15,55 @@ export const mockApartment: Apartment = {
   area: 75.5,
 };
 
-// 2. Mock User
+export const mockFamilyMembers: FamilyMember[] = [
+  {
+    id: "fm_001",
+    name: "Nguyen Thi Lan",
+    relation: "Spouse",
+    dob: "1992-08-20",
+    userId: "user_001",
+  },
+  {
+    id: "fm_002",
+    name: "Nguyen Van An",
+    relation: "Child",
+    dob: "2015-03-10",
+    userId: "user_001",
+  },
+];
+
+export const mockVehicles: Vehicle[] = [
+  {
+    id: "veh_001",
+    imageUrl: "https://example.com/car1.png",
+    type: "car",
+    licensePlate: "30A-12345",
+    ownerId: "user_001",
+  },
+  {
+    id: "veh_002",
+    imageUrl: "https://example.com/motorbike1.png",
+    type: "motorbike",
+    licensePlate: "29B-67890",
+    ownerId: "user_001",
+  },
+];
+
 export const mockUser: UserProfile = {
   id: "user_001",
   name: "Nguyen Minh Nhat",
+  idNumber: "012345678901",
+  dob: "1990-05-15",
   email: "nhatnm@example.com",
   phone: "0909123456",
   avatarUrl: "https://github.com/shadcn.png",
   role: "resident",
   apartment: mockApartment,
+  familyMembers: mockFamilyMembers,
+  vehicles: mockVehicles,
 };
 
-// 3. Mock Bills (English Content)
 export const mockBills: Bill[] = [
-  // --- Case 1: Overdue ---
   {
     id: "bill_001",
     title: "Electricity Bill - Dec 2025",
@@ -35,7 +75,6 @@ export const mockBills: Bill[] = [
     description: "Old index: 1200, New index: 1550",
   },
 
-  // --- Case 2: Pending ---
   {
     id: "bill_002",
     title: "Management Fee - Jan 2026",
@@ -67,7 +106,6 @@ export const mockBills: Bill[] = [
     description: "Consumption: 15m3",
   },
 
-  // --- Case 3: Paid ---
   {
     id: "bill_005",
     title: "Management Fee - Dec 2025",
@@ -79,7 +117,6 @@ export const mockBills: Bill[] = [
   },
 ];
 
-// 4. Mock Transactions
 export const mockTransactions: Transaction[] = [
   {
     id: "trans_001",

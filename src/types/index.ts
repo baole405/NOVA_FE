@@ -25,11 +25,15 @@ export interface Apartment {
 export interface UserProfile {
   id: string;
   name: string;
+  idNumber: string; // Số CMND/CCCD
+  dob?: string;
   email: string;
   phone?: string;
   avatarUrl?: string;
-  role: "resident" | "admin";
+  role: "resident" | "owner" | "admin";
   apartment?: Apartment;
+  vehicles?: Vehicle[];
+  familyMembers?: FamilyMember[];
 }
 
 export interface Bill {
@@ -51,4 +55,20 @@ export interface Transaction {
   paidDate: string; // Ngày thanh toán thực tế (ISO Date)
   method: PaymentMethod;
   transactionCode: string; // Mã giao dịch ngân hàng
+}
+
+export interface Vehicle {
+  id: string;
+  imageUrl?: string;
+  type: "car" | "motorbike" | "bicycle";
+  licensePlate: string;
+  ownerId: string; // User ID
+}
+
+export interface FamilyMember {
+  id: string;
+  name: string;
+  relation: string; // Mối quan hệ (vd: Vợ, Con)
+  dob?: string; // Ngày sinh (ISO Date)
+  userId: string; // User ID
 }
