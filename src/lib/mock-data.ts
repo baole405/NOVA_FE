@@ -128,3 +128,41 @@ export const mockTransactions: Transaction[] = [
     transactionCode: "VCB.123456789",
   },
 ];
+
+export const mockNotifications = [
+  {
+    id: 1,
+    title: "Electricity Bill - Dec",
+    desc: "Payment due soon",
+    time: "2 hours ago",
+    unread: true,
+  },
+  {
+    id: 2,
+    title: "Management Fee",
+    desc: "Payment successful",
+    time: "1 day ago",
+    unread: false,
+  },
+  {
+    id: 3,
+    title: "Maintenance Notice",
+    desc: "Elevator B1 maintenance on Jan 25",
+    time: "2 days ago",
+    unread: true,
+  },
+  {
+    id: 4,
+    title: "Water Bill",
+    desc: "New bill has been updated",
+    time: "3 days ago",
+    unread: false,
+  },
+  {
+    id: 5,
+    title: "Resident Meeting",
+    desc: "Annual meeting reminder",
+    time: "5 days ago",
+    unread: false,
+  },
+];
