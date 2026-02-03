@@ -1,116 +1,61 @@
-import { Building, Mail, Phone, User as UserIcon } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+"use client";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockUser } from "@/lib/mock-data";
+
+// Import các components con mới
+import { ProfileHeader } from "@/components/profile/profile-header";
+import { PersonalInfo } from "@/components/profile/personal-info";
+import { ApartmentInfo } from "@/components/profile/apartment-info";
+import { FamilyList } from "@/components/profile/family-list";
+import { VehicleList } from "@/components/profile/vehicle-list";
 
 export default function ProfilePage() {
   return (
-    <div className="space-y-6 p-4 md:p-8 max-w-4xl mx-auto">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight text-primary">
-          My Profile
-        </h2>
-        <p className="text-muted-foreground">
-          Manage your account and apartment details.
-        </p>
+    <div className="space-y-6 p-4 md:p-8 max-w-5xl mx-auto">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight text-primary">
+            My Profile
+          </h2>
+          <p className="text-muted-foreground">
+            Manage your personal information and household details.
+          </p>
+        </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        {/* Cột trái: Avatar & Info cơ bản */}
-        <Card className="md:col-span-1">
-          <CardContent className="flex flex-col items-center pt-6 text-center">
-            <Avatar className="h-24 w-24 mb-4 border-4 border-background shadow-lg">
-              <AvatarImage src={mockUser.avatarUrl} />
-              <AvatarFallback className="text-xl">NM</AvatarFallback>
-            </Avatar>
-            <h3 className="text-xl font-bold">{mockUser.name}</h3>
-            <p className="text-sm text-muted-foreground capitalize">
-              {mockUser.role}
-            </p>
-            <div className="mt-6 w-full space-y-2">
-              <Button variant="outline" className="w-full">
-                Change Avatar
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
-              >
-                Delete Account
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid gap-6 md:grid-cols-12">
+        {/* --- LEFT COLUMN: Header & Stats (Chiếm 4/12 cột) --- */}
+        <div className="md:col-span-4">
+          <ProfileHeader user={mockUser} />
+        </div>
 
-        {/* Cột phải: Form chi tiết & Căn hộ */}
-        <div className="md:col-span-2 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <UserIcon className="h-5 w-5 text-primary" />
-                Personal Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-2">
-                <Label>Full Name</Label>
-                <Input defaultValue={mockUser.name} readOnly />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label className="flex items-center gap-2">
-                    <Mail className="h-4 w-4" /> Email
-                  </Label>
-                  <Input defaultValue={mockUser.email} readOnly />
-                </div>
-                <div className="grid gap-2">
-                  <Label className="flex items-center gap-2">
-                    <Phone className="h-4 w-4" /> Phone
-                  </Label>
-                  <Input defaultValue={mockUser.phone} readOnly />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* --- RIGHT COLUMN: Detailed Tabs (Chiếm 8/12 cột) --- */}
+        <div className="md:col-span-8">
+          <Tabs defaultValue="personal" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="personal">Personal</TabsTrigger>
+              <TabsTrigger value="apartment">Apartment</TabsTrigger>
+              <TabsTrigger value="family">Family</TabsTrigger>
+              <TabsTrigger value="vehicles">Vehicles</TabsTrigger>
+            </TabsList>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building className="h-5 w-5 text-primary" />
-                Apartment Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Block</p>
-                  <p className="font-medium text-lg">
-                    {mockUser.apartment?.block}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Unit Number</p>
-                  <p className="font-medium text-lg">
-                    {mockUser.apartment?.unitNumber}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Floor</p>
-                  <p className="font-medium text-lg">
-                    {mockUser.apartment?.floor}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Area</p>
-                  <p className="font-medium text-lg">
-                    {mockUser.apartment?.area} m²
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            <TabsContent value="personal">
+              <PersonalInfo user={mockUser} />
+            </TabsContent>
+
+            <TabsContent value="apartment">
+              <ApartmentInfo apartment={mockUser.apartment} />
+            </TabsContent>
+
+            <TabsContent value="family">
+              <FamilyList members={mockUser.familyMembers} />
+            </TabsContent>
+
+            <TabsContent value="vehicles">
+              <VehicleList vehicles={mockUser.vehicles} />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
