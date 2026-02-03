@@ -1,4 +1,12 @@
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
 
 export default function ProtectedLayout({
   children,
@@ -6,14 +14,28 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar cố định bên trái (ẩn trên mobile) */}
-      <div className="hidden md:block w-64 shrink-0">
-        <DashboardSidebar className="h-screen sticky top-0" />
+    <div className="flex min-h-screen flex-col md:flex-row">
+      <div className="md:hidden flex items-center justify-between p-4 border-b bg-background sticky top-0 z-50">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+
+          <SheetContent side="left" className="p-0 w-64">
+            <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+
+            <DashboardSidebar className="border-none" />
+          </SheetContent>
+        </Sheet>
       </div>
 
-      {/* Nội dung chính bên phải */}
-      <main className="flex-1 overflow-x-hidden">{children}</main>
+      <div className="hidden md:block w-64 shrink-0 border-r bg-muted/10 min-h-screen">
+        <DashboardSidebar className="sticky top-0 h-screen" />
+      </div>
+
+      <main className="flex-1 overflow-x-hidden p-4 md:p-8">{children}</main>
     </div>
   );
 }
