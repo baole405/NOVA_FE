@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { UpcomingBills } from "@/components/dashboard/upcoming-bills";
 import { type BackendBill, fetchApi, mapBillFromApi } from "@/lib/api-client";
-import type { Bill } from "@/types";
+import type { Apartment, Bill } from "@/types";
 
 export default function DashboardPage() {
   const [bills, setBills] = useState<Bill[]>([]);
@@ -38,17 +38,20 @@ export default function DashboardPage() {
 
         // Fetch Apartment (Optional - for unit info)
         try {
-          const apt = await fetchApi<any>("/apartments/my");
+          const apt = await fetchApi<Apartment>("/apartments/my");
           if (apt) {
-            setUser((prev) => ({
-              ...prev!,
-              apartment: { unitNumber: apt.unitNumber, block: apt.blockName },
-            }));
+            setUser((prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                apartment: { unitNumber: apt.unitNumber, block: apt.block },
+              };
+            });
           }
-        } catch (err) {
+        } catch (err: unknown) {
           console.warn("Could not fetch apartment info", err);
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
         console.error("Dashboard Load Error", e);
         setError("Failed to load dashboard data.");
       } finally {

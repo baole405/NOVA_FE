@@ -21,7 +21,7 @@ export default function Home() {
   // const { data: session, isPending } = authClient.useSession();
   // const user = session?.user;
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ name: string } | null>(null);
   const [isPending, setIsPending] = useState(true);
 
   useEffect(() => {
