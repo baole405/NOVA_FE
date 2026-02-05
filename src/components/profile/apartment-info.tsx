@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Apartment } from "@/types";
+import type { Apartment } from "@/types";
 
 export function ApartmentInfo({ apartment }: { apartment?: Apartment }) {
   if (!apartment) return null;

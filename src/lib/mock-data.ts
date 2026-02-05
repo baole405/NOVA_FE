@@ -1,10 +1,10 @@
 import type {
   Apartment,
   Bill,
+  FamilyMember,
   Transaction,
   UserProfile,
   Vehicle,
-  FamilyMember,
 } from "@/types";
 
 export const mockApartment: Apartment = {
