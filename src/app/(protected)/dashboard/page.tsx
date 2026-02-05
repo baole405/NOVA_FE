@@ -1,12 +1,11 @@
 "use client";
 
-import { AlertCircle, Building2, CheckCircle2, Wallet } from "lucide-react";
-import { useEffect, useState } from "react";
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { UpcomingBills } from "@/components/dashboard/upcoming-bills";
 import { type BackendBill, fetchApi, mapBillFromApi } from "@/lib/api-client";
-import { authClient } from "@/lib/auth/client";
 import type { Bill } from "@/types";
+import { AlertCircle, Building2, CheckCircle2, Wallet } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   const [bills, setBills] = useState<Bill[]>([]);
@@ -20,11 +19,17 @@ export default function DashboardPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const { data } = await authClient.getSession();
-        setUser({
-          name: data?.user?.email || "Resident",
-          apartment: { unitNumber: "...", block: "..." },
-        });
+        // const { data } = await authClient.getSession();
+
+        // Placeholder for User Info (since we removed neon-auth)
+        // Ideally we fetch this from /api/auth/me if it existed
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+          setUser({
+            name: "Resident", // Cannot decode token easily without lib, use placeholder
+            apartment: { unitNumber: "...", block: "..." },
+          });
+        }
 
         // Fetch Bills
         const billsData = await fetchApi<BackendBill[]>("/bills");

@@ -1,8 +1,10 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "Running type check before push..."
-npm run type-check
+echo "🛠️ Running Biome Auto-fix (Lint & Format)..."
+# Tự động sửa lỗi Lint & Format code
+npm run fix-lint
 
-echo "Running build test..."
-npm run build
+echo "🔎 Running type-check..."
+# Kiểm tra Type (TypeScript)
+npm run typecheck

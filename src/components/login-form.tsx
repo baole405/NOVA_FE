@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 
 export function LoginForm({
@@ -35,20 +34,35 @@ export function LoginForm({
     setError("");
 
     try {
-      const { error } = await authClient.signIn.email({
-        email,
-        password,
+      const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+      const res = await fetch(`${apiUrl}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: email, password }), // Assuming BE uses username/email field
       });
 
-      if (error) {
-        setError(error.message || "Sign in failed");
-      } else {
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Login failed");
+      }
+
+      const data = await res.json();
+
+      // Store token
+      if (data.access_token) {
+        localStorage.setItem("accessToken", data.access_token);
         // Redirect về dashboard sau khi login thành công
         router.push("/dashboard");
-        router.refresh(); // Refresh để cập nhật trạng thái Auth trên Navbar
+        router.refresh();
+      } else {
+        throw new Error("No access token received");
       }
-    } catch (_err) {
-      setError("An error occurred. Please try again.");
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
