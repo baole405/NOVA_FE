@@ -12,14 +12,25 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth/client"; // Import Auth Client
 
 export default function Home() {
   // Lấy thông tin session
-  const { data: session, isPending } = authClient.useSession();
-  const user = session?.user;
+  // const { data: session, isPending } = authClient.useSession();
+  // const user = session?.user;
+
+  const [user, setUser] = useState<any>(null);
+  const [isPending, setIsPending] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      setUser({ name: "User" }); // Placeholder
+    }
+    setIsPending(false);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">

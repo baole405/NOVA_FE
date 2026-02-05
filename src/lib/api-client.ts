@@ -1,4 +1,4 @@
-import { authClient } from "@/lib/auth/client";
+// import { authClient } from "@/lib/auth/client"; // Removed
 import type { Bill, BillStatus, FeeType } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
@@ -7,8 +7,10 @@ export async function fetchApi<T>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const { data } = await authClient.getSession();
-  const token = data?.session?.token; // Access token from session object
+  // const { data } = await authClient.getSession();
+  // const token = data?.session?.token;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
 
   const headers = {
     "Content-Type": "application/json",

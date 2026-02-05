@@ -1,8 +1,6 @@
-import { NeonAuthUIProvider } from "@neondatabase/auth/react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NavBar } from "@/components/nav/nav-bar";
-import { authClient } from "@/lib/auth/client";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,14 +28,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <NeonAuthUIProvider
-          authClient={authClient}
-          redirectTo="/dashboard" // Redirect to dashboard after login
-          emailOTP // OTP option
-        >
-          <NavBar />
-          <main className="flex-1">{children}</main>
-        </NeonAuthUIProvider>
+        {/* NeonAuthUIProvider removed */}
+        <NavBar />
+        <main className="flex-1">{children}</main>
+        {/* NeonAuthUIProvider removed */}
       </body>
     </html>
   );

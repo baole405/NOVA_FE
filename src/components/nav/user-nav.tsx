@@ -10,23 +10,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { authClient } from "@/lib/auth/client";
 
 export function UserNav() {
   const router = useRouter();
-  // Hook lấy session từ authClient (được hỗ trợ bởi Better Auth)
-  const { data: session } = authClient.useSession();
+  // const { data: session } = authClient.useSession();
 
-  const user = session?.user;
+  // Temporary: Check token manually or use a context
+  // handling user state requires a context/hook, for now we will assume if token exists we show a placeholder,
+  // or purely rely on what we can decode.
+  // Since we removed neon-auth, we need to implement our own useAuth later.
+  // For now to fix build:
+  const user = { name: "User", email: "user@example.com", image: "" }; // Placeholder
+  // You should implement a proper useAuth hook.
 
-  const handleSignOut = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/login"); // Redirect về trang login của bạn
-        },
-      },
-    });
+  const handleSignOut = () => {
+    localStorage.removeItem("accessToken");
+    router.push("/login");
   };
 
   if (!user) return null;
