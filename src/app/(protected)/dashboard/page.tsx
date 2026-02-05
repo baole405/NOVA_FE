@@ -1,11 +1,11 @@
 "use client";
 
+import { AlertCircle, Building2, CheckCircle2, Wallet } from "lucide-react";
+import { useEffect, useState } from "react";
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { UpcomingBills } from "@/components/dashboard/upcoming-bills";
 import { type BackendBill, fetchApi, mapBillFromApi } from "@/lib/api-client";
 import type { Bill } from "@/types";
-import { AlertCircle, Building2, CheckCircle2, Wallet } from "lucide-react";
-import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   const [bills, setBills] = useState<Bill[]>([]);
