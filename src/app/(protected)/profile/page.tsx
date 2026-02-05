@@ -1,14 +1,13 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { mockUser } from "@/lib/mock-data";
-
-// Import các components con mới
-import { ProfileHeader } from "@/components/profile/profile-header";
-import { PersonalInfo } from "@/components/profile/personal-info";
 import { ApartmentInfo } from "@/components/profile/apartment-info";
 import { FamilyList } from "@/components/profile/family-list";
+import { PersonalInfo } from "@/components/profile/personal-info";
+// Import các components con mới
+import { ProfileHeader } from "@/components/profile/profile-header";
 import { VehicleList } from "@/components/profile/vehicle-list";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { mockUser } from "@/lib/mock-data";
 
 export default function ProfilePage() {
   return (

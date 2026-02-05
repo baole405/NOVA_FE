@@ -1,12 +1,12 @@
+import { Menu } from "lucide-react";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetTrigger,
   SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
 
 export default function ProtectedLayout({
   children,

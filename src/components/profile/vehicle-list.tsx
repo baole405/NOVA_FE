@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Vehicle } from "@/types";
+import type { Vehicle } from "@/types";
 
 export function VehicleList({ vehicles }: { vehicles?: Vehicle[] }) {
   return (

@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { FamilyMember } from "@/types";
+import type { FamilyMember } from "@/types";
 
 export function FamilyList({ members }: { members?: FamilyMember[] }) {
   const formatDate = (dateString?: string) => {

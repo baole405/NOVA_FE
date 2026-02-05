@@ -1,19 +1,19 @@
 "use client";
 
-import { useState } from "react";
 import {
   Calendar,
+  Eye, // Mới
+  EyeOff, // Mới
+  Fingerprint,
+  Info,
   Mail,
+  Pencil,
   Phone,
   Save,
   User as UserIcon,
   X,
-  Pencil,
-  Fingerprint,
-  Info,
-  Eye, // Mới
-  EyeOff, // Mới
 } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,13 +24,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserProfile } from "@/types";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { UserProfile } from "@/types";
 
 export function PersonalInfo({ user }: { user: UserProfile }) {
   const [isEditing, setIsEditing] = useState(false);
