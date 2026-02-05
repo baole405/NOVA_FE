@@ -50,7 +50,10 @@ export function VehicleList({ vehicles }: { vehicles?: Vehicle[] }) {
             )}
           </div>
         ))}
-        <button className="mt-2 px-4 py-2 bg-primary text-black rounded-lg hover:bg-primary/67 transition-colors">
+        <button
+          type="button"
+          className="mt-2 px-4 py-2 bg-primary text-black rounded-lg hover:bg-primary/67 transition-colors"
+        >
           Add
         </button>
         {(!vehicles || vehicles.length === 0) && (

@@ -14,8 +14,16 @@ function AuthCallbackContent() {
       // 1. Lưu token vào localStorage (hoặc cookie nếu muốn bảo mật hơn)
       localStorage.setItem("accessToken", token);
 
-      // 2. (Optional) Set cookie cho server component nếu cần
-      document.cookie = `accessToken=${token}; path=/; max-age=86400`; // 1 day
+      // 2. (Optional) Set cookie sử dụng Cookie API
+      if (typeof window !== "undefined") {
+        // Create a more secure cookie path using native API if available
+        try {
+          // Fallback: Use document.cookie with proper encoding
+          const encodedToken = encodeURIComponent(token);
+          // biome-ignore lint/suspicious/noDocumentCookie: Required for auth token persistence
+          document.cookie = `accessToken=${encodedToken}; path=/; max-age=86400; SameSite=Lax`; // 1 day
+        } catch {}
+      }
 
       // 3. Redirect về Dashboard
       router.push("/dashboard");

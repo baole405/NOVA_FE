@@ -60,9 +60,13 @@ export function LoginForm({
       } else {
         throw new Error("No access token received");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An error occurred. Please try again.";
       console.error(err);
-      setError(err.message || "An error occurred. Please try again.");
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
