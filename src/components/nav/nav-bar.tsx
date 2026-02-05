@@ -1,9 +1,5 @@
 "use client";
 
-import { SignedIn, SignedOut } from "@neondatabase/auth/react";
-import { LayoutDashboard } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -13,6 +9,10 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
+import { LayoutDashboard } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { UserNav } from "./user-nav";
 
 const mainNavItems = [
@@ -25,6 +25,20 @@ const mainNavItems = [
 
 export function NavBar() {
   const pathname = usePathname();
+  // Simplified auth check (Client side)
+  // In real app, use a Context. Here checking localStorage for MVP/Build fix.
+  // We need to suppress hydration mismatch so we use useEffect or just render
+  // different content after mount.
+
+  // Quick fix: assume guest for SSR, then check client side.
+  const [isClient, setIsClient] = useState(false);
+  const [hasToken, setHasToken] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const token = localStorage.getItem("accessToken");
+    setHasToken(!!token);
+  }, []);
 
   return (
     // Thay đổi: dùng bg-background/95 thay vì bg-white/95 để hỗ trợ dark mode
@@ -39,7 +53,7 @@ export function NavBar() {
             NOVA
           </Link>
 
-          <SignedIn>
+          {isClient && hasToken && (
             <div className="hidden md:block">
               <NavigationMenu>
                 <NavigationMenuList>
@@ -69,11 +83,11 @@ export function NavBar() {
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
-          </SignedIn>
+          )}
         </div>
 
         <div className="flex items-center gap-4">
-          <SignedOut>
+          {isClient && !hasToken && (
             <div className="flex items-center gap-2">
               <Button asChild variant="ghost" size="sm">
                 <Link href="/login">Sign in</Link>
@@ -87,11 +101,9 @@ export function NavBar() {
                 <Link href="/auth/sign-up">Sign up</Link>
               </Button>
             </div>
-          </SignedOut>
+          )}
 
-          <SignedIn>
-            <UserNav />
-          </SignedIn>
+          {isClient && hasToken && <UserNav />}
         </div>
       </div>
     </div>

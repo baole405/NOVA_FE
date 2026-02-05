@@ -1,9 +1,10 @@
-import { neonAuthMiddleware } from "@neondatabase/auth/next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
-export default neonAuthMiddleware({
-  // Redirects unauthenticated users to sign-in page
-  loginUrl: "/login",
-});
+export function middleware(request: NextRequest) {
+  // Placeholder for future auth check (e.g. cookie check)
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
