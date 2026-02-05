@@ -54,12 +54,13 @@ export function LoginForm({
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = () => {
     setIsLoading(true);
-    await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/dashboard", // Redirect về Dashboard
-    });
+    // Redirect trực tiếp tới Backend để bắt đầu Google OAuth Flow
+    // Backend sẽ redirect ngược lại về /auth/callback kèm token
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+    window.location.href = `${apiUrl}/auth/google`;
   };
 
   const [showPolicy, setShowPolicy] = useState(false);
