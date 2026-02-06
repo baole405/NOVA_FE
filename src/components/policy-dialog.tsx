@@ -24,9 +24,10 @@ export function PolicyDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl h-[80vh] flex flex-col p-0 gap-0">
         <DialogHeader className="px-6 py-4 border-b">
-          <DialogTitle>Legal Information</DialogTitle>
+          <DialogTitle>Thông tin Pháp lý</DialogTitle>
           <DialogDescription>
-            Please review our terms and privacy policy carefully.
+            Vui lòng xem xét cẩn thận Điều kiện Dịch vụ và Chính sách Bảo mật
+            của chúng tôi.
           </DialogDescription>
         </DialogHeader>
 
@@ -36,8 +37,8 @@ export function PolicyDialog({
         >
           <div className="px-6 py-2 bg-muted/30 border-b">
             <TabsList className="grid w-full max-w-md grid-cols-2">
-              <TabsTrigger value="terms">Terms of Service</TabsTrigger>
-              <TabsTrigger value="privacy">Privacy Policy</TabsTrigger>
+              <TabsTrigger value="terms">Điều khoản Dịch vụ</TabsTrigger>
+              <TabsTrigger value="privacy">Chính sách Bảo mật</TabsTrigger>
             </TabsList>
           </div>
 
@@ -46,41 +47,30 @@ export function PolicyDialog({
             value="terms"
             className="flex-1 p-6 overflow-y-auto mt-0 space-y-4 text-sm text-muted-foreground"
           >
-            <h3 className="text-lg font-bold text-foreground">
-              1. Introduction
-            </h3>
+            <h3 className="text-lg font-bold text-foreground">1. Giới thiệu</h3>
             <p>
-              Welcome to NOVA. By accessing our website and using our services,
-              you agree to comply with and be bound by the following terms and
-              conditions.
+              Chào mừng đến với NOVA. Bằng cách truy cập trang web của chúng
+              tôi, bạn đồng ý tuân thủ các điều khoản sau.
             </p>
 
             <h3 className="text-lg font-bold text-foreground">
-              2. User Responsibilities
+              2. Trách nhiệm
             </h3>
             <p>
-              As a resident using NOVA, you are responsible for maintaining the
-              confidentiality of your account credentials and for all activities
-              that occur under your account. You agree to notify us immediately
-              of any unauthorized use.
+              Bạn chịu trách nhiệm giữ bảo mật thông tin tài khoản. Thông báo
+              ngay cho chúng tôi nếu có truy cập trái phép.
             </p>
 
-            <h3 className="text-lg font-bold text-foreground">
-              3. Payment Obligations
-            </h3>
+            <h3 className="text-lg font-bold text-foreground">3. Thanh toán</h3>
             <p>
-              You agree to pay all service fees, utility bills, and other
-              charges associated with your apartment unit by the due date.
-              Failure to pay may result in late fees or service restrictions.
+              Bạn đồng ý thanh toán tất cả phí dịch vụ trước ngày hết hạn. Không
+              thanh toán có thể dẫn đến phí quá hạn.
             </p>
 
-            <h3 className="text-lg font-bold text-foreground">
-              4. Termination
-            </h3>
+            <h3 className="text-lg font-bold text-foreground">4. Chấm dứt</h3>
             <p>
-              We reserve the right to suspend or terminate your account if you
-              violate these Terms of Service or engage in illegal activities
-              within the platform.
+              Chúng tôi bảo lưu quyền chấm dứt tài khoản nếu bạn vi phạm điều
+              khoản.
             </p>
           </TabsContent>
 
