@@ -11,7 +11,7 @@ import type { FamilyMember } from "@/types";
 export function FamilyList({ members }: { members?: FamilyMember[] }) {
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("en-GB");
+    return new Date(dateString).toLocaleDateString("vi-VN");
   };
 
   return (
@@ -19,9 +19,9 @@ export function FamilyList({ members }: { members?: FamilyMember[] }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Users className="h-5 w-5 text-primary" />
-          Family Members
+          Thành Viên Gia Đình
         </CardTitle>
-        <CardDescription>Registered residents in your unit.</CardDescription>
+        <CardDescription>Cư dân đã đăng ký trong căn hộ.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {members?.map((member) => (
@@ -41,7 +41,7 @@ export function FamilyList({ members }: { members?: FamilyMember[] }) {
               </div>
             </div>
             <div className="text-right text-sm">
-              <p className="text-muted-foreground">DOB</p>
+              <p className="text-muted-foreground">Ngày sinh</p>
               <p className="font-medium">{formatDate(member.dob)}</p>
             </div>
           </div>
@@ -50,11 +50,11 @@ export function FamilyList({ members }: { members?: FamilyMember[] }) {
           type="button"
           className="mt-2 px-4 py-2 bg-secondary text-black rounded-lg hover:bg-primary/67 transition-colors"
         >
-          Add
+          Thêm thành viên
         </button>
         {(!members || members.length === 0) && (
           <p className="text-center text-muted-foreground py-4">
-            No family members registered.
+            Chưa có thành viên nào được đăng ký.
           </p>
         )}
       </CardContent>

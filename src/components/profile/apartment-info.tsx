@@ -31,16 +31,16 @@ export function ApartmentInfo({ apartment }: { apartment?: Apartment }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Building className="h-5 w-5 text-primary" />
-          Apartment Information
+          Thông Tin Căn Hộ
         </CardTitle>
-        <CardDescription>Details about your registered unit.</CardDescription>
+        <CardDescription>Chi tiết về căn hộ đã đăng ký.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 gap-4">
-          <InfoBox label="Block" value={apartment.block} />
-          <InfoBox label="Unit" value={apartment.unitNumber} />
-          <InfoBox label="Floor" value={apartment.floor} />
-          <InfoBox label="Area" value={`${apartment.area} m²`} />
+          <InfoBox label="Tòa" value={apartment.block} />
+          <InfoBox label="Căn hộ" value={apartment.unitNumber} />
+          <InfoBox label="Tầng" value={apartment.floor} />
+          <InfoBox label="Diện tích" value={`${apartment.area} m²`} />
         </div>
       </CardContent>
     </Card>

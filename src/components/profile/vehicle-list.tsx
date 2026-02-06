@@ -15,9 +15,9 @@ export function VehicleList({ vehicles }: { vehicles?: Vehicle[] }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Car className="h-5 w-5 text-primary" />
-          Registered Vehicles
+          Phương Tiện Đăng Ký
         </CardTitle>
-        <CardDescription>Vehicles authorized for parking.</CardDescription>
+        <CardDescription>Danh sách xe được phép gửi.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {vehicles?.map((veh) => (
@@ -36,7 +36,7 @@ export function VehicleList({ vehicles }: { vehicles?: Vehicle[] }) {
               <div>
                 <p className="font-bold text-lg">{veh.licensePlate}</p>
                 <Badge variant="outline" className="capitalize">
-                  {veh.type}
+                  {veh.type === "car" ? "Ô tô" : "Xe máy"}
                 </Badge>
               </div>
             </div>
@@ -54,11 +54,11 @@ export function VehicleList({ vehicles }: { vehicles?: Vehicle[] }) {
           type="button"
           className="mt-2 px-4 py-2 bg-secondary text-black rounded-lg hover:bg-primary/67 transition-colors"
         >
-          Add
+          Thêm phương tiện
         </button>
         {(!vehicles || vehicles.length === 0) && (
           <p className="text-center text-muted-foreground py-4">
-            No vehicles registered.
+            Chưa có phương tiện nào được đăng ký.
           </p>
         )}
       </CardContent>

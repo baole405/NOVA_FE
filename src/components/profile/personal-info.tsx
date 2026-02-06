@@ -2,8 +2,8 @@
 
 import {
   Calendar,
-  Eye, // Mới
-  EyeOff, // Mới
+  Eye,
+  EyeOff,
   Fingerprint,
   Info,
   Mail,
@@ -34,7 +34,7 @@ import type { UserProfile } from "@/types";
 
 export function PersonalInfo({ user }: { user: UserProfile }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [showIdNumber, setShowIdNumber] = useState(false); // State quản lý ẩn/hiện CCCD
+  const [showIdNumber, setShowIdNumber] = useState(false);
 
   const [formData, setFormData] = useState({
     name: user.name,
@@ -44,11 +44,9 @@ export function PersonalInfo({ user }: { user: UserProfile }) {
     dob: user.dob || "",
   });
 
-  // Hàm che chuỗi ID, chỉ hiện 3 số cuối
   const maskId = (id: string) => {
     if (!id) return "";
     if (id.length <= 3) return id;
-    // Thay thế tất cả ký tự trừ 3 ký tự cuối bằng dấu chấm tròn
     return "●".repeat(id.length - 3) + id.slice(-3);
   };
 
@@ -74,10 +72,10 @@ export function PersonalInfo({ user }: { user: UserProfile }) {
         <div>
           <CardTitle className="flex items-center gap-2">
             <UserIcon className="h-5 w-5 text-primary" />
-            Personal Details
+            Thông Tin Cá Nhân
           </CardTitle>
           <CardDescription>
-            View and manage your personal information.
+            Xem và quản lý thông tin cá nhân của bạn.
           </CardDescription>
         </div>
         {!isEditing && (
@@ -86,16 +84,15 @@ export function PersonalInfo({ user }: { user: UserProfile }) {
             size="sm"
             onClick={() => setIsEditing(true)}
           >
-            <Pencil className="w-4 h-4 mr-2" /> Edit Info
+            <Pencil className="w-4 h-4 mr-2" /> Chỉnh sửa
           </Button>
         )}
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* ROW 1: Name & ID Number */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="grid gap-2">
             <Label htmlFor="name" className="flex items-center gap-2">
-              Full Name
+              Họ và tên
               {isEditing && (
                 <TooltipProvider>
                   <Tooltip>
@@ -103,7 +100,7 @@ export function PersonalInfo({ user }: { user: UserProfile }) {
                       <Info className="h-3 w-3 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      Name must match the contract. Contact Admin to change.
+                      Tên phải trùng khớp với hợp đồng. Liên hệ BQL để thay đổi.
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -117,21 +114,19 @@ export function PersonalInfo({ user }: { user: UserProfile }) {
             />
           </div>
 
-          {/* ID NUMBER VỚI MASKING */}
           <div className="grid gap-2">
             <Label htmlFor="idNumber" className="flex items-center gap-2">
-              <Fingerprint className="h-4 w-4" /> ID Card / Passport
+              <Fingerprint className="h-4 w-4" /> CCCD / Hộ chiếu
             </Label>
             <div className="relative">
               <Input
                 id="idNumber"
-                // Logic hiển thị: Nếu đang bật showIdNumber thì hiện số thật, ngược lại hiện số đã che
                 value={
                   showIdNumber ? formData.idNumber : maskId(formData.idNumber)
                 }
                 disabled
-                className="bg-muted/50 cursor-not-allowed font-mono pr-10" // pr-10 để chừa chỗ cho icon
-                type={showIdNumber ? "text" : "password"} // Kết hợp thêm type password để an toàn hơn
+                className="bg-muted/50 cursor-not-allowed font-mono pr-10"
+                type={showIdNumber ? "text" : "password"}
               />
               <Button
                 type="button"
@@ -151,11 +146,10 @@ export function PersonalInfo({ user }: { user: UserProfile }) {
           </div>
         </div>
 
-        {/* ROW 2: DOB & Phone */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="grid gap-2">
             <Label htmlFor="dob" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" /> Date of Birth
+              <Calendar className="h-4 w-4" /> Ngày sinh
             </Label>
             <Input
               id="dob"
@@ -170,7 +164,7 @@ export function PersonalInfo({ user }: { user: UserProfile }) {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="phone" className="flex items-center gap-2">
-              <Phone className="h-4 w-4" /> Phone Number
+              <Phone className="h-4 w-4" /> Số điện thoại
             </Label>
             <Input
               id="phone"
@@ -184,10 +178,9 @@ export function PersonalInfo({ user }: { user: UserProfile }) {
           </div>
         </div>
 
-        {/* ROW 3: Email */}
         <div className="grid gap-2">
           <Label htmlFor="email" className="flex items-center gap-2">
-            <Mail className="h-4 w-4" /> Email Address
+            <Mail className="h-4 w-4" /> Địa chỉ Email
           </Label>
           <Input
             id="email"
@@ -201,19 +194,19 @@ export function PersonalInfo({ user }: { user: UserProfile }) {
           />
           {isEditing && (
             <p className="text-xs text-muted-foreground mt-1">
-              * Changing email or phone may require OTP verification.
+              * Việc thay đổi email hoặc số điện thoại có thể yêu cầu xác thực
+              OTP.
             </p>
           )}
         </div>
 
-        {/* Action Buttons */}
         {isEditing && (
           <div className="flex justify-end gap-2 mt-4 animate-in fade-in slide-in-from-top-2">
             <Button variant="ghost" onClick={handleCancel}>
-              <X className="w-4 h-4 mr-2" /> Cancel
+              <X className="w-4 h-4 mr-2" /> Hủy
             </Button>
             <Button onClick={handleSave}>
-              <Save className="w-4 h-4 mr-2" /> Save Changes
+              <Save className="w-4 h-4 mr-2" /> Lưu thay đổi
             </Button>
           </div>
         )}

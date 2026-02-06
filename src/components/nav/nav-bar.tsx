@@ -77,7 +77,7 @@ export function NavBar() {
           ) : !session ? (
             <div className="flex items-center gap-2">
               <Button asChild variant="ghost" size="sm">
-                <Link href="/auth/login">Đăng nhập</Link>
+                <Link href="/login">Đăng nhập</Link>
               </Button>
               <Button
                 asChild
