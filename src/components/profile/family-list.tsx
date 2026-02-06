@@ -48,7 +48,7 @@ export function FamilyList({ members }: { members?: FamilyMember[] }) {
         ))}
         <button
           type="button"
-          className="mt-2 px-4 py-2 bg-primary text-black rounded-lg hover:bg-primary/67 transition-colors"
+          className="mt-2 px-4 py-2 bg-secondary text-black rounded-lg hover:bg-primary/67 transition-colors"
         >
           Add
         </button>

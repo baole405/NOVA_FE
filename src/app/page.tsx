@@ -1,4 +1,4 @@
-"use client"; // Chuyển thành Client Component
+"use client";
 
 import {
   ArrowRight,
@@ -12,25 +12,13 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth/client";
 
 export default function Home() {
-  // Lấy thông tin session
-  // const { data: session, isPending } = authClient.useSession();
-  // const user = session?.user;
-
-  const [user, setUser] = useState<{ name: string } | null>(null);
-  const [isPending, setIsPending] = useState(true);
-
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      setUser({ name: "User" }); // Placeholder
-    }
-    setIsPending(false);
-  }, []);
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -42,7 +30,7 @@ export default function Home() {
               variant="outline"
               className="px-4 py-1.5 text-sm rounded-full border-primary/20 bg-primary/5 text-primary animate-in fade-in zoom-in duration-500"
             >
-              🚀 Giải pháp quản lý phí chung cư thông minh
+              🚀 Giải pháp quản lý phí căn hộ thông minh
             </Badge>
 
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -53,20 +41,21 @@ export default function Home() {
             </h1>
 
             <p className="text-xl text-muted-foreground max-w-2xl animate-in fade-in slide-in-from-bottom-5 duration-800 delay-100">
-              Không còn lo trễ hạn đóng phí. NOVA giúp bạn theo dõi hóa đơn,
-              nhận thông báo nhắc nhở và xem lịch sử thanh toán chỉ trong vài cú
+              Không còn lo lắng về thanh toán trễ hạn. NOVA giúp bạn theo dõi
+              hóa đơn, nhận nhắc nhở và xem lịch sử thanh toán chỉ với vài lần
               chạm.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 w-full justify-center animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-              {/* --- LOGIC ĐIỀU KIỆN --- */}
               {isPending ? (
-                // Loading Skeleton (Optional)
-                <Button size="lg" disabled className="h-12 px-8 rounded-full">
-                  Đang tải...
+                <Button
+                  size="lg"
+                  disabled
+                  className="h-12 px-8 rounded-full opacity-50"
+                >
+                  <span className="animate-pulse">Đang kiểm tra...</span>
                 </Button>
               ) : user ? (
-                // TRẠNG THÁI: ĐÃ ĐĂNG NHẬP
                 <div className="flex flex-col items-center gap-4">
                   <p className="text-lg font-medium text-foreground">
                     Xin chào, <span className="text-primary">{user.name}</span>{" "}
@@ -78,13 +67,12 @@ export default function Home() {
                     asChild
                   >
                     <Link href="/dashboard">
-                      Truy cập Dashboard{" "}
+                      Vào Bảng điều khiển{" "}
                       <LayoutDashboard className="ml-2 h-5 w-5" />
                     </Link>
                   </Button>
                 </div>
               ) : (
-                // TRẠNG THÁI: CHƯA ĐĂNG NHẬP (GUEST)
                 <>
                   <Button
                     size="lg"
@@ -101,7 +89,7 @@ export default function Home() {
                     className="h-12 px-8 text-lg rounded-full"
                     asChild
                   >
-                    <Link href="/auth/sign-in">Đăng nhập</Link>
+                    <Link href="/auth/login">Đăng nhập</Link>
                   </Button>
                 </>
               )}
@@ -109,25 +97,22 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Background Gradients */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-blue-500/10 rounded-full blur-[100px] -z-10" />
       </section>
 
-      {/* --- CÁC SECTION KHÁC GIỮ NGUYÊN --- */}
-      {/* ... (Copy lại phần Mockup, Features, Zigzag, CTA, Footer từ code cũ) ... */}
       <section className="pb-20">
         <div className="container px-4 mx-auto">
           <div className="relative rounded-xl border bg-muted/50 p-2 shadow-2xl max-w-5xl mx-auto">
             <div className="relative aspect-[16/9] overflow-hidden rounded-lg bg-background">
               <Image
                 src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
-                alt="App Dashboard Preview"
+                alt="Xem trước Giao diện Bảng điều khiển"
                 fill
                 className="object-cover opacity-90"
               />
               <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                 <p className="text-white font-bold text-xl md:text-3xl">
-                  Dashboard Giao Diện Người Dùng
+                  Giao diện Bảng điều khiển Người dùng
                 </p>
               </div>
             </div>
@@ -142,26 +127,26 @@ export default function Home() {
               Tại sao chọn NOVA?
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Chúng tôi tập trung giải quyết vấn đề lớn nhất của cư dân: Sự minh
-              bạch và tiện lợi trong thanh toán.
+              Chúng tôi tập trung vào giải quyết vấn đề lớn nhất cho cư dân:
+              Minh bạch và tiện lợi trong thanh toán.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <FeatureCard
               icon={<CreditCard className="w-10 h-10 text-blue-500" />}
-              title="Minh bạch khoản phí"
-              description="Xem chi tiết từng hạng mục: Phí quản lý, điện, nước, gửi xe. Không còn thắc mắc về các khoản thu."
+              title="Minh bạch Phí dịch vụ"
+              description="Xem chi tiết từng hạng mục: Phí quản lý, điện, nước, đỗ xe. Không còn thắc mắc về các khoản phí."
             />
             <FeatureCard
               icon={<Clock className="w-10 h-10 text-orange-500" />}
-              title="Nhắc hạn tự động"
-              description="Hệ thống tự động gửi thông báo khi sắp đến hạn đóng phí. Tạm biệt nỗi lo bị phạt trễ hạn."
+              title="Nhắc nhở Tự động"
+              description="Hệ thống tự động gửi thông báo khi phí đến hạn. Nói tạm biệt với lo lắng về phạt trễ hạn."
             />
             <FeatureCard
               icon={<Smartphone className="w-10 h-10 text-green-500" />}
-              title="Truy cập mọi nơi"
-              description="Giao diện tối ưu cho điện thoại. Kiểm tra hóa đơn và lịch sử thanh toán ngay cả khi đang di chuyển."
+              title="Truy cập từ mọi nơi"
+              description="Giao diện di động được tối ưu hóa. Kiểm tra hóa đơn và lịch sử thanh toán ngay cả khi đang di chuyển."
             />
           </div>
         </div>
@@ -175,25 +160,29 @@ export default function Home() {
                 <Zap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <h3 className="text-3xl font-bold">
-                Theo dõi trạng thái hóa đơn tức thì
+                Theo dõi Trạng thái Hóa đơn Ngay lập tức
               </h3>
               <p className="text-lg text-muted-foreground">
-                Phân loại rõ ràng các hóa đơn:{" "}
-                <span className="text-amber-600 font-medium">Chờ đóng</span>,{" "}
-                <span className="text-red-600 font-medium">Quá hạn</span>, và{" "}
-                <span className="text-green-600 font-medium">Đã đóng</span>.
-                Giúp bạn quản lý tài chính cá nhân hiệu quả hơn.
+                Phân loại hóa đơn một cách rõ ràng:{" "}
+                <span className="text-amber-600 font-medium">
+                  Chưa thanh toán
+                </span>
+                , <span className="text-red-600 font-medium">Quá hạn</span>, và{" "}
+                <span className="text-green-600 font-medium">
+                  Đã thanh toán
+                </span>
+                . Giúp bạn quản lý tài chính cá nhân hiệu quả hơn.
               </p>
               <ul className="space-y-3">
-                <ListItem text="Cập nhật dữ liệu thời gian thực" />
-                <ListItem text="Hiển thị chi tiết số tiền và hạn chót" />
-                <ListItem text="Cảnh báo khi quá hạn" />
+                <ListItem text="Cập nhật dữ liệu thực tế" />
+                <ListItem text="Hiển thị chi tiết số tiền và thời hạn" />
+                <ListItem text="Cảnh báo quá hạn" />
               </ul>
             </div>
             <div className="flex-1 relative aspect-square md:aspect-video bg-muted rounded-2xl overflow-hidden shadow-xl border">
               <Image
                 src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2000&auto=format&fit=crop"
-                alt="Tracking bills"
+                alt="Theo dõi hóa đơn"
                 fill
                 className="object-cover"
               />
@@ -206,23 +195,22 @@ export default function Home() {
                 <ShieldCheck className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               </div>
               <h3 className="text-3xl font-bold">
-                Lịch sử giao dịch minh bạch
+                Lịch sử Giao dịch Minh bạch
               </h3>
               <p className="text-lg text-muted-foreground">
-                Lưu trữ toàn bộ lịch sử thanh toán của bạn. Dễ dàng tra cứu lại
-                các khoản phí đã đóng từ nhiều tháng trước để đối chiếu khi cần
-                thiết.
+                Lưu trữ toàn bộ lịch sử thanh toán của bạn. Dễ dàng tra cứu các
+                khoản thanh toán từ những tháng trước để xác minh khi cần.
               </p>
               <ul className="space-y-3">
                 <ListItem text="Lưu trữ vĩnh viễn" />
                 <ListItem text="Xuất hóa đơn PDF (Sắp ra mắt)" />
-                <ListItem text="Tra cứu theo tháng/năm" />
+                <ListItem text="Tìm kiếm theo tháng/năm" />
               </ul>
             </div>
             <div className="flex-1 relative aspect-square md:aspect-video bg-muted rounded-2xl overflow-hidden shadow-xl border">
               <Image
                 src="https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?q=80&w=2000&auto=format&fit=crop"
-                alt="History Transparency"
+                alt="Minh bạch Lịch sử"
                 fill
                 className="object-cover"
               />
@@ -234,11 +222,11 @@ export default function Home() {
       <section className="py-20 bg-primary text-primary-foreground relative overflow-hidden">
         <div className="container px-4 mx-auto text-center relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Sẵn sàng trải nghiệm cuộc sống tiện nghi?
+            Sẵn sàng trải nghiệm cuộc sống tiện lợi?
           </h2>
           <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto mb-10">
-            Tham gia cùng hàng trăm cư dân đang sử dụng NOVA để quản lý căn hộ
-            của họ ngay hôm nay.
+            Tham gia hàng trăm cư dân đang sử dụng NOVA để quản lý căn hộ ngày
+            hôm nay.
           </p>
           <Button
             size="lg"
@@ -246,7 +234,7 @@ export default function Home() {
             className="h-14 px-10 text-lg rounded-full text-primary font-bold shadow-2xl"
             asChild
           >
-            <Link href="/auth/sign-up">Tạo tài khoản ngay</Link>
+            <Link href="/auth/sign-up">Tạo Tài khoản Ngay</Link>
           </Button>
         </div>
         <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
@@ -259,7 +247,7 @@ export default function Home() {
             NOVA
           </div>
           <p className="text-sm text-muted-foreground">
-            © 2026 NOVA Project - FPT University. MVP for EXE202 Course.
+            © 2026 Dự án NOVA - Đại học FPT. MVP cho Khóa học EXE202.
           </p>
           <div className="flex gap-6 text-sm font-medium text-muted-foreground">
             <Link href="#" className="hover:text-primary">

@@ -4,83 +4,51 @@ import { AlertCircle, Building2, CheckCircle2, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { UpcomingBills } from "@/components/dashboard/upcoming-bills";
-import { type BackendBill, fetchApi, mapBillFromApi } from "@/lib/api-client";
-import type { Apartment, Bill } from "@/types";
+import { authClient } from "@/lib/auth/client";
+import { mockBills, mockUser } from "@/lib/mock-data"; // Import Mock Data
+import type { Bill } from "@/types";
 
 export default function DashboardPage() {
-  const [bills, setBills] = useState<Bill[]>([]);
+  const [bills, _setBills] = useState<Bill[]>(mockBills);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<{
     name: string;
     apartment?: { unitNumber: string; block: string };
-  } | null>(null);
+  }>({
+    name: mockUser.name,
+    apartment: {
+      unitNumber: mockUser.apartment?.unitNumber || "N/A",
+      block: mockUser.apartment?.block || "N/A",
+    },
+  });
 
   useEffect(() => {
     async function loadData() {
       try {
-        // const { data } = await authClient.getSession();
+        const { data } = await authClient.getSession();
 
-        // Placeholder for User Info (since we removed neon-auth)
-        // Ideally we fetch this from /api/auth/me if it existed
-        const token = localStorage.getItem("accessToken");
-        if (token) {
-          setUser({
-            name: "Resident", // Cannot decode token easily without lib, use placeholder
-            apartment: { unitNumber: "...", block: "..." },
-          });
+        if (data?.user) {
+          setUser((prev) => ({
+            ...prev,
+            name: data.user.name || mockUser.name,
+          }));
         }
-
-        // Fetch Bills
-        const billsData = await fetchApi<BackendBill[]>("/bills");
-        const mappedBills = billsData.map(mapBillFromApi);
-        setBills(mappedBills);
-
-        // Fetch Apartment (Optional - for unit info)
-        try {
-          const apt = await fetchApi<Apartment>("/apartments/my");
-          if (apt) {
-            setUser((prev) => {
-              if (!prev) return prev;
-              return {
-                ...prev,
-                apartment: { unitNumber: apt.unitNumber, block: apt.block },
-              };
-            });
-          }
-        } catch (err: unknown) {
-          console.warn("Could not fetch apartment info", err);
-        }
-      } catch (e: unknown) {
-        console.error("Dashboard Load Error", e);
-        setError("Failed to load dashboard data.");
+      } catch (_e) {
+        console.warn("Session check failed, using full mock user");
       } finally {
-        setLoading(false);
+        setTimeout(() => setLoading(false), 500);
       }
     }
     loadData();
   }, []);
 
   if (loading) {
-    return <div className="p-8 text-center">Loading dashboard...</div>;
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
   }
-
-  if (error) {
-    return <div className="p-8 text-center text-red-500">{error}</div>;
-  }
-
-  // --- Logic tính toán Stats ---
-
-  // 1. Tổng tiền cần đóng (Pending + Overdue)
-  const totalDue = bills
-    .filter((b) => b.status === "pending" || b.status === "overdue")
-    .reduce((acc, curr) => acc + curr.amount, 0);
-
-  // 2. Số hóa đơn quá hạn
-  const overdueCount = bills.filter((b) => b.status === "overdue").length;
-
-  // 3. Số hóa đơn chờ thanh toán (Pending only)
-  const pendingCount = bills.filter((b) => b.status === "pending").length;
 
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat("vi-VN", {
@@ -88,74 +56,71 @@ export default function DashboardPage() {
       currency: "VND",
     }).format(amount);
 
+  const totalDue = bills
+    .filter((b) => b.status === "pending" || b.status === "overdue")
+    .reduce((sum, b) => sum + b.amount, 0);
+
+  const pendingCount = bills.filter((b) => b.status === "pending").length;
+  const overdueCount = bills.filter((b) => b.status === "overdue").length;
+
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 my-8 p-4 p-4 md:p-8">
-      {/* --- HEADER SECTION --- */}
+    <div className="space-y-8 animate-in fade-in duration-500 my-8 p-4 md:p-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-primary">
-            Overview
+            Tổng quan
           </h2>
-          <p className="text-muted-foreground mt-1">
-            Welcome back, {user?.name} 👋
-          </p>
+          <p className="text-muted-foreground mt-1">Xin chào, {user.name} 👋</p>
         </div>
 
-        {/* Apartment Info Badge */}
         <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-border shadow-sm">
           <Building2 className="w-5 h-5 text-primary" />
           <div className="text-sm">
             <p className="font-medium text-foreground">
-              Unit {user?.apartment?.unitNumber || "N/A"}
+              Ông {user.apartment?.unitNumber}
             </p>
             <p className="text-xs text-muted-foreground">
-              Block {user?.apartment?.block || "N/A"}
+              Tòa nhà {user.apartment?.block}
             </p>
           </div>
         </div>
       </div>
 
-      {/* --- STATS CARDS GRID --- */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {/* Card 1: Total Due */}
         <StatsCard
-          title="Total Due"
+          title="Còn nợ"
           value={formatCurrency(totalDue)}
-          description="Includes overdue fees"
+          description="Bao gồm phí quá hạn"
           icon={Wallet}
           trend={totalDue > 0 ? "negative" : "positive"}
         />
 
-        {/* Card 2: Pending Bills */}
         <StatsCard
-          title="Pending Bills"
-          value={`${pendingCount} Bills`}
-          description="Awaiting payment"
+          title="Hóa đơn chờm"
+          value={`${pendingCount} Hơp đơng`}
+          description="Chờ thanh toán"
           icon={AlertCircle}
           trend="neutral"
         />
 
-        {/* Card 3: Overdue (Highlighted) */}
         <StatsCard
-          title="Overdue"
-          value={`${overdueCount} Bills`}
-          description="Action required"
+          title="Quá hạn"
+          value={`${overdueCount} Hơp đơng`}
+          description="Cần tài khoản"
           icon={AlertCircle}
           className="border-destructive/50 bg-destructive/5"
           trend="negative"
         />
 
-        {/* Card 4: Paid (Mock) */}
         <StatsCard
-          title="Paid this month"
-          value="1.2M" // TODO: Calculate this from transaction history
-          description="Thank you!"
+          title="Đã thanh toán tháng này"
+          value="1.2M"
+          description="Cảm ơn!"
           icon={CheckCircle2}
           trend="positive"
         />
       </div>
 
-      {/* --- MAIN CONTENT --- */}
       <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-7">
         <div className="col-span-7">
           <UpcomingBills bills={bills} />

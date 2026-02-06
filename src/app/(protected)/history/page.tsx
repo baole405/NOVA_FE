@@ -30,25 +30,27 @@ export default function HistoryPage() {
     <div className="space-y-6 p-4 md:p-8 max-w-5xl mx-auto">
       <div>
         <h2 className="text-3xl font-bold tracking-tight text-primary">
-          Transaction History
+          Lịch sử Giao dịch
         </h2>
-        <p className="text-muted-foreground">Review your past payments.</p>
+        <p className="text-muted-foreground">
+          Đánh giá các khoản thanh toán của bạn.
+        </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Transactions</CardTitle>
+          <CardTitle>Đơn vị giao dịch gần đây</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Transaction Code</TableHead>
-                <TableHead>Service</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Method</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead className="text-right">Status</TableHead>
+                <TableHead>Mã giao dịch</TableHead>
+                <TableHead>Dịch vụ</TableHead>
+                <TableHead>Ngày</TableHead>
+                <TableHead>Phương thức</TableHead>
+                <TableHead className="text-right">Số tiền</TableHead>
+                <TableHead className="text-right">Trạng thái</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

@@ -40,10 +40,10 @@ export default function BillsPage() {
   };
 
   const BillItem = ({ bill }: { bill: Bill }) => (
-    <button // 1. ĐỔI div THÀNH button
+    <button
       type="button"
       onClick={() => handleOpenDetail(bill)}
-      className="w-full text-left flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg bg-card hover:bg-accent/50 transition-colors gap-4 cursor-pointer group focus:outline-none focus:ring-2 focus:ring-primary/50" // Thêm w-full text-left
+      className="w-full text-left flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg bg-card hover:bg-accent/50 transition-colors gap-4 cursor-pointer group focus:outline-none focus:ring-2 focus:ring-primary/50"
     >
       <div className="flex items-start gap-4">
         <div
@@ -91,9 +91,8 @@ export default function BillsPage() {
           </p>
         </div>
         {bill.status !== "paid" && (
-          // 2. ĐỔI Button THÀNH div (Visual only) để tránh lỗi lồng button
           <div className={cn(buttonVariants({ size: "sm" }))}>
-            Pay <ArrowRight className="ml-1 h-4 w-4" />
+            Thanh toán <ArrowRight className="ml-1 h-4 w-4" />
           </div>
         )}
       </div>
@@ -104,27 +103,27 @@ export default function BillsPage() {
     <div className="space-y-6 p-4 md:p-8 max-w-5xl mx-auto">
       <div>
         <h2 className="text-3xl font-bold tracking-tight text-primary">
-          Bills
+          Hóa đơn
         </h2>
         <p className="text-muted-foreground">
-          Manage and pay your monthly service fees.
+          Quản lý và thanh toán các khoản phí dịch vụ hàng tháng.
         </p>
       </div>
 
       <Tabs defaultValue="unpaid" className="w-full">
         <TabsList className="grid w-full max-w-md grid-cols-2 mb-4">
           <TabsTrigger value="unpaid">
-            Unpaid ({unpaidBills.length})
+            Chêu thanh toán ({unpaidBills.length})
           </TabsTrigger>
-          <TabsTrigger value="all">All Bills</TabsTrigger>
+          <TabsTrigger value="all">Tất cả Hóa đơn</TabsTrigger>
         </TabsList>
 
         <TabsContent value="unpaid" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Pending Payments</CardTitle>
+              <CardTitle>Đang chờ Thanh toán</CardTitle>
               <CardDescription>
-                Fees that require your attention.
+                Các khoản phí cần đưa đấu lưu ý.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -134,7 +133,7 @@ export default function BillsPage() {
                 ))
               ) : (
                 <div className="text-center py-10 text-muted-foreground">
-                  No unpaid bills. You are all set!
+                  Không có hóa đơn chờm. Bạn đã hoàn thành tất cả!
                 </div>
               )}
             </CardContent>
@@ -144,8 +143,10 @@ export default function BillsPage() {
         <TabsContent value="all">
           <Card>
             <CardHeader>
-              <CardTitle>History & Archive</CardTitle>
-              <CardDescription>List of all your invoices.</CardDescription>
+              <CardTitle>Lịch sử & Lưu trữ</CardTitle>
+              <CardDescription>
+                Danh sách tất cả hóa đơn của bạn.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {mockBills.map((bill) => (

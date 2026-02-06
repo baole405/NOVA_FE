@@ -15,28 +15,26 @@ export default function ProfilePage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-primary">
-            My Profile
+            Hồ sơ của tôi
           </h2>
           <p className="text-muted-foreground">
-            Manage your personal information and household details.
+            Quản lý thông tin cá nhân và chi tiết hộ gia đình.
           </p>
         </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-12">
-        {/* --- LEFT COLUMN: Header & Stats (Chiếm 4/12 cột) --- */}
         <div className="md:col-span-4">
           <ProfileHeader user={mockUser} />
         </div>
 
-        {/* --- RIGHT COLUMN: Detailed Tabs (Chiếm 8/12 cột) --- */}
         <div className="md:col-span-8">
           <Tabs defaultValue="personal" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="personal">Personal</TabsTrigger>
-              <TabsTrigger value="apartment">Apartment</TabsTrigger>
-              <TabsTrigger value="family">Family</TabsTrigger>
-              <TabsTrigger value="vehicles">Vehicles</TabsTrigger>
+              <TabsTrigger value="personal">Cá nhân</TabsTrigger>
+              <TabsTrigger value="apartment">Căn hộ</TabsTrigger>
+              <TabsTrigger value="family">Gia đình</TabsTrigger>
+              <TabsTrigger value="vehicles">Xe</TabsTrigger>
             </TabsList>
 
             <TabsContent value="personal">
