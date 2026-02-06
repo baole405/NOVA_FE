@@ -77,7 +77,7 @@ export default function DashboardPage() {
           <Building2 className="w-5 h-5 text-primary" />
           <div className="text-sm">
             <p className="font-medium text-foreground">
-              Ông {user.apartment?.unitNumber}
+              Phòng {user.apartment?.unitNumber}
             </p>
             <p className="text-xs text-muted-foreground">
               Tòa nhà {user.apartment?.block}
@@ -96,8 +96,8 @@ export default function DashboardPage() {
         />
 
         <StatsCard
-          title="Hóa đơn chờm"
-          value={`${pendingCount} Hơp đơng`}
+          title="Hóa đơn chờ"
+          value={`${pendingCount} Hóa đơn`}
           description="Chờ thanh toán"
           icon={AlertCircle}
           trend="neutral"
@@ -105,7 +105,7 @@ export default function DashboardPage() {
 
         <StatsCard
           title="Quá hạn"
-          value={`${overdueCount} Hơp đơng`}
+          value={`${overdueCount} Hóa đơn`}
           description="Cần tài khoản"
           icon={AlertCircle}
           className="border-destructive/50 bg-destructive/5"

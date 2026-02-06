@@ -89,7 +89,7 @@ export default function Home() {
                     className="h-12 px-8 text-lg rounded-full"
                     asChild
                   >
-                    <Link href="/auth/login">Đăng nhập</Link>
+                    <Link href="/login">Đăng nhập</Link>
                   </Button>
                 </>
               )}

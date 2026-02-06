@@ -27,7 +27,7 @@ export function UserNav() {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.push("/auth/login");
+          router.push("/login");
           router.refresh();
         },
       },

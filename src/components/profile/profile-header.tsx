@@ -22,22 +22,22 @@ export function ProfileHeader({ user }: { user: UserProfile }) {
 
         <h3 className="text-2xl font-bold mt-2">{user.name}</h3>
         <Badge variant="secondary" className="mt-2 capitalize px-3 py-1">
-          {user.role}
+          {user.role === "resident" ? "Cư dân" : user.role}
         </Badge>
 
         <div className="w-full mt-6 space-y-4 text-left">
           <div className="flex justify-between text-sm py-2 border-b">
-            <span className="text-muted-foreground">Joined</span>
-            <span className="font-medium">Nov 2023</span>
+            <span className="text-muted-foreground">Tham gia</span>
+            <span className="font-medium">Th11 2023</span>
           </div>
           <div className="flex justify-between text-sm py-2 border-b">
-            <span className="text-muted-foreground">Family Members</span>
+            <span className="text-muted-foreground">Thành viên gia đình</span>
             <span className="font-medium">
               {user.familyMembers?.length || 0}
             </span>
           </div>
           <div className="flex justify-between text-sm py-2">
-            <span className="text-muted-foreground">Vehicles</span>
+            <span className="text-muted-foreground">Phương tiện</span>
             <span className="font-medium">{user.vehicles?.length || 0}</span>
           </div>
         </div>
