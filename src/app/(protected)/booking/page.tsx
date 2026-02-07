@@ -28,8 +28,27 @@ interface Booking {
   createdAt: string;
 }
 
+import { useRouter, useSearchParams } from "next/navigation";
+
 export default function BookingPage() {
   const { user, loading: authLoading } = useAuth();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const tabParam = searchParams.get("tab");
+  const [currentTab, setCurrentTab] = useState<string>(tabParam || "parking");
+
+  useEffect(() => {
+    if (tabParam) {
+      setCurrentTab(tabParam);
+    }
+  }, [tabParam]);
+
+  const handleTabChange = (value: string) => {
+    setCurrentTab(value);
+    router.push(`/booking?tab=${value}`, { scroll: false });
+  };
+
   const [date, setDate] = useState<Date | undefined>(new Date());
 
   // States for Parking
@@ -165,7 +184,12 @@ export default function BookingPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Booking Area (Takes up 2 cols on large screens) */}
         <div className="lg:col-span-2">
-          <Tabs defaultValue="parking" className="w-full">
+          <Tabs
+            defaultValue="parking"
+            value={currentTab}
+            onValueChange={handleTabChange}
+            className="w-full"
+          >
             <TabsList className="grid w-full grid-cols-3 mb-4">
               <TabsTrigger value="parking" className="flex gap-2">
                 <Car className="h-4 w-4" /> Bãi đậu xe
