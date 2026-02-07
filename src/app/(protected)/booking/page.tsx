@@ -1,20 +1,26 @@
 "use client";
 
-import { format } from "date-fns";
-import { Car, Loader2, Utensils } from "lucide-react";
+import { addDays, format } from "date-fns";
+import { Car, Loader2, Users, Utensils } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { BBQArea } from "@/components/booking/bbq-area";
+import { GuestRegistration } from "@/components/booking/guest-registration";
+import { ParkingLot } from "@/components/booking/parking-lot";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 
 interface Booking {
   id: number;
   serviceType: "parking" | "bbq";
+  slotNumber?: string;
   date: string;
+  endDate?: string;
   startTime: string;
   endTime: string;
   status: string;
@@ -25,9 +31,16 @@ interface Booking {
 export default function BookingPage() {
   const { user, loading: authLoading } = useAuth();
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [serviceType, setServiceType] = useState<"parking" | "bbq">("parking");
+
+  // States for Parking
+  const [isMonthly, setIsMonthly] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<string>("");
+
+  // States for BBQ
+  const [selectedArea, setSelectedArea] = useState<string>("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -62,14 +75,51 @@ export default function BookingPage() {
     }
   }, [user, fetchBookings]);
 
-  const handleBooking = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!date || !startTime || !endTime) return;
+  const handleBooking = async (serviceType: "parking" | "bbq") => {
+    if (!date) {
+      alert("Vui lòng chọn ngày");
+      return;
+    }
+
+    // Validation
+    if (serviceType === "parking" && !selectedSlot) {
+      alert("Vui lòng chọn vị trí đỗ xe");
+      return;
+    }
+    if (serviceType === "bbq") {
+      if (!selectedArea) {
+        alert("Vui lòng chọn khu vực BBQ");
+        return;
+      }
+      if (!startTime || !endTime) {
+        alert("Vui lòng chọn giờ bắt đầu và kết thúc");
+        return;
+      }
+    }
 
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem("accessToken");
       const formattedDate = format(date, "yyyy-MM-dd");
+
+      const payload: any = {
+        serviceType,
+        date: formattedDate,
+        notes,
+      };
+
+      if (serviceType === "parking") {
+        payload.slotNumber = selectedSlot;
+        payload.startTime = "00:00";
+        payload.endTime = "23:59";
+        if (isMonthly) {
+          payload.endDate = format(addDays(date, 30), "yyyy-MM-dd");
+        }
+      } else {
+        payload.slotNumber = selectedArea;
+        payload.startTime = startTime;
+        payload.endTime = endTime;
+      }
 
       const res = await fetch(`${API_URL}/bookings`, {
         method: "POST",
@@ -77,24 +127,23 @@ export default function BookingPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          serviceType,
-          date: formattedDate,
-          startTime,
-          endTime,
-          notes,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
-        const error = await res.text();
-        alert(`Booking failed: ${error}`);
+        const error = await res.json();
+        alert(`Booking failed: ${error.message || "Unknown error"}`);
         return;
       }
 
-      alert("Booking successful!");
-      fetchBookings(); // Refresh list
-      // Reset form (optional)
+      alert("Đặt chỗ thành công!");
+      fetchBookings();
+      // Reset logic
+      setSelectedSlot("");
+      setSelectedArea("");
+      setStartTime("");
+      setEndTime("");
+      setNotes("");
     } catch (error) {
       console.error("Booking error:", error);
       alert("Something went wrong");
@@ -103,156 +152,251 @@ export default function BookingPage() {
     }
   };
 
-  if (authLoading) return <div>Loading...</div>;
+  if (authLoading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="space-y-6 p-4 md:p-8">
+    <div className="space-y-6 p-4 md:p-8 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight text-primary">
           Đặt chỗ tiện ích
         </h2>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Booking Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Đăng ký mới</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleBooking} className="space-y-4">
-              <div className="space-y-2">
-                <Label>Loại dịch vụ</Label>
-                <Tabs
-                  value={serviceType}
-                  onValueChange={(v) => setServiceType(v as "parking" | "bbq")}
-                  className="w-full"
-                >
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="parking" className="flex gap-2">
-                      <Car className="h-4 w-4" /> Bãi đậu xe
-                    </TabsTrigger>
-                    <TabsTrigger value="bbq" className="flex gap-2">
-                      <Utensils className="h-4 w-4" /> Khu BBQ
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Main Booking Area (Takes up 2 cols on large screens) */}
+        <div className="lg:col-span-2">
+          <Tabs defaultValue="parking" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-4">
+              <TabsTrigger value="parking" className="flex gap-2">
+                <Car className="h-4 w-4" /> Bãi đậu xe
+              </TabsTrigger>
+              <TabsTrigger value="bbq" className="flex gap-2">
+                <Utensils className="h-4 w-4" /> Khu BBQ
+              </TabsTrigger>
+              <TabsTrigger value="guest" className="flex gap-2">
+                <Users className="h-4 w-4" /> Khách ra vào
+              </TabsTrigger>
+            </TabsList>
 
-              <div className="space-y-2">
-                <Label>Ngày đặt</Label>
-                <div className="border rounded-md p-2 flex justify-center">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    className="rounded-md border shadow"
-                    disabled={(date) =>
-                      date < new Date(new Date().setHours(0, 0, 0, 0))
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Giờ bắt đầu</Label>
-                  <Input
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Giờ kết thúc</Label>
-                  <Input
-                    type="time"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Ghi chú</Label>
-                <Input
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Biển số xe / Số lượng người..."
-                />
-              </div>
-
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {isSubmitting ? "Đang xử lý..." : "Xác nhận đặt chỗ"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
-        {/* My Bookings List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Lịch sử đặt chỗ</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loadingBookings ? (
-              <div className="flex justify-center p-4">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              </div>
-            ) : bookings.length === 0 ? (
-              <div className="text-center text-muted-foreground p-8">
-                Bạn chưa có lịch đặt chỗ nào.
-              </div>
-            ) : (
-              <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
-                {bookings.map((booking) => (
-                  <div
-                    key={booking.id}
-                    className="flex items-center justify-between p-4 border rounded-lg bg-card hover:bg-accent/50 transition-colors"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        {booking.serviceType === "parking" ? (
-                          <Car className="h-4 w-4 text-primary" />
-                        ) : (
-                          <Utensils className="h-4 w-4 text-orange-500" />
-                        )}
-                        <span className="font-semibold capitalize">
-                          {booking.serviceType === "parking"
-                            ? "Bãi đậu xe"
-                            : "Khu BBQ"}
-                        </span>
-                        <span
-                          className={`text-xs px-2 py-0.5 rounded-full ${
-                            booking.status === "confirmed"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-yellow-100 text-yellow-700"
-                          }`}
-                        >
-                          {booking.status}
-                        </span>
+            <TabsContent value="parking">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sơ đồ bãi xe</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <div className="space-y-4">
+                      <Label>Ngày bắt đầu</Label>
+                      <div className="border rounded-md p-2 w-fit">
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          onSelect={setDate}
+                          disabled={(d) =>
+                            d < new Date(new Date().setHours(0, 0, 0, 0))
+                          }
+                        />
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {format(new Date(booking.date), "dd/MM/yyyy")} •{" "}
-                        {booking.startTime} - {booking.endTime}
-                      </p>
-                      {booking.notes && (
-                        <p className="text-xs text-muted-foreground/80 italic">
-                          "{booking.notes}"
-                        </p>
+                      <div className="flex items-center space-x-2 pt-2">
+                        <Switch
+                          id="monthly-mode"
+                          checked={isMonthly}
+                          onCheckedChange={setIsMonthly}
+                        />
+                        <Label htmlFor="monthly-mode">
+                          Gửi theo tháng (30 ngày)
+                        </Label>
+                      </div>
+                    </div>
+
+                    <div className="flex-1">
+                      <ParkingLot
+                        selectedDate={date}
+                        selectedSlot={selectedSlot}
+                        onSelectSlot={setSelectedSlot}
+                      />
+
+                      {selectedSlot && (
+                        <div className="mt-6 p-4 border rounded-lg bg-accent/20">
+                          <h4 className="font-semibold mb-2">
+                            Xác nhận đặt chỗ
+                          </h4>
+                          <p className="text-sm text-muted-foreground mb-4">
+                            Vị trí:{" "}
+                            <span className="font-bold text-foreground">
+                              {selectedSlot}
+                            </span>
+                            <br />
+                            Thời gian:{" "}
+                            {date ? format(date, "dd/MM/yyyy") : "..."}
+                            {isMonthly &&
+                              ` - ${format(addDays(date!, 30), "dd/MM/yyyy")}`}
+                          </p>
+                          <Button
+                            onClick={() => handleBooking("parking")}
+                            disabled={isSubmitting}
+                            className="w-full"
+                          >
+                            {isSubmitting ? (
+                              <Loader2 className="animate-spin mr-2" />
+                            ) : (
+                              "Đặt vị trí này"
+                            )}
+                          </Button>
+                        </div>
                       )}
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="bbq">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Đặt khu vực BBQ</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <div className="space-y-4">
+                      <Label>Ngày tổ chức</Label>
+                      <div className="border rounded-md p-2 w-fit">
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          onSelect={setDate}
+                          disabled={(d) =>
+                            d < new Date(new Date().setHours(0, 0, 0, 0))
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex-1 space-y-6">
+                      <BBQArea
+                        selectedDate={date}
+                        selectedArea={selectedArea}
+                        onSelectArea={setSelectedArea}
+                      />
+
+                      {selectedArea && (
+                        <div className="p-4 border rounded-lg bg-accent/20 space-y-4">
+                          <h4 className="font-semibold">Chọn thời gian</h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Bắt đầu</Label>
+                              <Input
+                                type="time"
+                                value={startTime}
+                                onChange={(e) => setStartTime(e.target.value)}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Kết thúc</Label>
+                              <Input
+                                type="time"
+                                value={endTime}
+                                onChange={(e) => setEndTime(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Ghi chú</Label>
+                            <Input
+                              placeholder="Số lượng người..."
+                              value={notes}
+                              onChange={(e) => setNotes(e.target.value)}
+                            />
+                          </div>
+                          <Button
+                            onClick={() => handleBooking("bbq")}
+                            disabled={isSubmitting}
+                            className="w-full"
+                          >
+                            {isSubmitting ? (
+                              <Loader2 className="animate-spin mr-2" />
+                            ) : (
+                              "Xác nhận đặt BBQ"
+                            )}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="guest">
+              <GuestRegistration />
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        {/* Sidebar: Booking History */}
+        <div>
+          <Card className="h-full flex flex-col">
+            <CardHeader>
+              <CardTitle>Lịch sử đặt chỗ</CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 overflow-y-auto max-h-[calc(100vh-200px)]">
+              {loadingBookings ? (
+                <div className="flex justify-center p-4">
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                </div>
+              ) : bookings.length === 0 ? (
+                <div className="text-center text-muted-foreground p-8">
+                  Bạn chưa có lịch đặt chỗ nào.
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {bookings.map((booking) => (
+                    <div
+                      key={booking.id}
+                      className="p-4 border rounded-lg bg-card hover:bg-accent/50 transition-colors"
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            {booking.serviceType === "parking" ? (
+                              <Car className="h-4 w-4 text-primary" />
+                            ) : (
+                              <Utensils className="h-4 w-4 text-orange-500" />
+                            )}
+                            <span className="font-semibold capitalize">
+                              {booking.serviceType === "parking"
+                                ? `Bãi xe - ${booking.slotNumber || "?"}`
+                                : `BBQ - ${booking.slotNumber || "?"}`}
+                            </span>
+                          </div>
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded-full ${
+                              booking.status === "confirmed"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-yellow-100 text-yellow-700"
+                            }`}
+                          >
+                            {booking.status}
+                          </span>
+                        </div>
+
+                        <p className="text-sm text-foreground">
+                          {format(new Date(booking.date), "dd/MM/yyyy")}
+                          {booking.endDate &&
+                            ` - ${format(new Date(booking.endDate), "dd/MM/yyyy")}`}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {booking.startTime.slice(0, 5)} -{" "}
+                          {booking.endTime.slice(0, 5)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
