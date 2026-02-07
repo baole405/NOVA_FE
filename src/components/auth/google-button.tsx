@@ -1,32 +1,22 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth/client";
 
 export function GoogleSignInButton() {
   const [isLoading, setIsLoading] = useState(false);
-  const _router = useRouter();
-
-  const handleLogin = async () => {
-    setIsLoading(true);
-    try {
-      await authClient.signIn.social({
-        provider: "google",
-        callbackURL: "/dashboard",
-      });
-    } catch (error) {
-      console.error("Login failed:", error);
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Button
       variant="outline"
-      onClick={handleLogin}
+      onClick={() => {
+        setIsLoading(true);
+        // Redirect to NestJS Backend Google OAuth endpoint
+        const API_URL =
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+        window.location.href = `${API_URL}/auth/google`;
+      }}
       disabled={isLoading}
       className="w-full"
     >
