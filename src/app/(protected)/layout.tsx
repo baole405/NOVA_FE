@@ -1,4 +1,7 @@
+"use client";
+
 import { Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,9 +13,18 @@ import {
 
 export default function ProtectedLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
+  const pathname = usePathname();
+  const isManagerRoute = pathname?.startsWith("/manager");
+
+  // Manager routes have their own layout, so just render children
+  if (isManagerRoute) {
+    return <>{children}</>;
+  }
+
+  // Customer routes get the dashboard sidebar
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <div className="md:hidden flex items-center justify-between p-4 border-b bg-background sticky top-0 z-50">
