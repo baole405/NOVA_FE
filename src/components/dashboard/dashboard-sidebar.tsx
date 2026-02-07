@@ -1,6 +1,6 @@
 "use client";
 
-import { History, LayoutDashboard, Receipt, User } from "lucide-react";
+import { History, LayoutDashboard, Receipt, User, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,12 @@ const sidebarItems = [
     title: "Lịch sử",
     href: "/history",
     icon: History,
+  },
+  {
+    title: "Khách hàng",
+    href: "/manager/customers",
+    icon: Users,
+    managerOnly: true, // Only show for managers/admins
   },
 ];
 
