@@ -2,7 +2,7 @@
 
 import { format } from "date-fns";
 import { Car, Loader2, Utensils } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,7 +36,7 @@ export default function BookingPage() {
   const API_URL =
     process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) return;
@@ -54,7 +54,7 @@ export default function BookingPage() {
     } finally {
       setLoadingBookings(false);
     }
-  };
+  }, [API_URL]);
 
   useEffect(() => {
     if (user) {

@@ -13,6 +13,7 @@ export default function DashboardPage() {
   const [loadingBills, setLoadingBills] = useState(true);
 
   // Fallback to mock user if not logged in (or handle redirect)
+  // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for matching mock data structure
   const displayUser: any = user || {};
 
   useEffect(() => {
