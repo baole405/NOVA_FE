@@ -3,6 +3,7 @@
 import { Loader2, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { createCustomerAccount } from "@/app/actions/customers";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,10 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createCustomerAccount } from "@/app/actions/customers";
 import { cn } from "@/lib/utils";
 
-interface CreateCustomerFormProps extends React.ComponentPropsWithoutRef<"div"> {}
+interface CreateCustomerFormProps
+  extends React.ComponentPropsWithoutRef<"div"> {}
 
 export function CreateCustomerForm({
   className,
@@ -90,7 +91,7 @@ export function CreateCustomerForm({
         apartment: {
           unitNumber: formData.unitNumber,
           block: formData.block,
-          floor: Number.parseInt(formData.floor) || 1,
+          floor: Number.parseInt(formData.floor, 10) || 1,
           area: Number.parseFloat(formData.area) || 50,
         },
       });

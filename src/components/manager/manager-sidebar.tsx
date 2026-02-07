@@ -103,9 +103,7 @@ export function ManagerSidebar({
       <div className="px-3 py-4 border-t bg-muted/30">
         <div className="px-3 py-2 rounded-lg bg-primary/5 border border-primary/20">
           <p className="text-xs font-medium text-foreground">Manager Mode</p>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Chế độ quản lý
-          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">Chế độ quản lý</p>
         </div>
       </div>
     </div>
