@@ -85,9 +85,7 @@ export default function ManagerDashboardPage() {
             <TrendingUp className="h-5 w-5 text-primary" />
             Thao tác nhanh
           </CardTitle>
-          <CardDescription>
-            Các tác vụ quản lý thường xuyên
-          </CardDescription>
+          <CardDescription>Các tác vụ quản lý thường xuyên</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -140,9 +138,7 @@ export default function ManagerDashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle>Hoạt động gần đây</CardTitle>
-            <CardDescription>
-              Các thay đổi và sự kiện mới nhất
-            </CardDescription>
+            <CardDescription>Các thay đổi và sự kiện mới nhất</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -168,9 +164,7 @@ export default function ManagerDashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle>Cảnh báo</CardTitle>
-            <CardDescription>
-              Các vấn đề cần chú ý
-            </CardDescription>
+            <CardDescription>Các vấn đề cần chú ý</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">

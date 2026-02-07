@@ -27,12 +27,6 @@ const sidebarItems = [
     href: "/history",
     icon: History,
   },
-  {
-    title: "Khách hàng",
-    href: "/manager/customers",
-    icon: Users,
-    managerOnly: true, // Only show for managers/admins
-  },
 ];
 
 interface DashboardSidebarProps extends React.HTMLAttributes<HTMLDivElement> {}

@@ -1,6 +1,7 @@
 import { UserPlus, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getCustomers } from "@/app/actions/customers";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,7 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getCustomers } from "@/app/actions/customers";
 
 export const metadata: Metadata = {
   title: "Quản lý khách hàng | NOVA",
@@ -103,9 +103,7 @@ export default async function CustomersPage() {
           ) : (
             <div className="text-center py-12">
               <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
-              <h3 className="mt-4 text-lg font-semibold">
-                Chưa có khách hàng
-              </h3>
+              <h3 className="mt-4 text-lg font-semibold">Chưa có khách hàng</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 Bắt đầu bằng cách tạo tài khoản khách hàng đầu tiên
               </p>
