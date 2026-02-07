@@ -42,6 +42,7 @@ export function LoginForm({
       });
       router.push("/dashboard");
       router.refresh();
+      // biome-ignore lint/suspicious/noExplicitAny: Generic error handling
     } catch (err: any) {
       setError(err.message || "Đăng nhập thất bại");
       setIsLoading(false);
