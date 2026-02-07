@@ -30,8 +30,9 @@ export default function DashboardPage() {
         );
 
         if (res.ok) {
-          const data = await res.json();
-          setBills(data);
+          const result = await res.json();
+          // API returns paginated response: { data: [], total: number, page: number }
+          setBills(Array.isArray(result.data) ? result.data : []);
         }
       } catch (error) {
         console.error("Failed to fetch bills:", error);
