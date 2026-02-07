@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authClient } from "@/lib/auth/client";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 export function LoginForm({
@@ -24,6 +24,7 @@ export function LoginForm({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
+  const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -34,20 +35,17 @@ export function LoginForm({
     setIsLoading(true);
     setError("");
 
-    await authClient.signIn.email({
-      email,
-      password,
-      callbackURL: "/dashboard",
-      fetchOptions: {
-        onSuccess: () => {
-          router.refresh();
-        },
-        onError: (ctx) => {
-          setError(ctx.error.message);
-          setIsLoading(false);
-        },
-      },
-    });
+    try {
+      await signIn({
+        usernameOrEmail: email,
+        password,
+      });
+      router.push("/dashboard");
+      router.refresh();
+    } catch (err: any) {
+      setError(err.message || "Đăng nhập thất bại");
+      setIsLoading(false);
+    }
   };
 
   const [showPolicy, setShowPolicy] = useState(false);
