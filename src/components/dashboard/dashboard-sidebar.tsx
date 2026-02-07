@@ -1,9 +1,9 @@
 "use client";
 
-import { History, LayoutDashboard, Receipt, User } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Calendar, LayoutDashboard, Receipt, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 
 // Định nghĩa các mục menu
 const sidebarItems = [
@@ -23,9 +23,9 @@ const sidebarItems = [
     icon: Receipt,
   },
   {
-    title: "Lịch sử",
-    href: "/history",
-    icon: History,
+    title: "Đặt chỗ",
+    href: "/booking",
+    icon: Calendar,
   },
 ];
 
