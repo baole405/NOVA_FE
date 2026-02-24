@@ -1,11 +1,9 @@
 "use client";
 
-import { addDays, format } from "date-fns";
-import { Car, Loader2, Users, Utensils } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
 import { BBQArea } from "@/components/booking/bbq-area";
 import { GuestRegistration } from "@/components/booking/guest-registration";
 import { ParkingLot } from "@/components/booking/parking-lot";
+import { SwimmingPool } from "@/components/booking/swimming-pool";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,10 +12,14 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
+import { addDays, format } from "date-fns";
+import { Car, Droplets, Loader2, Users, Utensils } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 interface Booking {
   id: number;
-  serviceType: "parking" | "bbq";
+  serviceType: "parking" | "bbq" | "swimming_pool";
   slotNumber?: string;
   date: string;
   endDate?: string;
@@ -28,9 +30,7 @@ interface Booking {
   createdAt: string;
 }
 
-import { useRouter, useSearchParams } from "next/navigation";
-
-export default function BookingPage() {
+function BookingPageContent() {
   const { user, loading: authLoading } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -59,6 +59,9 @@ export default function BookingPage() {
   const [selectedArea, setSelectedArea] = useState<string>("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+
+  // States for Pool
+  const [selectedPoolSlot, setSelectedPoolSlot] = useState<string>("");
 
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -94,7 +97,9 @@ export default function BookingPage() {
     }
   }, [user, fetchBookings]);
 
-  const handleBooking = async (serviceType: "parking" | "bbq") => {
+  const handleBooking = async (
+    serviceType: "parking" | "bbq" | "swimming_pool",
+  ) => {
     if (!date) {
       alert("Vui lòng chọn ngày");
       return;
@@ -112,6 +117,13 @@ export default function BookingPage() {
       }
       if (!startTime || !endTime) {
         alert("Vui lòng chọn giờ bắt đầu và kết thúc");
+        return;
+      }
+    }
+
+    if (serviceType === "swimming_pool") {
+      if (!selectedPoolSlot) {
+        alert("Vui lòng chọn khung giờ bơi");
         return;
       }
     }
@@ -134,10 +146,16 @@ export default function BookingPage() {
         if (isMonthly) {
           payload.endDate = format(addDays(date, 30), "yyyy-MM-dd");
         }
-      } else {
+      } else if (serviceType === "bbq") {
         payload.slotNumber = selectedArea;
         payload.startTime = startTime;
         payload.endTime = endTime;
+      } else if (serviceType === "swimming_pool") {
+        // Slot format "06:00-07:00"
+        const [start, end] = selectedPoolSlot.split("-");
+        payload.startTime = start;
+        payload.endTime = end;
+        payload.price = 50000;
       }
 
       const res = await fetch(`${API_URL}/bookings`, {
@@ -160,6 +178,7 @@ export default function BookingPage() {
       // Reset logic
       setSelectedSlot("");
       setSelectedArea("");
+      setSelectedPoolSlot("");
       setStartTime("");
       setEndTime("");
       setNotes("");
@@ -196,6 +215,9 @@ export default function BookingPage() {
               </TabsTrigger>
               <TabsTrigger value="bbq" className="flex gap-2">
                 <Utensils className="h-4 w-4" /> Khu BBQ
+              </TabsTrigger>
+              <TabsTrigger value="pool" className="flex gap-2">
+                <Droplets className="h-4 w-4" /> Hồ bơi
               </TabsTrigger>
               <TabsTrigger value="guest" className="flex gap-2">
                 <Users className="h-4 w-4" /> Khách ra vào
@@ -351,6 +373,69 @@ export default function BookingPage() {
               </Card>
             </TabsContent>
 
+            <TabsContent value="pool">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Đặt vé hồ bơi</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <div className="space-y-4">
+                      <Label>Ngày bơi</Label>
+                      <div className="border rounded-md p-2 w-fit">
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          onSelect={setDate}
+                          disabled={(d) =>
+                            d < new Date(new Date().setHours(0, 0, 0, 0))
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex-1 space-y-6">
+                      <SwimmingPool
+                        selectedDate={date}
+                        selectedTimeSlot={selectedPoolSlot}
+                        onSelectTimeSlot={setSelectedPoolSlot}
+                      />
+
+                      {selectedPoolSlot && (
+                        <div className="p-4 border rounded-lg bg-blue-50 space-y-4">
+                          <h4 className="font-semibold text-blue-900">
+                            Xác nhận đặt vé bơi
+                          </h4>
+                          <p className="text-sm">
+                            Thời gian:{" "}
+                            <span className="font-bold">
+                              {selectedPoolSlot}
+                            </span>{" "}
+                            <br />
+                            Ngày:{" "}
+                            <span className="font-bold">
+                              {date ? format(date, "dd/MM/yyyy") : ""}
+                            </span>
+                          </p>
+                          <Button
+                            onClick={() => handleBooking("swimming_pool")}
+                            disabled={isSubmitting}
+                            className="w-full bg-blue-600 hover:bg-blue-700"
+                          >
+                            {isSubmitting ? (
+                              <Loader2 className="animate-spin mr-2" />
+                            ) : (
+                              "Thanh toán & Đặt vé (50.000 VNĐ)"
+                            )}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
             <TabsContent value="guest">
               <GuestRegistration />
             </TabsContent>
@@ -384,13 +469,18 @@ export default function BookingPage() {
                           <div className="flex items-center gap-2">
                             {booking.serviceType === "parking" ? (
                               <Car className="h-4 w-4 text-primary" />
-                            ) : (
+                            ) : booking.serviceType === "bbq" ? (
                               <Utensils className="h-4 w-4 text-orange-500" />
+                            ) : (
+                              <Droplets className="h-4 w-4 text-blue-500" />
                             )}
                             <span className="font-semibold capitalize">
-                              {booking.serviceType === "parking"
-                                ? `Bãi xe - ${booking.slotNumber || "?"}`
-                                : `BBQ - ${booking.slotNumber || "?"}`}
+                              {booking.serviceType === "parking" &&
+                                `Bãi xe - ${booking.slotNumber || "?"}`}
+                              {booking.serviceType === "bbq" &&
+                                `BBQ - ${booking.slotNumber || "?"}`}
+                              {booking.serviceType === "swimming_pool" &&
+                                `Bơi - ${booking.startTime}`}
                             </span>
                           </div>
                           <span
@@ -423,5 +513,19 @@ export default function BookingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center p-20">
+          <Loader2 className="animate-spin h-10 w-10 text-primary" />
+        </div>
+      }
+    >
+      <BookingPageContent />
+    </Suspense>
   );
 }
