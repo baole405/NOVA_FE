@@ -1,5 +1,9 @@
 "use client";
 
+import { addDays, format } from "date-fns";
+import { Car, Droplets, Loader2, Users, Utensils } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { BBQArea } from "@/components/booking/bbq-area";
 import { GuestRegistration } from "@/components/booking/guest-registration";
 import { ParkingLot } from "@/components/booking/parking-lot";
@@ -12,10 +16,6 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
-import { addDays, format } from "date-fns";
-import { Car, Droplets, Loader2, Users, Utensils } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useCallback, useEffect, useState } from "react";
 
 interface Booking {
   id: number;
