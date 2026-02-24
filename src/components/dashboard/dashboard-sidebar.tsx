@@ -1,9 +1,9 @@
 "use client";
 
-import { Calendar, LayoutDashboard, Receipt, User } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Calendar, LayoutDashboard, Receipt, User, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 
 // Định nghĩa các mục menu
 interface SidebarItem {
@@ -36,8 +36,14 @@ const sidebarItems: SidebarItem[] = [
     children: [
       { title: "Bãi đậu xe", href: "/booking?tab=parking" },
       { title: "Khu BBQ", href: "/booking?tab=bbq" },
+      { title: "Hồ bơi", href: "/booking?tab=pool" },
       { title: "Khách ra vào", href: "/booking?tab=guest" },
     ],
+  },
+  {
+    title: "Cộng đồng",
+    href: "/community",
+    icon: Users,
   },
 ];
 
