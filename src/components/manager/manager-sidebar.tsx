@@ -4,9 +4,11 @@ import {
   Building2,
   FileText,
   Home,
+  Megaphone,
   Settings,
   TrendingUp,
   Users,
+  Warehouse,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -38,6 +40,16 @@ const managerMenuItems = [
     title: "Hóa đơn & Phí",
     href: "/manager/billing",
     icon: FileText,
+  },
+  {
+    title: "Thông báo & Tin tức",
+    href: "/manager/announcements",
+    icon: Megaphone,
+  },
+  {
+    title: "Quản lý tiện ích",
+    href: "/manager/facilities",
+    icon: Warehouse,
   },
   {
     title: "Cài đặt",
