@@ -1,6 +1,16 @@
 "use client";
 
-import { Calendar, LayoutDashboard, Receipt, User, Users } from "lucide-react";
+import {
+  Bell,
+  Calendar,
+  LayoutDashboard,
+  Megaphone,
+  MessageSquareWarning,
+  Receipt,
+  Settings,
+  User,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -30,6 +40,11 @@ const sidebarItems: SidebarItem[] = [
     icon: Receipt,
   },
   {
+    title: "Thông báo",
+    href: "/notifications",
+    icon: Bell,
+  },
+  {
     title: "Đặt chỗ",
     href: "#",
     icon: Calendar,
@@ -41,9 +56,24 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
   {
+    title: "Phản ánh",
+    href: "/complaints",
+    icon: MessageSquareWarning,
+  },
+  {
+    title: "Tin tức",
+    href: "/announcements",
+    icon: Megaphone,
+  },
+  {
     title: "Cộng đồng",
     href: "/community",
     icon: Users,
+  },
+  {
+    title: "Cài đặt",
+    href: "/settings",
+    icon: Settings,
   },
 ];
 

@@ -80,3 +80,84 @@ export interface Notification {
   time: string; // Thời gian hiển thị (vd: "2 giờ trước")
   unread: boolean;
 }
+
+// Complaint / Maintenance Request
+export type ComplaintCategory = "plumbing" | "electrical" | "elevator" | "other";
+export type ComplaintUrgency = "low" | "medium" | "high";
+export type ComplaintStatus = "pending" | "in_progress" | "resolved";
+
+export interface Complaint {
+  id: string;
+  title: string;
+  category: ComplaintCategory;
+  description: string;
+  urgency: ComplaintUrgency;
+  status: ComplaintStatus;
+  imageUrl?: string;
+  createdAt: string; // ISO date
+  updatedAt?: string;
+  residentId: string;
+  residentName: string;
+  apartmentUnit: string;
+}
+
+// Announcement
+export type AnnouncementCategory =
+  | "maintenance"
+  | "event"
+  | "policy"
+  | "emergency"
+  | "general";
+export type AnnouncementPriority = "normal" | "important" | "urgent";
+
+export interface Announcement {
+  id: string;
+  title: string;
+  content: string; // Markdown content
+  author: string;
+  category: AnnouncementCategory;
+  priority: AnnouncementPriority;
+  createdAt: string; // ISO date
+  imageUrl?: string;
+  pinned?: boolean;
+}
+
+// Manager Bill (extends Bill with apartment info)
+export interface ManagerBill extends Bill {
+  apartmentUnit: string;
+  apartmentBlock: string;
+  residentName: string;
+}
+
+// Facility Management
+export type ParkingSlotStatus = "available" | "occupied" | "maintenance";
+
+export interface ParkingSlotConfig {
+  id: string;
+  slotNumber: string;
+  floor: string; // e.g., "B1", "B2"
+  type: "car" | "motorbike" | "bicycle";
+  status: ParkingSlotStatus;
+  monthlyPrice: number;
+  assignedTo?: string; // apartment unit
+}
+
+export interface BBQAreaConfig {
+  id: string;
+  name: string; // e.g., "Khu A", "Khu B"
+  capacity: number;
+  pricePerHour: number;
+  status: "available" | "maintenance";
+  openTime: string; // "08:00"
+  closeTime: string; // "22:00"
+}
+
+export interface PoolScheduleConfig {
+  id: string;
+  timeSlot: string; // "06:00-08:00"
+  maxCapacity: number;
+  currentBookings: number;
+  pricePerSession: number;
+  dayOfWeek: "all" | "weekday" | "weekend";
+  status: "active" | "inactive";
+}

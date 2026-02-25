@@ -1,6 +1,7 @@
 "use client";
 
 import { Bell, LogOut } from "lucide-react";
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -111,6 +112,15 @@ export function UserNav() {
               </div>
             )}
           </div>
+        </div>
+
+        <div className="px-2 py-1.5">
+          <Link
+            href="/notifications"
+            className="text-xs text-primary hover:underline underline-offset-4"
+          >
+            Xem tất cả thông báo
+          </Link>
         </div>
 
         <DropdownMenuSeparator />
