@@ -41,6 +41,7 @@ export function useAuth() {
         const res = await fetch(`${API_URL}/auth/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
+            "ngrok-skip-browser-warning": "true",
           },
         });
 
@@ -77,6 +78,7 @@ export function useAuth() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
           },
           body: JSON.stringify(payload),
         });
