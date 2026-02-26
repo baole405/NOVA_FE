@@ -96,7 +96,7 @@ export async function createCustomerAccount(
       },
     };
   } catch (error) {
-    console.error("Error creating customer account:", error);
+    console.log("Error creating customer account:", error);
     return {
       success: false,
       message: "Có lỗi xảy ra khi tạo tài khoản",

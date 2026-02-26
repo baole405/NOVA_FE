@@ -120,7 +120,7 @@ export function CreateCustomerForm({
       }
     } catch (err) {
       setError("Có lỗi xảy ra. Vui lòng thử lại sau.");
-      console.error("Error creating customer:", err);
+      console.log("Error creating customer:", err);
     } finally {
       setIsLoading(false);
     }

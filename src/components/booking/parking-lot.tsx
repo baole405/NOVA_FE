@@ -57,7 +57,7 @@ export function ParkingLot({
           setBookedSlots(data.map((b) => b.slotNumber).filter(Boolean));
         }
       } catch (error) {
-        console.error("Failed to fetch parking slots:", error);
+        console.log("Failed to fetch parking slots:", error);
       } finally {
         setLoading(false);
       }

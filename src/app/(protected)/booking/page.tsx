@@ -85,7 +85,7 @@ function BookingPageContent() {
         setBookings(data);
       }
     } catch (error) {
-      console.error("Failed to fetch bookings:", error);
+      console.log("Failed to fetch bookings:", error);
     } finally {
       setLoadingBookings(false);
     }
@@ -183,7 +183,7 @@ function BookingPageContent() {
       setEndTime("");
       setNotes("");
     } catch (error) {
-      console.error("Booking error:", error);
+      console.log("Booking error:", error);
       alert("Something went wrong");
     } finally {
       setIsSubmitting(false);
