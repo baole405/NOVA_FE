@@ -1,52 +1,39 @@
 "use client";
 
 import { AlertCircle, Building2, CheckCircle2, Wallet } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { UpcomingBills } from "@/components/dashboard/upcoming-bills";
 import { useAuth } from "@/hooks/use-auth";
-import type { Bill } from "@/types";
+import { getBills } from "@/lib/api-client";
+import type { BackendBill } from "@/types/api";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
-  const [bills, setBills] = useState<Bill[]>([]);
+  const [bills, setBills] = useState<BackendBill[]>([]);
   const [loadingBills, setLoadingBills] = useState(true);
 
-  // Fallback to mock user if not logged in (or handle redirect)
   // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for matching mock data structure
   const displayUser: any = user || {};
 
-  useEffect(() => {
-    async function fetchBills() {
-      try {
-        const token = localStorage.getItem("accessToken");
-        if (!token) return;
-
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/bills`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
-
-        if (res.ok) {
-          const result = await res.json();
-          // API returns paginated response: { data: [], total: number, page: number }
-          setBills(Array.isArray(result.data) ? result.data : []);
-        }
-      } catch (error) {
-        console.error("Failed to fetch bills:", error);
-      } finally {
-        setLoadingBills(false);
-      }
+  const fetchBillsData = useCallback(async () => {
+    try {
+      const res = await getBills();
+      setBills(res.data);
+    } catch (error) {
+      console.error("Failed to fetch bills:", error);
+    } finally {
+      setLoadingBills(false);
     }
+  }, []);
 
+  useEffect(() => {
     if (user) {
-      fetchBills();
+      fetchBillsData();
     } else {
       setLoadingBills(false);
     }
-  }, [user]);
+  }, [user, fetchBillsData]);
 
   if (loading || loadingBills) {
     return (

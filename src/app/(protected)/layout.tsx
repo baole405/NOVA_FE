@@ -1,7 +1,8 @@
 "use client";
 
-import { Menu } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { Loader2, Menu } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function ProtectedLayout({
   children,
@@ -17,7 +19,27 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, loading } = useAuth();
   const isManagerRoute = pathname?.startsWith("/manager");
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push(`/login?redirect=${pathname}`);
+    }
+  }, [loading, user, router, pathname]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   // Manager routes have their own layout, so just render children
   if (isManagerRoute) {

@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { Bill } from "@/types";
+import type { BackendBill } from "@/types/api";
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("vi-VN", {
@@ -19,7 +19,7 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
-export function UpcomingBills({ bills }: { bills: Bill[] }) {
+export function UpcomingBills({ bills }: { bills: BackendBill[] }) {
   // Lọc lấy tối đa 5 hóa đơn chưa thanh toán (Pending hoặc Overdue)
   const pendingBills = bills.filter((b) => b.status !== "paid").slice(0, 5);
 
@@ -85,10 +85,10 @@ export function UpcomingBills({ bills }: { bills: Bill[] }) {
                 <div className="flex items-center gap-4">
                   <div className="text-right hidden sm:block">
                     <p className="text-sm font-bold">
-                      {formatCurrency(bill.amount)}
+                      {formatCurrency(Number(bill.amount))}
                     </p>
                     <p className="text-xs text-muted-foreground capitalize">
-                      {bill.feeType}
+                      {bill.feeType?.name ?? "N/A"}
                     </p>
                   </div>
                   <Badge
