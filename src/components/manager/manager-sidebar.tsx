@@ -5,6 +5,7 @@ import {
   FileText,
   Home,
   Megaphone,
+  MessageSquareWarning,
   Settings,
   TrendingUp,
   Users,
@@ -30,6 +31,11 @@ const managerMenuItems = [
     title: "Quản lý căn hộ",
     href: "/manager/apartments",
     icon: Building2,
+  },
+  {
+    title: "Quản lý phản ánh",
+    href: "/manager/complaints",
+    icon: MessageSquareWarning,
   },
   {
     title: "Báo cáo & Thống kê",

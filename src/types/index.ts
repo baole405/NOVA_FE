@@ -82,7 +82,11 @@ export interface Notification {
 }
 
 // Complaint / Maintenance Request
-export type ComplaintCategory = "plumbing" | "electrical" | "elevator" | "other";
+export type ComplaintCategory =
+  | "plumbing"
+  | "electrical"
+  | "elevator"
+  | "other";
 export type ComplaintUrgency = "low" | "medium" | "high";
 export type ComplaintStatus = "pending" | "in_progress" | "resolved";
 
@@ -160,4 +164,44 @@ export interface PoolScheduleConfig {
   pricePerSession: number;
   dayOfWeek: "all" | "weekday" | "weekend";
   status: "active" | "inactive";
+}
+
+// Community
+export type CommunityCategory = "general" | "buy_sell" | "qa" | "events";
+
+export interface CommunityPost {
+  id: string;
+  title: string;
+  content: string;
+  category: CommunityCategory;
+  authorId: string;
+  authorName: string;
+  authorAvatarUrl?: string;
+  apartmentUnit: string;
+  createdAt: string;
+  likes: number;
+  commentCount: number;
+}
+
+// Manager Apartment
+export type ApartmentStatus = "occupied" | "vacant" | "maintenance";
+
+export interface ManagerApartment extends Apartment {
+  status: ApartmentStatus;
+  residentName?: string;
+  residentId?: string;
+  monthlyFee: number;
+}
+
+// Manager Complaint
+export interface ComplaintResponse {
+  id: string;
+  complaintId: string;
+  content: string;
+  author: string;
+  createdAt: string;
+}
+
+export interface ManagerComplaint extends Complaint {
+  responses?: ComplaintResponse[];
 }
