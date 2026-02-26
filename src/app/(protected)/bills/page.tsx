@@ -5,12 +5,11 @@ import {
   ArrowRight,
   CheckCircle2,
   Clock,
-  RefreshCw,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { BillDetailDialog } from "@/components/bills/bill-detail-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -20,7 +19,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
-import { getBills } from "@/lib/api-client";
+import { getBills } from "@/lib/bills";
 import { cn } from "@/lib/utils";
 import type { BackendBill } from "@/types/api";
 
@@ -28,18 +27,16 @@ export default function BillsPage() {
   const { user } = useAuth();
   const [bills, setBills] = useState<BackendBill[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedBill, setSelectedBill] = useState<BackendBill | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchBills = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
       const res = await getBills();
       setBills(res.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Không thể tải hóa đơn");
+      console.log("Failed to fetch bills:", err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
     }
@@ -73,19 +70,6 @@ export default function BillsPage() {
     return (
       <div className="flex h-[50vh] items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-4 h-[50vh] p-4">
-        <AlertCircle className="h-12 w-12 text-destructive" />
-        <p className="text-destructive text-center">{error}</p>
-        <Button variant="outline" onClick={fetchBills}>
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Thử lại
-        </Button>
       </div>
     );
   }

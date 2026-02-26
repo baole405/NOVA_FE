@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { getBillById } from "@/lib/api-client";
+import { getBillById } from "@/lib/bills";
 import type { BackendBill, BackendBillDetail } from "@/types/api";
 
 interface BillDetailDialogProps {
