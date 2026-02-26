@@ -1,17 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Moon, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 export function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    const root = document.documentElement;
-    setIsDark(root.classList.contains("dark"));
+    const stored = localStorage.getItem("theme");
+    if (stored) {
+      setIsDark(stored === "dark");
+    } else {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    }
   }, []);
 
   const toggleTheme = (checked: boolean) => {
