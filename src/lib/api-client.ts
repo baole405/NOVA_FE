@@ -1,21 +1,24 @@
-// import { authClient } from "@/lib/auth/client"; // Removed
-import type { Bill, BillStatus, FeeType } from "@/types";
+import type {
+  BackendBill,
+  BackendBillDetail,
+  BillsResponse,
+  MarkPaidPayload,
+  MarkPaidResponse,
+} from "@/types/api";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export async function fetchApi<T>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<T> {
-  // const { data } = await authClient.getSession();
-  // const token = data?.session?.token;
   const token =
     typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
 
-  const headers = {
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...options.headers,
+    ...(options.headers as Record<string, string>),
   };
 
   const response = await fetch(`${API_URL}${endpoint}`, {
@@ -31,32 +34,35 @@ export async function fetchApi<T>(
   return response.json();
 }
 
-// Backend Response Types
-export interface BackendFeeType {
-  id: number;
-  name: string;
+// --- Bills API ---
+
+export async function getBills(params?: {
+  status?: "pending" | "paid" | "overdue" | "all";
+  limit?: number;
+  offset?: number;
+}): Promise<BillsResponse> {
+  const searchParams = new URLSearchParams();
+  if (params?.status) searchParams.set("status", params.status);
+  if (params?.limit) searchParams.set("limit", String(params.limit));
+  if (params?.offset) searchParams.set("offset", String(params.offset));
+
+  const qs = searchParams.toString();
+  return fetchApi<BillsResponse>(`/bills${qs ? `?${qs}` : ""}`);
 }
 
-export interface BackendBill {
-  id: number;
-  title: string;
-  amount: string; // Numeric string from DB
-  dueDate: string;
-  period: string;
-  status: "pending" | "paid" | "overdue" | "cancelled";
-  feeType: BackendFeeType;
+export async function getBillById(id: number): Promise<BackendBillDetail> {
+  return fetchApi<BackendBillDetail>(`/bills/${id}`);
 }
 
-// Mapper Function
-export function mapBillFromApi(bill: BackendBill): Bill {
-  return {
-    id: bill.id.toString(),
-    title: bill.title,
-    amount: Number(bill.amount),
-    dueDate: bill.dueDate,
-    period: bill.period,
-    status: bill.status as BillStatus, // Assuming API returns compatible status
-    feeType: bill.feeType.name.toLowerCase() as FeeType, // Warning: naive mapping
-    description: "",
-  };
+export async function markBillAsPaid(
+  id: number,
+  payload: MarkPaidPayload,
+): Promise<MarkPaidResponse> {
+  return fetchApi<MarkPaidResponse>(`/bills/${id}/mark-paid`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
 }
+
+// Re-export types for convenience
+export type { BackendBill, BackendBillDetail, BillsResponse };
