@@ -21,7 +21,10 @@ const dayOfWeekLabels = {
 };
 
 function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount);
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(amount);
 }
 
 export function PoolConfig() {
@@ -31,7 +34,8 @@ export function PoolConfig() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          Tổng: <strong className="text-foreground">{schedules.length}</strong> khung giờ
+          Tổng: <strong className="text-foreground">{schedules.length}</strong>{" "}
+          khung giờ
         </p>
         <Button size="sm">Thêm khung giờ</Button>
       </div>
@@ -85,13 +89,13 @@ export function PoolConfig() {
                           : "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400"
                       }
                     >
-                      {schedule.status === "active"
-                        ? "Hoạt động"
-                        : "Tạm ngưng"}
+                      {schedule.status === "active" ? "Hoạt động" : "Tạm ngưng"}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">Sửa</Button>
+                    <Button variant="ghost" size="sm">
+                      Sửa
+                    </Button>
                   </TableCell>
                 </TableRow>
               );

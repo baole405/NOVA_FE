@@ -15,7 +15,10 @@ import { mockBBQAreas } from "@/lib/mock-data";
 import type { BBQAreaConfig } from "@/types";
 
 function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount);
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(amount);
 }
 
 export function BBQConfig() {
@@ -25,7 +28,8 @@ export function BBQConfig() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          Tổng: <strong className="text-foreground">{areas.length}</strong> khu BBQ
+          Tổng: <strong className="text-foreground">{areas.length}</strong> khu
+          BBQ
         </p>
         <Button size="sm">Thêm khu BBQ</Button>
       </div>
@@ -64,7 +68,9 @@ export function BBQConfig() {
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm">Sửa</Button>
+                  <Button variant="ghost" size="sm">
+                    Sửa
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

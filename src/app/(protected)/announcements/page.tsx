@@ -18,16 +18,12 @@ export default function AnnouncementsPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
   const filteredAnnouncements = mockAnnouncements
-    .filter(
-      (a) => categoryFilter === "all" || a.category === categoryFilter,
-    )
+    .filter((a) => categoryFilter === "all" || a.category === categoryFilter)
     .sort((a, b) => {
       // Pinned first, then by date desc
       if (a.pinned && !b.pinned) return -1;
       if (!a.pinned && b.pinned) return 1;
-      return (
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
   return (

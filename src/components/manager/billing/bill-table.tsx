@@ -26,11 +26,13 @@ const feeTypeLabels: Record<FeeType, string> = {
 const statusConfig: Record<BillStatus, { label: string; className: string }> = {
   pending: {
     label: "Chờ thanh toán",
-    className: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    className:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
   },
   paid: {
     label: "Đã thanh toán",
-    className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+    className:
+      "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
   },
   overdue: {
     label: "Quá hạn",
@@ -38,7 +40,8 @@ const statusConfig: Record<BillStatus, { label: string; className: string }> = {
   },
   cancelled: {
     label: "Đã hủy",
-    className: "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400",
+    className:
+      "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400",
   },
 };
 
@@ -93,9 +96,7 @@ export function BillTable({ bills }: BillTableProps) {
                   {bill.title}
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline">
-                    {feeTypeLabels[bill.feeType]}
-                  </Badge>
+                  <Badge variant="outline">{feeTypeLabels[bill.feeType]}</Badge>
                 </TableCell>
                 <TableCell className="font-medium">
                   {formatCurrency(bill.amount)}

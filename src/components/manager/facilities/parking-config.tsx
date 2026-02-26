@@ -14,25 +14,34 @@ import {
 import { mockParkingSlots } from "@/lib/mock-data";
 import type { ParkingSlotConfig, ParkingSlotStatus } from "@/types";
 
-const statusConfig: Record<ParkingSlotStatus, { label: string; className: string }> = {
+const statusConfig: Record<
+  ParkingSlotStatus,
+  { label: string; className: string }
+> = {
   available: {
     label: "Trống",
-    className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+    className:
+      "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
   },
   occupied: {
     label: "Đã thuê",
-    className: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+    className:
+      "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
   },
   maintenance: {
     label: "Bảo trì",
-    className: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+    className:
+      "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
   },
 };
 
 const typeLabels = { car: "Ô tô", motorbike: "Xe máy", bicycle: "Xe đạp" };
 
 function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount);
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(amount);
 }
 
 export function ParkingConfig() {
@@ -76,7 +85,9 @@ export function ParkingConfig() {
               const status = statusConfig[slot.status];
               return (
                 <TableRow key={slot.id}>
-                  <TableCell className="font-medium">{slot.slotNumber}</TableCell>
+                  <TableCell className="font-medium">
+                    {slot.slotNumber}
+                  </TableCell>
                   <TableCell>{slot.floor}</TableCell>
                   <TableCell>{typeLabels[slot.type]}</TableCell>
                   <TableCell>
@@ -91,7 +102,9 @@ export function ParkingConfig() {
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">Sửa</Button>
+                    <Button variant="ghost" size="sm">
+                      Sửa
+                    </Button>
                   </TableCell>
                 </TableRow>
               );

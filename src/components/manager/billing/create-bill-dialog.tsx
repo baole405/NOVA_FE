@@ -37,7 +37,10 @@ interface CreateBillDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function CreateBillDialog({ open, onOpenChange }: CreateBillDialogProps) {
+export function CreateBillDialog({
+  open,
+  onOpenChange,
+}: CreateBillDialogProps) {
   const [formData, setFormData] = useState({
     apartmentId: "",
     feeType: "" as FeeType | "",
@@ -53,7 +56,12 @@ export function CreateBillDialog({ open, onOpenChange }: CreateBillDialogProps) 
     e.preventDefault();
     setError("");
 
-    if (!formData.apartmentId || !formData.feeType || !formData.amount || !formData.dueDate) {
+    if (
+      !formData.apartmentId ||
+      !formData.feeType ||
+      !formData.amount ||
+      !formData.dueDate
+    ) {
       setError("Vui lòng điền đầy đủ thông tin bắt buộc.");
       return;
     }
@@ -62,7 +70,14 @@ export function CreateBillDialog({ open, onOpenChange }: CreateBillDialogProps) 
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSubmitting(false);
     onOpenChange(false);
-    setFormData({ apartmentId: "", feeType: "", amount: "", period: "", dueDate: "", description: "" });
+    setFormData({
+      apartmentId: "",
+      feeType: "",
+      amount: "",
+      period: "",
+      dueDate: "",
+      description: "",
+    });
   };
 
   return (
@@ -83,10 +98,14 @@ export function CreateBillDialog({ open, onOpenChange }: CreateBillDialogProps) 
           )}
 
           <div className="space-y-2">
-            <Label>Căn hộ <span className="text-destructive">*</span></Label>
+            <Label>
+              Căn hộ <span className="text-destructive">*</span>
+            </Label>
             <Select
               value={formData.apartmentId}
-              onValueChange={(v) => setFormData((prev) => ({ ...prev, apartmentId: v }))}
+              onValueChange={(v) =>
+                setFormData((prev) => ({ ...prev, apartmentId: v }))
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Chọn căn hộ" />
@@ -103,10 +122,14 @@ export function CreateBillDialog({ open, onOpenChange }: CreateBillDialogProps) 
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Loại phí <span className="text-destructive">*</span></Label>
+              <Label>
+                Loại phí <span className="text-destructive">*</span>
+              </Label>
               <Select
                 value={formData.feeType}
-                onValueChange={(v: FeeType) => setFormData((prev) => ({ ...prev, feeType: v }))}
+                onValueChange={(v: FeeType) =>
+                  setFormData((prev) => ({ ...prev, feeType: v }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Chọn loại phí" />
@@ -122,13 +145,17 @@ export function CreateBillDialog({ open, onOpenChange }: CreateBillDialogProps) 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="amount">Số tiền (VNĐ) <span className="text-destructive">*</span></Label>
+              <Label htmlFor="amount">
+                Số tiền (VNĐ) <span className="text-destructive">*</span>
+              </Label>
               <Input
                 id="amount"
                 type="number"
                 placeholder="0"
                 value={formData.amount}
-                onChange={(e) => setFormData((prev) => ({ ...prev, amount: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, amount: e.target.value }))
+                }
               />
             </div>
           </div>
@@ -140,17 +167,23 @@ export function CreateBillDialog({ open, onOpenChange }: CreateBillDialogProps) 
                 id="period"
                 placeholder="MM/YYYY"
                 value={formData.period}
-                onChange={(e) => setFormData((prev) => ({ ...prev, period: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, period: e.target.value }))
+                }
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="dueDate">Hạn thanh toán <span className="text-destructive">*</span></Label>
+              <Label htmlFor="dueDate">
+                Hạn thanh toán <span className="text-destructive">*</span>
+              </Label>
               <Input
                 id="dueDate"
                 type="date"
                 value={formData.dueDate}
-                onChange={(e) => setFormData((prev) => ({ ...prev, dueDate: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, dueDate: e.target.value }))
+                }
               />
             </div>
           </div>
@@ -161,12 +194,21 @@ export function CreateBillDialog({ open, onOpenChange }: CreateBillDialogProps) 
               id="description"
               placeholder="Ghi chú thêm (tùy chọn)"
               value={formData.description}
-              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
             />
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Hủy
             </Button>
             <Button type="submit" disabled={isSubmitting}>

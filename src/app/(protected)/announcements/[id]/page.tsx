@@ -51,9 +51,7 @@ export default function AnnouncementDetailPage({
             {announcement.priority !== "normal" && (
               <Badge variant="destructive">{announcement.priority}</Badge>
             )}
-            {announcement.pinned && (
-              <Pin className="h-4 w-4 text-primary" />
-            )}
+            {announcement.pinned && <Pin className="h-4 w-4 text-primary" />}
           </div>
 
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">

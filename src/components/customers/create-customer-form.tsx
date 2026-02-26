@@ -23,8 +23,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
-interface CreateCustomerFormProps
-  extends React.ComponentPropsWithoutRef<"div"> {}
+interface CreateCustomerFormProps extends React.ComponentPropsWithoutRef<"div"> {}
 
 export function CreateCustomerForm({
   className,

@@ -48,9 +48,7 @@ export default function NotificationsPage() {
       <Tabs defaultValue="all" className="w-full">
         <TabsList>
           <TabsTrigger value="all">Tất cả ({notifications.length})</TabsTrigger>
-          <TabsTrigger value="unread">
-            Chưa đọc ({unreadCount})
-          </TabsTrigger>
+          <TabsTrigger value="unread">Chưa đọc ({unreadCount})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="mt-4">

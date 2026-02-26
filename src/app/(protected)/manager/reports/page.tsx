@@ -8,12 +8,7 @@ import {
   TrendingUp,
   Wallet,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -33,7 +28,10 @@ import {
 import { ChartPlaceholder } from "@/components/manager/reports/chart-placeholder";
 
 function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount);
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(amount);
 }
 
 // Mock report data
@@ -191,9 +189,7 @@ export default function ManagerReportsPage() {
               </TableHeader>
               <TableBody>
                 {revenueData.map((row) => {
-                  const rate = Math.round(
-                    (row.collected / row.expected) * 100,
-                  );
+                  const rate = Math.round((row.collected / row.expected) * 100);
                   return (
                     <TableRow key={row.feeType}>
                       <TableCell className="font-medium">

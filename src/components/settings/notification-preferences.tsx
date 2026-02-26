@@ -56,10 +56,7 @@ export function NotificationPreferences() {
       </CardHeader>
       <CardContent className="space-y-4">
         {preferences.map((pref) => (
-          <div
-            key={pref.id}
-            className="flex items-center justify-between py-1"
-          >
+          <div key={pref.id} className="flex items-center justify-between py-1">
             <div>
               <Label htmlFor={pref.id} className="text-sm font-medium">
                 {pref.label}

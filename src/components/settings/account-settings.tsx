@@ -32,11 +32,7 @@ export function AccountSettings({
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-base">Tài khoản</CardTitle>
         {!isEditing && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsEditing(true)}
-          >
+          <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
             <Pencil className="h-4 w-4 mr-1" />
             Chỉnh sửa
           </Button>
@@ -65,7 +61,9 @@ export function AccountSettings({
           {isEditing ? (
             <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
           ) : (
-            <p className="text-sm text-foreground">{phone || "Chưa cập nhật"}</p>
+            <p className="text-sm text-foreground">
+              {phone || "Chưa cập nhật"}
+            </p>
           )}
         </div>
 

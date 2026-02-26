@@ -6,7 +6,10 @@ interface ChartPlaceholderProps {
   description: string;
 }
 
-export function ChartPlaceholder({ title, description }: ChartPlaceholderProps) {
+export function ChartPlaceholder({
+  title,
+  description,
+}: ChartPlaceholderProps) {
   return (
     <Card>
       <CardHeader>

@@ -146,11 +146,7 @@ export default function CreateAnnouncementPage() {
             </div>
 
             <div className="flex gap-3">
-              <Button
-                type="submit"
-                className="flex-1"
-                disabled={isSubmitting}
-              >
+              <Button type="submit" className="flex-1" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (

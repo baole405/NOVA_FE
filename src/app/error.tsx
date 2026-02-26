@@ -26,8 +26,8 @@ export default function Error({
           </h2>
 
           <p className="text-muted-foreground mb-8 leading-relaxed">
-            Rất tiếc, đã có lỗi xảy ra khi tải trang. Vui lòng thử lại hoặc
-            quay về trang chủ.
+            Rất tiếc, đã có lỗi xảy ra khi tải trang. Vui lòng thử lại hoặc quay
+            về trang chủ.
           </p>
 
           <div className="flex flex-col gap-3">

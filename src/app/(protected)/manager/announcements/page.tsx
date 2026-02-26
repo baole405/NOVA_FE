@@ -34,7 +34,8 @@ const priorityConfig: Record<string, { label: string; className: string }> = {
   normal: { label: "Bình thường", className: "" },
   important: {
     label: "Quan trọng",
-    className: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    className:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
   },
   urgent: {
     label: "Khẩn cấp",
@@ -112,9 +113,9 @@ export default function ManagerAnnouncementsPage() {
                           )}
                         </TableCell>
                         <TableCell>
-                          {new Date(
-                            announcement.createdAt,
-                          ).toLocaleDateString("vi-VN")}
+                          {new Date(announcement.createdAt).toLocaleDateString(
+                            "vi-VN",
+                          )}
                         </TableCell>
                         <TableCell>
                           {announcement.pinned ? (

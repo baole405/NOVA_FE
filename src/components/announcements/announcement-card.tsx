@@ -1,13 +1,12 @@
 import { Pin } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import type { Announcement, AnnouncementCategory, AnnouncementPriority } from "@/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type {
+  Announcement,
+  AnnouncementCategory,
+  AnnouncementPriority,
+} from "@/types";
 import { cn } from "@/lib/utils";
 
 const categoryConfig: Record<
@@ -16,15 +15,18 @@ const categoryConfig: Record<
 > = {
   maintenance: {
     label: "Bảo trì",
-    className: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+    className:
+      "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
   },
   event: {
     label: "Sự kiện",
-    className: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+    className:
+      "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
   },
   policy: {
     label: "Quy định",
-    className: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+    className:
+      "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
   },
   emergency: {
     label: "Khẩn cấp",
@@ -32,15 +34,20 @@ const categoryConfig: Record<
   },
   general: {
     label: "Chung",
-    className: "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400",
+    className:
+      "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400",
   },
 };
 
-const priorityConfig: Record<AnnouncementPriority, { label: string; className: string }> = {
+const priorityConfig: Record<
+  AnnouncementPriority,
+  { label: string; className: string }
+> = {
   normal: { label: "", className: "" },
   important: {
     label: "Quan trọng",
-    className: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    className:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
   },
   urgent: {
     label: "Khẩn cấp",

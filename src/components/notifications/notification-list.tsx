@@ -57,7 +57,9 @@ export function NotificationList({
             <p
               className={cn(
                 "text-sm leading-none",
-                notif.unread ? "font-semibold text-foreground" : "font-medium text-muted-foreground",
+                notif.unread
+                  ? "font-semibold text-foreground"
+                  : "font-medium text-muted-foreground",
               )}
             >
               {notif.title}
