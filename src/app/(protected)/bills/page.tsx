@@ -1,10 +1,15 @@
 "use client";
 
-import { AlertCircle, ArrowRight, CheckCircle2, Clock } from "lucide-react";
-import { useState } from "react";
+import {
+  AlertCircle,
+  ArrowRight,
+  CheckCircle2,
+  Clock,
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { BillDetailDialog } from "@/components/bills/bill-detail-dialog";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button"; // Import thêm buttonVariants
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,33 +18,63 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { mockBills } from "@/lib/mock-data";
+import { useAuth } from "@/hooks/use-auth";
+import { getBills } from "@/lib/bills";
 import { cn } from "@/lib/utils";
-import type { Bill } from "@/types";
+import type { BackendBill } from "@/types/api";
 
 export default function BillsPage() {
-  const [selectedBill, setSelectedBill] = useState<Bill | null>(null);
+  const { user } = useAuth();
+  const [bills, setBills] = useState<BackendBill[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedBill, setSelectedBill] = useState<BackendBill | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const formatCurrency = (amount: number) =>
+  const fetchBills = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await getBills();
+      setBills(res.data);
+    } catch (err) {
+      console.log("Failed to fetch bills:", err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchBills();
+    }
+  }, [user, fetchBills]);
+
+  const formatCurrency = (amount: number | string) =>
     new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
-    }).format(amount);
+    }).format(Number(amount));
 
   const formatDate = (dateString: string) =>
     new Date(dateString).toLocaleDateString("en-GB");
 
-  const unpaidBills = mockBills.filter(
+  const unpaidBills = bills.filter(
     (b) => b.status === "pending" || b.status === "overdue",
   );
 
-  const handleOpenDetail = (bill: Bill) => {
+  const handleOpenDetail = (bill: BackendBill) => {
     setSelectedBill(bill);
     setIsModalOpen(true);
   };
 
-  const BillItem = ({ bill }: { bill: Bill }) => (
+  if (loading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
+  const BillItem = ({ bill }: { bill: BackendBill }) => (
     <button
       type="button"
       onClick={() => handleOpenDetail(bill)}
@@ -87,7 +122,7 @@ export default function BillsPage() {
         <div className="text-right">
           <p className="font-bold text-lg">{formatCurrency(bill.amount)}</p>
           <p className="text-xs text-muted-foreground capitalize">
-            {bill.feeType}
+            {bill.feeType?.name ?? "N/A"}
           </p>
         </div>
         {bill.status !== "paid" && (
@@ -113,7 +148,7 @@ export default function BillsPage() {
       <Tabs defaultValue="unpaid" className="w-full">
         <TabsList className="grid w-full max-w-md grid-cols-2 mb-4">
           <TabsTrigger value="unpaid">
-            Chêu thanh toán ({unpaidBills.length})
+            Chờ thanh toán ({unpaidBills.length})
           </TabsTrigger>
           <TabsTrigger value="all">Tất cả Hóa đơn</TabsTrigger>
         </TabsList>
@@ -122,9 +157,7 @@ export default function BillsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Đang chờ Thanh toán</CardTitle>
-              <CardDescription>
-                Các khoản phí cần đưa đấu lưu ý.
-              </CardDescription>
+              <CardDescription>Các khoản phí cần được lưu ý.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {unpaidBills.length > 0 ? (
@@ -133,7 +166,7 @@ export default function BillsPage() {
                 ))
               ) : (
                 <div className="text-center py-10 text-muted-foreground">
-                  Không có hóa đơn chờm. Bạn đã hoàn thành tất cả!
+                  Không có hóa đơn chờ. Bạn đã hoàn thành tất cả!
                 </div>
               )}
             </CardContent>
@@ -149,9 +182,13 @@ export default function BillsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {mockBills.map((bill) => (
-                <BillItem key={bill.id} bill={bill} />
-              ))}
+              {bills.length > 0 ? (
+                bills.map((bill) => <BillItem key={bill.id} bill={bill} />)
+              ) : (
+                <div className="text-center py-10 text-muted-foreground">
+                  Chưa có hóa đơn nào.
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

@@ -2,21 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  fullName?: string;
-  role?: string;
-  phoneNumber?: string;
-  image?: string; // Add if backend supports avatar
-}
-
-interface LoginPayload {
-  usernameOrEmail: string;
-  password: string;
-}
+import type { LoginPayload, User } from "@/types/api";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -41,6 +27,7 @@ export function useAuth() {
         const res = await fetch(`${API_URL}/auth/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
+            "ngrok-skip-browser-warning": "true",
           },
         });
 
@@ -51,7 +38,7 @@ export function useAuth() {
           signOut();
         }
       } catch (error) {
-        console.error("Failed to fetch user:", error);
+        console.log("Failed to fetch user:", error);
         signOut();
       } finally {
         setLoading(false);
@@ -98,7 +85,7 @@ export function useAuth() {
 
         return true;
       } catch (error) {
-        console.error("Login error:", error);
+        console.log("Login error:", error);
         throw error;
       } finally {
         setLoading(false);
