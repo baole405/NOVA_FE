@@ -1,6 +1,16 @@
 "use client";
 
-import { Calendar, LayoutDashboard, Receipt, User, Users } from "lucide-react";
+import {
+  Bell,
+  Calendar,
+  LayoutDashboard,
+  Megaphone,
+  MessageSquareWarning,
+  Receipt,
+  Settings,
+  User,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -9,7 +19,7 @@ import { cn } from "@/lib/utils";
 interface SidebarItem {
   title: string;
   href: string;
-  icon: any; // Using any for Lucide icon to avoid complex type issues
+  icon: React.ComponentType<{ className?: string }>;
   children?: { title: string; href: string }[];
 }
 
@@ -30,6 +40,11 @@ const sidebarItems: SidebarItem[] = [
     icon: Receipt,
   },
   {
+    title: "Thông báo",
+    href: "/notifications",
+    icon: Bell,
+  },
+  {
     title: "Đặt chỗ",
     href: "#",
     icon: Calendar,
@@ -41,9 +56,24 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
   {
+    title: "Phản ánh",
+    href: "/complaints",
+    icon: MessageSquareWarning,
+  },
+  {
+    title: "Tin tức",
+    href: "/announcements",
+    icon: Megaphone,
+  },
+  {
     title: "Cộng đồng",
     href: "/community",
     icon: Users,
+  },
+  {
+    title: "Cài đặt",
+    href: "/settings",
+    icon: Settings,
   },
 ];
 
@@ -57,10 +87,10 @@ export function DashboardSidebar({
   const _router = useRouter();
 
   // Helper to check if a main item is active (including its children)
-  const isItemActive = (item: any) => {
+  const isItemActive = (item: SidebarItem) => {
     if (item.href === pathname) return true;
     if (item.children) {
-      return item.children.some((child: any) => {
+      return item.children.some((child: { title: string; href: string }) => {
         // Handle query params in href (e.g., /booking?tab=parking)
         const [childPath, _childQuery] = child.href.split("?");
         if (pathname !== childPath) return false;
@@ -94,25 +124,27 @@ export function DashboardSidebar({
                   {item.title}
                 </div>
                 <div className="pl-9 space-y-1">
-                  {item.children.map((child: any) => {
-                    // Check exact match for children including query if needed,
-                    // but for sidebar highlighting usually path match is enough or we use useSearchParams.
-                    // Here we just use simple link.
-                    return (
-                      <Link
-                        key={child.href}
-                        href={child.href}
-                        className={cn(
-                          "block px-3 py-2 rounded-md text-sm transition-colors",
-                          // We can't easily highlight based on query params without useSearchParams hook here
-                          // So we settle for hover effects for now, or we can make this component client-heavy.
-                          "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-                        )}
-                      >
-                        {child.title}
-                      </Link>
-                    );
-                  })}
+                  {item.children.map(
+                    (child: { title: string; href: string }) => {
+                      // Check exact match for children including query if needed,
+                      // but for sidebar highlighting usually path match is enough or we use useSearchParams.
+                      // Here we just use simple link.
+                      return (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          className={cn(
+                            "block px-3 py-2 rounded-md text-sm transition-colors",
+                            // We can't easily highlight based on query params without useSearchParams hook here
+                            // So we settle for hover effects for now, or we can make this component client-heavy.
+                            "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                          )}
+                        >
+                          {child.title}
+                        </Link>
+                      );
+                    },
+                  )}
                 </div>
               </div>
             );

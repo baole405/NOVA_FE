@@ -134,11 +134,12 @@ export function SwimmingPool({
               const isSelected = selectedTimeSlot === slot;
 
               return (
-                <div
+                <button
+                  type="button"
                   key={slot}
                   onClick={() => onSelectTimeSlot(slot)}
                   className={`
-                                relative p-3 rounded-lg border cursor-pointer transition-all
+                                relative p-3 rounded-lg border cursor-pointer transition-all text-left
                                 ${
                                   isSelected
                                     ? "bg-blue-600 text-white border-blue-600 shadow-md"
@@ -157,7 +158,7 @@ export function SwimmingPool({
                       </Badge>
                     </div>
                   )}
-                </div>
+                </button>
               );
             })}
           </div>

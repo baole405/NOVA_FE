@@ -5,10 +5,10 @@ import { useCallback, useEffect, useState } from "react";
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { UpcomingBills } from "@/components/dashboard/upcoming-bills";
 import { useAuth } from "@/hooks/use-auth";
-import { getBills } from "@/lib/bills";
-import type { BackendBill } from "@/types/api";
-import { Apartment } from "@/types";
 import { getOwnApartment } from "@/lib/apartments";
+import { getBills } from "@/lib/bills";
+import type { Apartment } from "@/types";
+import type { BackendBill } from "@/types/api";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();

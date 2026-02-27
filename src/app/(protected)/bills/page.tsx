@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  AlertCircle,
-  ArrowRight,
-  CheckCircle2,
-  Clock,
-} from "lucide-react";
+import { AlertCircle, ArrowRight, CheckCircle2, Clock } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { BillDetailDialog } from "@/components/bills/bill-detail-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -36,7 +31,10 @@ export default function BillsPage() {
       const res = await getBills();
       setBills(res.data);
     } catch (err) {
-      console.log("Failed to fetch bills:", err instanceof Error ? err.message : "Unknown error");
+      console.log(
+        "Failed to fetch bills:",
+        err instanceof Error ? err.message : "Unknown error",
+      );
     } finally {
       setLoading(false);
     }

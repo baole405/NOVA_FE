@@ -4,9 +4,12 @@ import {
   Building2,
   FileText,
   Home,
+  Megaphone,
+  MessageSquareWarning,
   Settings,
   TrendingUp,
   Users,
+  Warehouse,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -30,6 +33,11 @@ const managerMenuItems = [
     icon: Building2,
   },
   {
+    title: "Quản lý phản ánh",
+    href: "/manager/complaints",
+    icon: MessageSquareWarning,
+  },
+  {
     title: "Báo cáo & Thống kê",
     href: "/manager/reports",
     icon: TrendingUp,
@@ -38,6 +46,16 @@ const managerMenuItems = [
     title: "Hóa đơn & Phí",
     href: "/manager/billing",
     icon: FileText,
+  },
+  {
+    title: "Thông báo & Tin tức",
+    href: "/manager/announcements",
+    icon: Megaphone,
+  },
+  {
+    title: "Quản lý tiện ích",
+    href: "/manager/facilities",
+    icon: Warehouse,
   },
   {
     title: "Cài đặt",

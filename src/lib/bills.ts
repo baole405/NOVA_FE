@@ -1,11 +1,11 @@
 // --- Bills API ---
 
-import {
-  BillsResponse,
+import type {
+  BackendBill,
   BackendBillDetail,
+  BillsResponse,
   MarkPaidPayload,
   MarkPaidResponse,
-  BackendBill,
 } from "@/types/api";
 import { fetchApi } from "./api-client";
 

@@ -19,20 +19,18 @@ export default function NotFound() {
 
           {/* Subheading */}
           <h2 className="text-xl font-semibold text-foreground mb-4">
-            Page Not Found
+            Không tìm thấy trang
           </h2>
 
-          {/* Friendly explanation */}
           <p className="text-muted-foreground mb-8 leading-relaxed">
-            The Nova page you're looking for doesn't exist. It might have been
-            moved, deleted, or you entered the wrong URL.
+            Trang bạn đang tìm không tồn tại. Có thể trang đã được di chuyển,
+            xóa, hoặc bạn đã nhập sai đường dẫn.
           </p>
 
-          {/* Call-to-action button */}
           <Link href="/">
             <Button className="w-full" size="lg">
               <Home className="h-4 w-4 mr-2" />
-              Back to Nova Home
+              Về trang chủ
             </Button>
           </Link>
         </CardContent>

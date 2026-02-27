@@ -133,7 +133,7 @@ function BookingPageContent() {
       const token = localStorage.getItem("accessToken");
       const formattedDate = format(date, "yyyy-MM-dd");
 
-      const payload: any = {
+      const payload: Record<string, string | number | undefined> = {
         serviceType,
         date: formattedDate,
         notes,
@@ -276,7 +276,8 @@ function BookingPageContent() {
                             Thời gian:{" "}
                             {date ? format(date, "dd/MM/yyyy") : "..."}
                             {isMonthly &&
-                              ` - ${format(addDays(date!, 30), "dd/MM/yyyy")}`}
+                              date &&
+                              ` - ${format(addDays(date, 30), "dd/MM/yyyy")}`}
                           </p>
                           <Button
                             onClick={() => handleBooking("parking")}
