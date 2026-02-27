@@ -7,6 +7,7 @@ export default function NotificationsLoading() {
       <Skeleton className="h-10 w-48" />
       <div className="space-y-3">
         {Array.from({ length: 6 }).map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton list never reorders
           <Skeleton key={i} className="h-20 rounded-lg" />
         ))}
       </div>

@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { Megaphone } from "lucide-react";
+import { useState } from "react";
+import { AnnouncementCard } from "@/components/announcements/announcement-card";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Select,
   SelectContent,
@@ -9,10 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AnnouncementCard } from "@/components/announcements/announcement-card";
-import { EmptyState } from "@/components/ui/empty-state";
 import { mockAnnouncements } from "@/lib/mock-data";
-import type { AnnouncementCategory } from "@/types";
 
 export default function AnnouncementsPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");

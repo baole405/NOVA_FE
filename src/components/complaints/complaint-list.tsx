@@ -1,12 +1,12 @@
 "use client";
 
 import { CheckCircle2, Clock, Loader2 } from "lucide-react";
+import { ComplaintStatusBadge } from "@/components/complaints/complaint-status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { ComplaintStatusBadge } from "@/components/complaints/complaint-status-badge";
-import type { Complaint, ComplaintCategory, ComplaintUrgency } from "@/types";
 import { cn } from "@/lib/utils";
+import type { Complaint, ComplaintCategory, ComplaintUrgency } from "@/types";
 
 const categoryLabels: Record<ComplaintCategory, string> = {
   plumbing: "Ống nước",

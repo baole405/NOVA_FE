@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { MessageSquareWarning } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
 import { ComplaintForm } from "@/components/complaints/complaint-form";
 import { ComplaintList } from "@/components/complaints/complaint-list";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockComplaints } from "@/lib/mock-data";
 import type { Complaint, ComplaintCategory, ComplaintUrgency } from "@/types";
 

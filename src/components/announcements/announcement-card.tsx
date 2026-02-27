@@ -2,12 +2,12 @@ import { Pin } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import type {
   Announcement,
   AnnouncementCategory,
   AnnouncementPriority,
 } from "@/types";
-import { cn } from "@/lib/utils";
 
 const categoryConfig: Record<
   AnnouncementCategory,
@@ -93,7 +93,7 @@ export function AnnouncementCard({ announcement }: AnnouncementCardProps) {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground line-clamp-3">
-            {announcement.content.replace(/[#*`\->\[\]]/g, "").slice(0, 150)}...
+            {announcement.content.replace(/[#*`\->[\]]/g, "").slice(0, 150)}...
           </p>
           <div className="flex items-center justify-between mt-4 text-xs text-muted-foreground">
             <span>{announcement.author}</span>

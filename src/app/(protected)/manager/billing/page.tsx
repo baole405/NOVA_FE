@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import { FileText, Plus } from "lucide-react";
+import { useMemo, useState } from "react";
+import { BillTable } from "@/components/manager/billing/bill-table";
+import { CreateBillDialog } from "@/components/manager/billing/create-bill-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,8 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BillTable } from "@/components/manager/billing/bill-table";
-import { CreateBillDialog } from "@/components/manager/billing/create-bill-dialog";
 import { mockManagerBills } from "@/lib/mock-data";
 
 export default function ManagerBillingPage() {

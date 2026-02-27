@@ -7,6 +7,7 @@ export default function ComplaintsLoading() {
       <Skeleton className="h-10 w-64" />
       <div className="space-y-4">
         {Array.from({ length: 4 }).map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton list never reorders
           <Skeleton key={i} className="h-28 rounded-lg" />
         ))}
       </div>

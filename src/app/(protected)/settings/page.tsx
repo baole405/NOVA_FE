@@ -1,7 +1,11 @@
 "use client";
 
 import { Settings } from "lucide-react";
+import { AccountSettings } from "@/components/settings/account-settings";
+import { NotificationPreferences } from "@/components/settings/notification-preferences";
+import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -9,10 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { ThemeToggle } from "@/components/settings/theme-toggle";
-import { NotificationPreferences } from "@/components/settings/notification-preferences";
-import { AccountSettings } from "@/components/settings/account-settings";
 
 export default function SettingsPage() {
   return (

@@ -7,6 +7,7 @@ export default function BillsLoading() {
       <Skeleton className="h-10 w-full max-w-sm" />
       <div className="space-y-4">
         {Array.from({ length: 4 }).map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton list never reorders
           <Skeleton key={i} className="h-20 rounded-lg" />
         ))}
       </div>

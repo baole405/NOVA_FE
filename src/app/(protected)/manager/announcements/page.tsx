@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Table,
   TableBody,
@@ -19,7 +20,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { EmptyState } from "@/components/ui/empty-state";
 import { mockAnnouncements } from "@/lib/mock-data";
 
 const categoryLabels: Record<string, string> = {

@@ -1,8 +1,8 @@
 "use client";
 
 import { Bell, Check, Circle } from "lucide-react";
-import type { Notification } from "@/types";
 import { cn } from "@/lib/utils";
+import type { Notification } from "@/types";
 
 interface NotificationListProps {
   notifications: Notification[];

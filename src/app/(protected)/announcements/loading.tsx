@@ -7,6 +7,7 @@ export default function AnnouncementsLoading() {
       <Skeleton className="h-10 w-48" />
       <div className="grid gap-4 md:grid-cols-2">
         {Array.from({ length: 4 }).map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton list never reorders
           <Skeleton key={i} className="h-48 rounded-xl" />
         ))}
       </div>

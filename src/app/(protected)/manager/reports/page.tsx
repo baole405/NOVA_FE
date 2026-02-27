@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   BadgeDollarSign,
   Building2,
@@ -8,6 +7,8 @@ import {
   TrendingUp,
   Wallet,
 } from "lucide-react";
+import { useState } from "react";
+import { ChartPlaceholder } from "@/components/manager/reports/chart-placeholder";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -25,7 +26,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChartPlaceholder } from "@/components/manager/reports/chart-placeholder";
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("vi-VN", {

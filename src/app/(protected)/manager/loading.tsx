@@ -9,6 +9,7 @@ export default function ManagerLoading() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton list never reorders
           <Skeleton key={i} className="h-32 rounded-xl" />
         ))}
       </div>

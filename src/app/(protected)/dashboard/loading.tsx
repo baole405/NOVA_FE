@@ -12,6 +12,7 @@ export default function DashboardLoading() {
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton list never reorders
           <Skeleton key={i} className="h-32 rounded-xl" />
         ))}
       </div>

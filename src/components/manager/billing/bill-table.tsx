@@ -1,7 +1,9 @@
 "use client";
 
+import { FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Table,
   TableBody,
@@ -10,8 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { EmptyState } from "@/components/ui/empty-state";
-import { FileText } from "lucide-react";
 import type { BillStatus, FeeType, ManagerBill } from "@/types";
 
 const feeTypeLabels: Record<FeeType, string> = {

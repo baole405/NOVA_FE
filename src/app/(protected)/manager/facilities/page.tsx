@@ -1,11 +1,11 @@
 "use client";
 
 import { Car, Droplets, Utensils, Warehouse } from "lucide-react";
+import { BBQConfig } from "@/components/manager/facilities/bbq-config";
+import { ParkingConfig } from "@/components/manager/facilities/parking-config";
+import { PoolConfig } from "@/components/manager/facilities/pool-config";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ParkingConfig } from "@/components/manager/facilities/parking-config";
-import { BBQConfig } from "@/components/manager/facilities/bbq-config";
-import { PoolConfig } from "@/components/manager/facilities/pool-config";
 
 export default function ManagerFacilitiesPage() {
   return (

@@ -1,4 +1,4 @@
-import { Apartment } from "@/types";
+import type { Apartment } from "@/types";
 import { fetchApi } from "./api-client";
 
 export const getOwnApartment = async (): Promise<Apartment> => {

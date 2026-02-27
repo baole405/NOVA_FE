@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { Bell, CheckCheck } from "lucide-react";
+import { useState } from "react";
+import { NotificationList } from "@/components/notifications/notification-list";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { NotificationList } from "@/components/notifications/notification-list";
 import { mockNotifications } from "@/lib/mock-data";
 import type { Notification } from "@/types";
 
