@@ -1,4 +1,5 @@
 // src/types/index.ts
+// Central export point for all types
 
 export type BillStatus = "pending" | "paid" | "overdue" | "cancelled";
 export type FeeType =
@@ -205,3 +206,10 @@ export interface ComplaintResponse {
 export interface ManagerComplaint extends Complaint {
   responses?: ComplaintResponse[];
 }
+// Re-export all entity types
+export * from "./api";
+export * from "./auth";
+export * from "./bills";
+export * from "./notifications";
+export * from "./transactions";
+export * from "./user";

@@ -1,17 +1,4 @@
-// Types for the Nova application API
-
-export interface Article {
-  id: string;
-  title: string;
-  content: string;
-  authorId: string;
-  authorName: string;
-  createdAt: string;
-  imageUrl?: string;
-}
-
-// Note: User types will come from Stack Auth SDK
-// No need to define custom User interface
+// Generic API types and re-exports
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -20,9 +7,12 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
-export interface FileUploadResponse {
-  success: boolean;
-  url?: string;
-  filename?: string;
-  message?: string;
-}
+// Re-export all backend DTOs
+export * from "./dto";
+
+// Re-export all entity-specific types
+export * from "./auth";
+export * from "./bills";
+export * from "./notifications";
+export * from "./transactions";
+export * from "./user";

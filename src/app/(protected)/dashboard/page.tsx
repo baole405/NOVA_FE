@@ -1,52 +1,52 @@
 "use client";
 
 import { AlertCircle, Building2, CheckCircle2, Wallet } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { UpcomingBills } from "@/components/dashboard/upcoming-bills";
 import { useAuth } from "@/hooks/use-auth";
-import type { Bill } from "@/types";
+import { getBills } from "@/lib/bills";
+import type { BackendBill } from "@/types/api";
+import { Apartment } from "@/types";
+import { getOwnApartment } from "@/lib/apartments";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
-  const [bills, setBills] = useState<Bill[]>([]);
+  const [bills, setBills] = useState<BackendBill[]>([]);
+  const [apartment, setApartment] = useState<Apartment | null>(null);
   const [loadingBills, setLoadingBills] = useState(true);
 
-  // Fallback to mock user if not logged in (or handle redirect)
-  // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for matching mock data structure
-  const displayUser: any = user || {};
+  const displayUser = user;
+
+  const fetchBillsData = useCallback(async () => {
+    try {
+      const res = await getBills();
+      setBills(res.data);
+    } catch (error) {
+      console.log("Failed to fetch bills:", error);
+    } finally {
+      setLoadingBills(false);
+    }
+  }, []);
+
+  const fetchApartmentData = useCallback(async () => {
+    try {
+      const res = await getOwnApartment();
+      setApartment(res);
+    } catch (error) {
+      console.log("Failed to fetch apartment data:", error);
+      setApartment(null);
+    }
+  }, []);
 
   useEffect(() => {
-    async function fetchBills() {
-      try {
-        const token = localStorage.getItem("accessToken");
-        if (!token) return;
-
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/bills`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
-
-        if (res.ok) {
-          const result = await res.json();
-          // API returns paginated response: { data: [], total: number, page: number }
-          setBills(Array.isArray(result.data) ? result.data : []);
-        }
-      } catch (error) {
-        console.error("Failed to fetch bills:", error);
-      } finally {
-        setLoadingBills(false);
-      }
-    }
-
     if (user) {
-      fetchBills();
+      fetchBillsData();
+      fetchApartmentData();
     } else {
       setLoadingBills(false);
     }
-  }, [user]);
+  }, [user, fetchBillsData, fetchApartmentData]);
 
   if (loading || loadingBills) {
     return (
@@ -78,11 +78,7 @@ export default function DashboardPage() {
           </h2>
           <p className="text-muted-foreground mt-1">
             Xin chào,{" "}
-            {displayUser.fullName ||
-              displayUser.name ||
-              displayUser.username ||
-              "Cư dân"}{" "}
-            👋
+            {displayUser?.fullName || displayUser?.username || "Cư dân"} 👋
           </p>
         </div>
 
@@ -90,10 +86,10 @@ export default function DashboardPage() {
           <Building2 className="w-5 h-5 text-primary" />
           <div className="text-sm">
             <p className="font-medium text-foreground">
-              Phòng {displayUser.apartment?.unitNumber || "N/A"}
+              Phòng {apartment?.unitNumber || "N/A"}
             </p>
             <p className="text-xs text-muted-foreground">
-              Tòa nhà {displayUser.apartment?.block || "N/A"}
+              Tòa nhà {apartment?.block || "N/A"}
             </p>
           </div>
         </div>

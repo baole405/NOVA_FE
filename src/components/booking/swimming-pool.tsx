@@ -67,7 +67,7 @@ export function SwimmingPool({
           setBookedSlots(data);
         }
       } catch (error) {
-        console.error("Failed to fetch pool bookings:", error);
+        console.log("Failed to fetch pool bookings:", error);
       } finally {
         setLoading(false);
       }

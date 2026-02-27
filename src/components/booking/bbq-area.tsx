@@ -64,7 +64,7 @@ export function BBQArea({
           setAreaBookings(grouped);
         }
       } catch (error) {
-        console.error("Failed to fetch BBQ areas:", error);
+        console.log("Failed to fetch BBQ areas:", error);
       } finally {
         setLoading(false);
       }
