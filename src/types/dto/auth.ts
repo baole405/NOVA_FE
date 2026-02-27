@@ -14,3 +14,16 @@ export interface LoginPayload {
   usernameOrEmail: string;
   password: string;
 }
+
+export interface RegisterPayload {
+  username: string;
+  email: string;
+  password: string;
+  fullName: string;
+  phoneNumber: string;
+}
+
+export interface RegisterResponse {
+  user: User;
+  access_token: string;
+}

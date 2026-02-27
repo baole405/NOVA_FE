@@ -9,13 +9,14 @@ import {
   useMemo,
   useState,
 } from "react";
-import type { LoginPayload, User } from "@/types/api";
+import type { LoginPayload, RegisterPayload, User } from "@/types/api";
 
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
   signIn: (payload: LoginPayload) => Promise<boolean>;
   signOut: () => void;
+  signUp: (payload: RegisterPayload) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -110,9 +111,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [API_URL, fetchUser],
   );
 
+  const signUp = useCallback(
+    async (payload: RegisterPayload) => {
+      try {
+        setLoading(true);
+        const res = await fetch(`${API_URL}/auth/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.message || "Đăng ký thất bại");
+        }
+
+        const data = await res.json();
+        const token = data.access_token;
+
+        localStorage.setItem("accessToken", token);
+        // biome-ignore lint/suspicious/noDocumentCookie: Required for auth token persistence
+        document.cookie = `accessToken=${token}; path=/; max-age=86400; SameSite=Lax`;
+
+        await fetchUser(token);
+
+        return true;
+      } catch (error) {
+        console.log("Register error:", error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [API_URL, fetchUser],
+  );
+
   const value = useMemo(
-    () => ({ user, loading, signIn, signOut }),
-    [user, loading, signIn, signOut],
+    () => ({ user, loading, signIn, signOut, signUp }),
+    [user, loading, signIn, signOut, signUp],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
