@@ -73,14 +73,6 @@ export interface FamilyMember {
   userId: string; // User ID
 }
 
-export interface Notification {
-  id: number;
-  title: string;
-  desc: string;
-  time: string; // Thời gian hiển thị (vd: "2 giờ trước")
-  unread: boolean;
-}
-
 // Complaint / Maintenance Request
 export type ComplaintCategory =
   | "plumbing"
