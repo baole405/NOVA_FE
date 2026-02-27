@@ -1,29 +1,24 @@
 "use client";
 
 import { Bell, CheckCheck } from "lucide-react";
-import { useState } from "react";
 import { NotificationList } from "@/components/notifications/notification-list";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { mockNotifications } from "@/lib/mock-data";
-import type { Notification } from "@/types";
+import { useNotifications } from "@/hooks/use-notifications";
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] =
-    useState<Notification[]>(mockNotifications);
+  const { notifications, loading, markRead, markAllRead } = useNotifications();
 
   const unreadNotifications = notifications.filter((n) => n.unread);
   const unreadCount = unreadNotifications.length;
 
-  const handleToggleRead = (id: number) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, unread: !n.unread } : n)),
+  if (loading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
     );
-  };
-
-  const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
-  };
+  }
 
   return (
     <div className="space-y-6 p-4 md:p-8 max-w-3xl mx-auto animate-in fade-in duration-500">
@@ -38,7 +33,7 @@ export default function NotificationsPage() {
           </p>
         </div>
         {unreadCount > 0 && (
-          <Button variant="outline" size="sm" onClick={handleMarkAllRead}>
+          <Button variant="outline" size="sm" onClick={markAllRead}>
             <CheckCheck className="h-4 w-4 mr-2" />
             Đánh dấu tất cả đã đọc
           </Button>
@@ -54,14 +49,14 @@ export default function NotificationsPage() {
         <TabsContent value="all" className="mt-4">
           <NotificationList
             notifications={notifications}
-            onToggleRead={handleToggleRead}
+            onToggleRead={markRead}
           />
         </TabsContent>
 
         <TabsContent value="unread" className="mt-4">
           <NotificationList
             notifications={unreadNotifications}
-            onToggleRead={handleToggleRead}
+            onToggleRead={markRead}
           />
         </TabsContent>
       </Tabs>
