@@ -6,13 +6,14 @@ import { StatsCard } from "@/components/dashboard/stats-card";
 import { UpcomingBills } from "@/components/dashboard/upcoming-bills";
 import { useAuth } from "@/hooks/use-auth";
 import { getOwnApartment } from "@/lib/apartments";
-import { getBills } from "@/lib/bills";
+import { getBills, getBillsUpcoming } from "@/lib/bills";
 import type { Apartment } from "@/types";
 import type { BackendBill } from "@/types/api";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const [bills, setBills] = useState<BackendBill[]>([]);
+  const [upcomingBills, setUpcomingBills] = useState<BackendBill[]>([]);
   const [apartment, setApartment] = useState<Apartment | null>(null);
   const [loadingBills, setLoadingBills] = useState(true);
 
@@ -20,8 +21,12 @@ export default function DashboardPage() {
 
   const fetchBillsData = useCallback(async () => {
     try {
-      const res = await getBills();
-      setBills(res.data);
+      const [allRes, upcomingRes] = await Promise.all([
+        getBills(),
+        getBillsUpcoming(),
+      ]);
+      setBills(allRes.data);
+      setUpcomingBills(upcomingRes);
     } catch (error) {
       console.log("Failed to fetch bills:", error);
     } finally {
@@ -132,11 +137,11 @@ export default function DashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-7">
         <div className="col-span-7">
-          {bills.length > 0 ? (
-            <UpcomingBills bills={bills} />
+          {upcomingBills.length > 0 ? (
+            <UpcomingBills bills={upcomingBills} />
           ) : (
             <div className="text-center p-8 text-muted-foreground">
-              Không có hóa đơn nào.
+              Không có hóa đơn nào sắp đến hạn.
             </div>
           )}
         </div>

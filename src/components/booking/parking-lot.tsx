@@ -3,16 +3,8 @@
 import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { getBookingsByDateService } from "@/lib/bookings";
 import { cn } from "@/lib/utils";
-
-interface Booking {
-  id: number;
-  slotNumber: string;
-  date: string;
-  endDate?: string;
-  startTime: string;
-  endTime: string;
-}
 
 interface ParkingLotProps {
   onSelectSlot: (slot: string) => void;
@@ -42,20 +34,11 @@ export function ParkingLot({
       setLoading(true);
       try {
         const dateStr = format(selectedDate, "yyyy-MM-dd");
-        const token = localStorage.getItem("accessToken");
-        // Fetch all parking bookings for this date (and potential end dates)
-        // Note: Backend findAll checks date overlap
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/bookings?date=${dateStr}&serviceType=parking`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
+        // Fetch all parking bookings for this date (backend checks date overlap)
+        const data = await getBookingsByDateService(dateStr, "parking");
+        setBookedSlots(
+          data.map((b) => b.slotNumber).filter((s): s is string => !!s),
         );
-        if (res.ok) {
-          const data: Booking[] = await res.json();
-          // Map to booked slot numbers
-          setBookedSlots(data.map((b) => b.slotNumber).filter(Boolean));
-        }
       } catch (error) {
         console.log("Failed to fetch parking slots:", error);
       } finally {

@@ -3,14 +3,9 @@
 import { format } from "date-fns";
 import { Utensils } from "lucide-react";
 import { useEffect, useState } from "react";
+import type { Booking } from "@/lib/bookings";
+import { getBookingsByDateService } from "@/lib/bookings";
 import { cn } from "@/lib/utils";
-
-interface Booking {
-  id: number;
-  slotNumber: string; // Used as Area Name
-  startTime: string;
-  endTime: string;
-}
 
 interface BBQAreaProps {
   onSelectArea: (area: string) => void;
@@ -44,25 +39,16 @@ export function BBQArea({
       setLoading(true);
       try {
         const dateStr = format(selectedDate, "yyyy-MM-dd");
-        const token = localStorage.getItem("accessToken");
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/bookings?date=${dateStr}&serviceType=bbq`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
-        if (res.ok) {
-          const data: Booking[] = await res.json();
-          // Group bookings by area
-          const grouped: Record<string, Booking[]> = {};
-          data.forEach((b) => {
-            if (b.slotNumber) {
-              if (!grouped[b.slotNumber]) grouped[b.slotNumber] = [];
-              grouped[b.slotNumber].push(b);
-            }
-          });
-          setAreaBookings(grouped);
-        }
+        const data = await getBookingsByDateService(dateStr, "bbq");
+        // Group bookings by area (slotNumber)
+        const grouped: Record<string, Booking[]> = {};
+        data.forEach((b) => {
+          if (b.slotNumber) {
+            if (!grouped[b.slotNumber]) grouped[b.slotNumber] = [];
+            grouped[b.slotNumber].push(b);
+          }
+        });
+        setAreaBookings(grouped);
       } catch (error) {
         console.log("Failed to fetch BBQ areas:", error);
       } finally {

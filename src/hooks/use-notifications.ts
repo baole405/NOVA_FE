@@ -2,11 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  getNotifications,
-  markAllNotificationsRead,
-  markNotificationRead,
-} from "@/lib/notifications";
+import { getNotifications, markNotificationRead } from "@/lib/notifications";
 import type { Notification } from "@/types";
 import { mapNotification } from "@/types/notifications";
 
@@ -65,12 +61,14 @@ export function useNotifications(): UseNotificationsReturn {
     // Optimistic update
     setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
     try {
-      await markAllNotificationsRead();
+      // No bulk endpoint — call individually in parallel
+      const unreadIds = notifications.filter((n) => n.unread).map((n) => n.id);
+      await Promise.all(unreadIds.map((id) => markNotificationRead(id)));
     } catch (err) {
       console.log("Failed to mark all notifications read:", err);
       refetch(); // Revert by refetching
     }
-  }, [refetch]);
+  }, [notifications, refetch]);
 
   return { notifications, loading, error, refetch, markRead, markAllRead };
 }

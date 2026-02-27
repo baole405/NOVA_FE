@@ -38,3 +38,13 @@ export async function createBooking(
     body: JSON.stringify(payload),
   });
 }
+
+// date format: "YYYY-MM-DD"
+export async function getBookingsByDateService(
+  date: string,
+  serviceType: "parking" | "bbq" | "swimming_pool",
+): Promise<Booking[]> {
+  return fetchApi<Booking[]>(
+    `/bookings?date=${date}&serviceType=${serviceType}`,
+  );
+}

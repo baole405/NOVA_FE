@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { getTransactions } from "@/lib/transactions";
+import { getTransactions, getTransactionsByMonth } from "@/lib/transactions";
 import type { BackendTransaction } from "@/types/api";
 
 interface UseTransactionsReturn {
@@ -12,7 +12,7 @@ interface UseTransactionsReturn {
   refetch: () => Promise<void>;
 }
 
-export function useTransactions(): UseTransactionsReturn {
+export function useTransactions(month?: string): UseTransactionsReturn {
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<BackendTransaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +22,9 @@ export function useTransactions(): UseTransactionsReturn {
     if (!user) return;
     try {
       setLoading(true);
-      const res = await getTransactions();
+      const res = month
+        ? await getTransactionsByMonth(month)
+        : await getTransactions();
       setTransactions(res.data);
     } catch (err) {
       setError(
@@ -32,7 +34,7 @@ export function useTransactions(): UseTransactionsReturn {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, month]);
 
   useEffect(() => {
     refetch();

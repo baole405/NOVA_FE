@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -13,7 +15,11 @@ import {
 import { useTransactions } from "@/hooks/use-transactions";
 
 export default function HistoryPage() {
-  const { transactions, loading } = useTransactions();
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  });
+  const { transactions, loading } = useTransactions(selectedMonth || undefined);
 
   const formatCurrency = (amount: number | string) =>
     new Intl.NumberFormat("vi-VN", {
@@ -40,13 +46,37 @@ export default function HistoryPage() {
 
   return (
     <div className="space-y-6 p-4 md:p-8 max-w-5xl mx-auto">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight text-primary">
-          Lịch sử Giao dịch
-        </h2>
-        <p className="text-muted-foreground">
-          Đánh giá các khoản thanh toán của bạn.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight text-primary">
+            Lịch sử Giao dịch
+          </h2>
+          <p className="text-muted-foreground">
+            Đánh giá các khoản thanh toán của bạn.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label htmlFor="month-filter" className="text-sm font-medium">
+            Tháng:
+          </label>
+          <input
+            id="month-filter"
+            type="month"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="rounded-md border border-input bg-background px-3 py-1.5 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+          {selectedMonth && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedMonth("")}
+            >
+              Tất cả
+            </Button>
+          )}
+        </div>
       </div>
 
       <Card>

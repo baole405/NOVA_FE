@@ -23,6 +23,10 @@ export async function getBills(params?: {
   return fetchApi<BillsResponse>(`/bills${qs ? `?${qs}` : ""}`);
 }
 
+export async function getBillsUpcoming(): Promise<BackendBill[]> {
+  return fetchApi<BackendBill[]>("/bills/upcoming");
+}
+
 export async function getBillById(id: number): Promise<BackendBillDetail> {
   return fetchApi<BackendBillDetail>(`/bills/${id}`);
 }

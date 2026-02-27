@@ -11,8 +11,4 @@ export async function markNotificationRead(id: number): Promise<void> {
   await fetchApi<void>(`/notifications/${id}/read`, { method: "PATCH" });
 }
 
-export async function markAllNotificationsRead(): Promise<void> {
-  await fetchApi<void>("/notifications/read-all", { method: "PATCH" });
-}
-
 export type { BackendNotification, NotificationsResponse };
