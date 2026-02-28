@@ -152,9 +152,6 @@ export default function BillsPage() {
       <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto mt-2 sm:mt-0">
         <div className="text-right">
           <p className="font-bold text-lg">{formatCurrency(bill.amount)}</p>
-          <p className="text-xs text-muted-foreground capitalize">
-            {bill.feeType?.name ?? "N/A"}
-          </p>
         </div>
         {bill.status !== "paid" && (
           <div className={cn(buttonVariants({ size: "sm" }))}>

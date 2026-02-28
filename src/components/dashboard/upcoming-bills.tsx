@@ -87,9 +87,6 @@ export function UpcomingBills({ bills }: { bills: BackendBill[] }) {
                     <p className="text-sm font-bold">
                       {formatCurrency(Number(bill.amount))}
                     </p>
-                    <p className="text-xs text-muted-foreground capitalize">
-                      {bill.feeType?.name ?? "N/A"}
-                    </p>
                   </div>
                   <Badge
                     variant={
