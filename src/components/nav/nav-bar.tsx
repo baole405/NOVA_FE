@@ -11,7 +11,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { authClient } from "@/lib/auth/client";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { UserNav } from "./user-nav";
 
@@ -26,7 +26,7 @@ const mainNavItems = [
 export function NavBar() {
   const pathname = usePathname();
 
-  const { data: session, isPending } = authClient.useSession();
+  const { user, loading } = useAuth();
 
   return (
     <div className="w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -39,7 +39,7 @@ export function NavBar() {
             NOVA
           </Link>
 
-          {!isPending && session && (
+          {!loading && user && (
             <div className="hidden md:block">
               <NavigationMenu>
                 <NavigationMenuList>
@@ -72,9 +72,9 @@ export function NavBar() {
         </div>
 
         <div className="flex items-center gap-4">
-          {isPending ? (
+          {loading ? (
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-          ) : !session ? (
+          ) : !user ? (
             <div className="flex items-center gap-2">
               <Button asChild variant="ghost" size="sm">
                 <Link href="/login">Đăng nhập</Link>
