@@ -14,11 +14,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth/client";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Home() {
-  const { data: session, isPending } = authClient.useSession();
-  const user = session?.user;
+  const { user, loading } = useAuth();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -47,7 +46,7 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 w-full justify-center animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-              {isPending ? (
+              {loading ? (
                 <Button
                   size="lg"
                   disabled
@@ -58,8 +57,8 @@ export default function Home() {
               ) : user ? (
                 <div className="flex flex-col items-center gap-4">
                   <p className="text-lg font-medium text-foreground">
-                    Xin chào, <span className="text-primary">{user.name}</span>{" "}
-                    👋
+                    Xin chào,{" "}
+                    <span className="text-primary">{user.fullName}</span> 👋
                   </p>
                   <Button
                     size="lg"
