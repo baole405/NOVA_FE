@@ -4,6 +4,8 @@ import type {
   BackendBill,
   BackendBillDetail,
   BillsResponse,
+  CreatePaymentLinkPayload,
+  CreatePaymentLinkResponse,
   MarkPaidPayload,
   MarkPaidResponse,
 } from "@/types/api";
@@ -41,6 +43,23 @@ export async function markBillAsPaid(
 ): Promise<MarkPaidResponse> {
   return fetchApi<MarkPaidResponse>(`/bills/${id}/mark-paid`, {
     method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function createPaymentLink(
+  billId: number,
+  testAmount?: number,
+): Promise<CreatePaymentLinkResponse> {
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const payload: CreatePaymentLinkPayload = {
+    billId,
+    returnUrl: `${origin}/bills?payment=success`,
+    cancelUrl: `${origin}/bills?payment=cancelled`,
+  };
+  if (testAmount) payload.testAmount = testAmount;
+  return fetchApi<CreatePaymentLinkResponse>("/payments/create-link", {
+    method: "POST",
     body: JSON.stringify(payload),
   });
 }

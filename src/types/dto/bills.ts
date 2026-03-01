@@ -47,3 +47,14 @@ export interface MarkPaidResponse {
   bill: { id: number; status: string; paidAt: string };
   transaction: { id: number; amount: string; method: string };
 }
+
+export interface CreatePaymentLinkPayload {
+  billId: number;
+  testAmount?: number;
+  returnUrl?: string;
+  cancelUrl?: string;
+}
+
+export interface CreatePaymentLinkResponse {
+  checkoutUrl: string;
+}

@@ -8,6 +8,7 @@ import {
   Clock,
   FileX,
 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { BillDetailDialog } from "@/components/bills/bill-detail-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +47,8 @@ function getDateRange(preset: string): { from?: string; to?: string } {
 
 export default function BillsPage() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const paymentStatus = searchParams.get("payment");
   const [bills, setBills] = useState<BackendBill[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBill, setSelectedBill] = useState<BackendBill | null>(null);
@@ -53,6 +56,9 @@ export default function BillsPage() {
   const [periodPreset, setPeriodPreset] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"dueDate" | "amount">("dueDate");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [testMode, setTestMode] = useState(false);
+  const isTestModeAvailable =
+    process.env.NEXT_PUBLIC_PAYOS_TEST_MODE === "true";
 
   const fetchBills = useCallback(async () => {
     try {
@@ -80,6 +86,13 @@ export default function BillsPage() {
       fetchBills();
     }
   }, [user, fetchBills]);
+
+  // Refresh bills when redirected back from PayOS with ?payment=success
+  useEffect(() => {
+    if (paymentStatus === "success") {
+      fetchBills();
+    }
+  }, [paymentStatus, fetchBills]);
 
   const formatCurrency = (amount: number | string) =>
     new Intl.NumberFormat("vi-VN", {
@@ -164,6 +177,35 @@ export default function BillsPage() {
 
   return (
     <div className="space-y-6 p-4 md:p-8 max-w-5xl mx-auto">
+      {isTestModeAvailable && (
+        <div className="flex items-center justify-between gap-4 rounded-lg border border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/30 px-4 py-3">
+          <div className="flex items-center gap-2 text-sm font-medium text-amber-800 dark:text-amber-200">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>
+              DEV: Test Payment Mode {testMode ? "ON" : "OFF"} —{" "}
+              {testMode
+                ? "Bills will be charged 10,000₫"
+                : "Toggle to test with minimal amount"}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setTestMode((v) => !v)}
+            className={cn(
+              "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors",
+              testMode ? "bg-amber-500" : "bg-gray-300 dark:bg-gray-600",
+            )}
+          >
+            <span
+              className={cn(
+                "pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform",
+                testMode ? "translate-x-5" : "translate-x-0",
+              )}
+            />
+          </button>
+        </div>
+      )}
+
       <div>
         <h2 className="text-3xl font-bold tracking-tight text-primary">
           Hóa đơn
@@ -282,6 +324,8 @@ export default function BillsPage() {
         bill={selectedBill}
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
+        onPaymentSuccess={fetchBills}
+        testAmount={testMode ? 10000 : undefined}
       />
     </div>
   );
