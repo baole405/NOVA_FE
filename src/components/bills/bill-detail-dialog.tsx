@@ -1,14 +1,16 @@
 "use client";
 
+import { usePayOS } from "@payos/payos-checkout";
 import {
   Building2,
   Calendar,
+  CheckCircle2,
   CreditCard,
   Download,
   Loader2,
   ShieldCheck,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,17 +22,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { getBillById } from "@/lib/bills";
+import { createPaymentLink, getBillById } from "@/lib/bills";
 import type {
   BackendBill,
   BackendBillDetail,
   BackendBillItem,
 } from "@/types/api";
 
+type DialogView = "detail" | "payment" | "success";
+
 interface BillDetailDialogProps {
   bill: BackendBill | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onPaymentSuccess?: () => void;
+  testAmount?: number;
 }
 
 function ItemBreakdown({ item }: { item: BackendBillItem }) {
@@ -63,13 +69,51 @@ export function BillDetailDialog({
   bill,
   open,
   onOpenChange,
+  onPaymentSuccess,
+  testAmount,
 }: BillDetailDialogProps) {
   const [detail, setDetail] = useState<BackendBillDetail | null>(null);
   const [loading, setLoading] = useState(false);
+  const [view, setView] = useState<DialogView>("detail");
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
+  // PayOS config — state-driven per official SDK pattern
+  const [payOSConfig, setPayOSConfig] = useState({
+    RETURN_URL:
+      typeof window !== "undefined"
+        ? `${window.location.origin}/bills?payment=success`
+        : "",
+    ELEMENT_ID: "payos-embedded-container",
+    CHECKOUT_URL: "",
+    embedded: true,
+    onSuccess: () => {
+      setView("success");
+      onPaymentSuccess?.();
+    },
+    onCancel: () => {
+      setView("detail");
+    },
+    onExit: () => {
+      setView("detail");
+    },
+  });
+
+  const { open: openPayOS, exit: exitPayOS } = usePayOS(payOSConfig);
+
+  // Open PayOS embedded form when CHECKOUT_URL is set
+  useEffect(() => {
+    if (payOSConfig.CHECKOUT_URL && view === "payment") {
+      openPayOS();
+    }
+  }, [payOSConfig.CHECKOUT_URL, view, openPayOS]);
+
+  // Fetch bill detail when dialog opens
   useEffect(() => {
     if (!bill || !open) {
       setDetail(null);
+      setView("detail");
+      setPaymentError(null);
       return;
     }
 
@@ -90,6 +134,41 @@ export function BillDetailDialog({
     fetchDetail();
   }, [bill, open]);
 
+  const handlePay = useCallback(async () => {
+    if (!bill) return;
+    setPaymentLoading(true);
+    setPaymentError(null);
+
+    try {
+      const { checkoutUrl } = await createPaymentLink(bill.id, testAmount);
+      setPayOSConfig((prev) => ({ ...prev, CHECKOUT_URL: checkoutUrl }));
+      setView("payment");
+    } catch (err) {
+      setPaymentError(
+        err instanceof Error ? err.message : "Không thể tạo link thanh toán",
+      );
+    } finally {
+      setPaymentLoading(false);
+    }
+  }, [bill, testAmount]);
+
+  const handleClose = useCallback(
+    (isOpen: boolean) => {
+      if (!isOpen && view === "payment") {
+        try {
+          exitPayOS();
+        } catch {
+          // ignore if element not found
+        }
+      }
+      setView("detail");
+      setPayOSConfig((prev) => ({ ...prev, CHECKOUT_URL: "" }));
+      setPaymentError(null);
+      onOpenChange(isOpen);
+    },
+    [view, exitPayOS, onOpenChange],
+  );
+
   if (!bill) return null;
 
   const amount = Number(bill.amount);
@@ -100,8 +179,72 @@ export function BillDetailDialog({
       currency: "VND",
     }).format(value);
 
+  // --- Success View ---
+  if (view === "success") {
+    return (
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="sm:max-w-[450px]">
+          <div className="flex flex-col items-center py-8 text-center space-y-4">
+            <div className="bg-green-100 dark:bg-green-900/30 w-16 h-16 rounded-full flex items-center justify-center">
+              <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
+            </div>
+            <h2 className="text-xl font-semibold">Thanh toán thành công!</h2>
+            <p className="text-sm text-muted-foreground">
+              Hóa đơn <strong>{bill.title}</strong> đã được thanh toán. Lịch sử
+              giao dịch sẽ được cập nhật trong giây lát.
+            </p>
+            <Button onClick={() => handleClose(false)} className="mt-4">
+              Đóng
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // --- Payment View (embedded PayOS form) ---
+  if (view === "payment") {
+    return (
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="sm:max-w-150">
+          <DialogHeader>
+            <DialogTitle className="text-center">Thanh toán</DialogTitle>
+            <DialogDescription className="text-center">
+              {bill.title} —{" "}
+              {testAmount ? (
+                <span className="text-amber-600 font-semibold">
+                  {formatCurrency(testAmount)} (test mode)
+                </span>
+              ) : (
+                formatCurrency(amount)
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div id="payos-embedded-container" style={{ minHeight: "350px" }} />
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                try {
+                  exitPayOS();
+                } catch {
+                  // ignore if element not found
+                }
+                setView("detail");
+                setPayOSConfig((prev) => ({ ...prev, CHECKOUT_URL: "" }));
+              }}
+            >
+              Quay lại
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // --- Detail View (default) ---
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <div className="mx-auto mb-4 bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center">
@@ -179,6 +322,12 @@ export function BillDetailDialog({
                 được cập nhật ngay sau khi thanh toán.
               </p>
             </div>
+
+            {paymentError && (
+              <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-md text-xs text-red-700 dark:text-red-300">
+                {paymentError}
+              </div>
+            )}
           </div>
         )}
 
@@ -187,8 +336,19 @@ export function BillDetailDialog({
             <Download className="mr-2 h-4 w-4" /> PDF
           </Button>
           {bill.status !== "paid" && (
-            <Button className="w-full sm:w-auto shadow-lg shadow-primary/20">
-              Thanh toán {formatCurrency(amount)}
+            <Button
+              className="w-full sm:w-auto shadow-lg shadow-primary/20"
+              onClick={handlePay}
+              disabled={paymentLoading || loading}
+            >
+              {paymentLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang tạo link...
+                </>
+              ) : (
+                `Thanh toán ${formatCurrency(amount)}`
+              )}
             </Button>
           )}
         </DialogFooter>
