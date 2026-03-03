@@ -3,6 +3,7 @@
 import {
   Bell,
   Calendar,
+  History,
   LayoutDashboard,
   Megaphone,
   MessageSquareWarning,
@@ -38,6 +39,11 @@ const sidebarItems: SidebarItem[] = [
     title: "Hóa đơn",
     href: "/bills",
     icon: Receipt,
+  },
+  {
+    title: "Lịch sử giao dịch",
+    href: "/history",
+    icon: History,
   },
   {
     title: "Thông báo",

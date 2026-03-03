@@ -1,17 +1,22 @@
 // Transaction-related types
 
-export type PaymentMethod =
-  | "bank_transfer"
-  | "cash"
-  | "e_wallet"
-  | "credit_card";
+// Backend API response types (match BE TransactionsService response shape)
+export interface BackendTransaction {
+  id: number;
+  billTitle: string | null;
+  amount: string; // decimal as string from BE
+  paymentDate: string; // ISO timestamp
+  paymentMethod: string | null;
+  transactionRef: string | null;
+  notes?: string | null;
+}
 
-export interface Transaction {
-  id: string;
-  billId: string;
-  billTitle: string; // Lưu tiêu đề bill để hiển thị lịch sử nhanh
-  amount: number;
-  paidDate: string; // Ngày thanh toán thực tế (ISO Date)
-  method: PaymentMethod;
-  transactionCode: string; // Mã giao dịch ngân hàng
+export interface TransactionsResponse {
+  data: BackendTransaction[];
+  total: number;
+}
+
+export interface TransactionsByMonthResponse {
+  data: BackendTransaction[];
+  month: string;
 }
