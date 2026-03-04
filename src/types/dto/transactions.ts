@@ -19,3 +19,8 @@ export interface TransactionsResponse {
   total: number;
   page: number;
 }
+
+export interface TransactionsByMonthResponse {
+  data: BackendTransaction[];
+  month: string;
+}

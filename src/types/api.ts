@@ -13,5 +13,4 @@ export * from "./bills";
 // Re-export all backend DTOs
 export * from "./dto";
 export * from "./notifications";
-export * from "./transactions";
 export * from "./user";
