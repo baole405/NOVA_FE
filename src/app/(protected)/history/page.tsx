@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { FileX, History, Loader2 } from "lucide-react";
+import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Table,
   TableBody,
@@ -13,13 +14,41 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTransactions } from "@/hooks/use-transactions";
+import { cn } from "@/lib/utils";
+
+const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  bank_transfer: "Chuyển khoản",
+  momo: "MoMo",
+  vnpay: "VNPay",
+  payos: "PayOS",
+  cash: "Tiền mặt",
+};
+
+const PERIOD_PRESETS = [
+  { value: "1m", label: "Tháng này" },
+  { value: "3m", label: "3 tháng" },
+  { value: "6m", label: "6 tháng" },
+  { value: "all", label: "Tất cả" },
+];
+
+function getCutoffDate(preset: string): Date | null {
+  if (preset === "all") return null;
+  const now = new Date();
+  if (preset === "1m") now.setMonth(now.getMonth() - 1);
+  else if (preset === "3m") now.setMonth(now.getMonth() - 3);
+  else if (preset === "6m") now.setMonth(now.getMonth() - 6);
+  return now;
+}
 
 export default function HistoryPage() {
-  const [selectedMonth, setSelectedMonth] = useState(() => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  });
-  const { transactions, loading } = useTransactions(selectedMonth || undefined);
+  const { transactions: allTransactions, loading } = useTransactions();
+  const [periodPreset, setPeriodPreset] = useState<string>("all");
+
+  const transactions = useMemo(() => {
+    const cutoff = getCutoffDate(periodPreset);
+    if (!cutoff) return allTransactions;
+    return allTransactions.filter((t) => new Date(t.createdAt) >= cutoff);
+  }, [allTransactions, periodPreset]);
 
   const formatCurrency = (amount: number | string) =>
     new Intl.NumberFormat("vi-VN", {
@@ -28,7 +57,7 @@ export default function HistoryPage() {
     }).format(Number(amount));
 
   const formatDate = (dateString: string) =>
-    new Date(dateString).toLocaleDateString("en-GB", {
+    new Date(dateString).toLocaleDateString("vi-VN", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -36,98 +65,110 @@ export default function HistoryPage() {
       minute: "2-digit",
     });
 
-  if (loading) {
-    return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
+  const formatPaymentMethod = (method: string) => {
+    return PAYMENT_METHOD_LABELS[method] ?? method;
+  };
 
   return (
     <div className="space-y-6 p-4 md:p-8 max-w-5xl mx-auto">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight text-primary">
-            Lịch sử Giao dịch
-          </h2>
-          <p className="text-muted-foreground">
-            Đánh giá các khoản thanh toán của bạn.
-          </p>
-        </div>
+      <div>
+        <h2 className="text-3xl font-bold tracking-tight text-primary">
+          Lịch sử Giao dịch
+        </h2>
+        <p className="text-muted-foreground">
+          Theo dõi các khoản thanh toán của bạn.
+        </p>
+      </div>
 
-        <div className="flex items-center gap-2">
-          <label htmlFor="month-filter" className="text-sm font-medium">
-            Tháng:
-          </label>
-          <input
-            id="month-filter"
-            type="month"
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            className="rounded-md border border-input bg-background px-3 py-1.5 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
-          />
-          {selectedMonth && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSelectedMonth("")}
-            >
-              Tất cả
-            </Button>
-          )}
-        </div>
+      <div className="flex flex-wrap gap-2">
+        {PERIOD_PRESETS.map((preset) => (
+          <button
+            key={preset.value}
+            type="button"
+            onClick={() => setPeriodPreset(preset.value)}
+            className={cn(
+              "px-3 py-1.5 text-sm rounded-md border transition-colors",
+              periodPreset === preset.value
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-background hover:bg-accent border-input",
+            )}
+          >
+            {preset.label}
+          </button>
+        ))}
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Đơn vị giao dịch gần đây</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <History className="h-5 w-5" />
+            Giao dịch gần đây
+            {!loading && (
+              <Badge variant="secondary" className="ml-2">
+                {transactions.length}
+              </Badge>
+            )}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          {transactions.length === 0 ? (
-            <div className="text-center py-10 text-muted-foreground">
-              Chưa có giao dịch nào.
+          {loading ? (
+            <div className="flex py-10 items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
+          ) : transactions.length === 0 ? (
+            <EmptyState
+              icon={FileX}
+              title="Không có giao dịch"
+              description={
+                periodPreset === "all"
+                  ? "Bạn chưa có giao dịch nào."
+                  : "Không có giao dịch trong khoảng thời gian này."
+              }
+            />
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Mã giao dịch</TableHead>
-                  <TableHead>Dịch vụ</TableHead>
-                  <TableHead>Ngày</TableHead>
-                  <TableHead>Phương thức</TableHead>
-                  <TableHead className="text-right">Số tiền</TableHead>
-                  <TableHead className="text-right">Trạng thái</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {transactions.map((trans) => (
-                  <TableRow key={trans.id}>
-                    <TableCell className="font-medium font-mono text-xs text-muted-foreground">
-                      {trans.transactionRef ?? "-"}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {trans.bill.title}
-                    </TableCell>
-                    <TableCell>{formatDate(trans.createdAt)}</TableCell>
-                    <TableCell className="capitalize">
-                      {trans.method.replace("_", " ")}
-                    </TableCell>
-                    <TableCell className="text-right font-bold">
-                      {formatCurrency(trans.amount)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Badge
-                        variant="outline"
-                        className="bg-green-50 text-green-700 border-green-200"
-                      >
-                        Success
-                      </Badge>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Mã giao dịch</TableHead>
+                    <TableHead>Dịch vụ</TableHead>
+                    <TableHead>Ngày</TableHead>
+                    <TableHead>Phương thức</TableHead>
+                    <TableHead className="text-right">Số tiền</TableHead>
+                    <TableHead className="text-right">Trạng thái</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {transactions.map((trans) => (
+                    <TableRow key={trans.id}>
+                      <TableCell className="font-medium font-mono text-xs text-muted-foreground">
+                        {trans.transactionRef ?? "—"}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {trans.bill?.title ?? "—"}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {formatDate(trans.createdAt)}
+                      </TableCell>
+                      <TableCell>
+                        {formatPaymentMethod(trans.method)}
+                      </TableCell>
+                      <TableCell className="text-right font-bold">
+                        {formatCurrency(trans.amount)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Badge
+                          variant="outline"
+                          className="bg-green-50 text-green-700 border-green-200"
+                        >
+                          Thành công
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>

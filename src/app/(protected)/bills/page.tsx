@@ -1,6 +1,14 @@
 "use client";
 
-import { AlertCircle, ArrowRight, CheckCircle2, Clock } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowRight,
+  ArrowUpDown,
+  CheckCircle2,
+  Clock,
+  FileX,
+} from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { BillDetailDialog } from "@/components/bills/bill-detail-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -12,23 +20,56 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { getBills } from "@/lib/bills";
 import { cn } from "@/lib/utils";
 import type { BackendBill } from "@/types/api";
 
+function getDateRange(preset: string): { from?: string; to?: string } {
+  if (preset === "all") return {};
+  const now = new Date();
+  const to = now.toISOString().split("T")[0];
+  const from = new Date(now);
+  if (preset === "1m") from.setMonth(from.getMonth() - 1);
+  else if (preset === "3m") from.setMonth(from.getMonth() - 3);
+  else if (preset === "6m") from.setMonth(from.getMonth() - 6);
+  return { from: from.toISOString().split("T")[0], to };
+}
+
 export default function BillsPage() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const paymentStatus = searchParams.get("payment");
   const [bills, setBills] = useState<BackendBill[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBill, setSelectedBill] = useState<BackendBill | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [periodPreset, setPeriodPreset] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<"dueDate" | "amount">("dueDate");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [testMode, setTestMode] = useState(false);
+  const isTestModeAvailable =
+    process.env.NEXT_PUBLIC_PAYOS_TEST_MODE === "true";
 
   const fetchBills = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await getBills();
+      const { from, to } = getDateRange(periodPreset);
+      const res = await getBills({
+        sortBy,
+        sortOrder,
+        dueDateFrom: from,
+        dueDateTo: to,
+      });
       setBills(res.data);
     } catch (err) {
       console.log(
@@ -38,13 +79,20 @@ export default function BillsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [periodPreset, sortBy, sortOrder]);
 
   useEffect(() => {
     if (user) {
       fetchBills();
     }
   }, [user, fetchBills]);
+
+  // Refresh bills when redirected back from PayOS with ?payment=success
+  useEffect(() => {
+    if (paymentStatus === "success") {
+      fetchBills();
+    }
+  }, [paymentStatus, fetchBills]);
 
   const formatCurrency = (amount: number | string) =>
     new Intl.NumberFormat("vi-VN", {
@@ -64,13 +112,11 @@ export default function BillsPage() {
     setIsModalOpen(true);
   };
 
-  if (loading) {
-    return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
+  const LoadingSpinner = () => (
+    <div className="flex py-10 items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+    </div>
+  );
 
   const BillItem = ({ bill }: { bill: BackendBill }) => (
     <button
@@ -119,9 +165,6 @@ export default function BillsPage() {
       <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto mt-2 sm:mt-0">
         <div className="text-right">
           <p className="font-bold text-lg">{formatCurrency(bill.amount)}</p>
-          <p className="text-xs text-muted-foreground capitalize">
-            {bill.feeType?.name ?? "N/A"}
-          </p>
         </div>
         {bill.status !== "paid" && (
           <div className={cn(buttonVariants({ size: "sm" }))}>
@@ -134,6 +177,35 @@ export default function BillsPage() {
 
   return (
     <div className="space-y-6 p-4 md:p-8 max-w-5xl mx-auto">
+      {isTestModeAvailable && (
+        <div className="flex items-center justify-between gap-4 rounded-lg border border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/30 px-4 py-3">
+          <div className="flex items-center gap-2 text-sm font-medium text-amber-800 dark:text-amber-200">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>
+              DEV: Test Payment Mode {testMode ? "ON" : "OFF"} —{" "}
+              {testMode
+                ? "Bills will be charged 10,000₫"
+                : "Toggle to test with minimal amount"}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setTestMode((v) => !v)}
+            className={cn(
+              "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors",
+              testMode ? "bg-amber-500" : "bg-gray-300 dark:bg-gray-600",
+            )}
+          >
+            <span
+              className={cn(
+                "pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform",
+                testMode ? "translate-x-5" : "translate-x-0",
+              )}
+            />
+          </button>
+        </div>
+      )}
+
       <div>
         <h2 className="text-3xl font-bold tracking-tight text-primary">
           Hóa đơn
@@ -141,6 +213,54 @@ export default function BillsPage() {
         <p className="text-muted-foreground">
           Quản lý và thanh toán các khoản phí dịch vụ hàng tháng.
         </p>
+      </div>
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-wrap gap-2">
+          {[
+            { value: "1m", label: "Tháng này" },
+            { value: "3m", label: "3 tháng" },
+            { value: "6m", label: "6 tháng" },
+            { value: "all", label: "Tất cả" },
+          ].map((preset) => (
+            <button
+              key={preset.value}
+              type="button"
+              onClick={() => setPeriodPreset(preset.value)}
+              className={cn(
+                "px-3 py-1.5 text-sm rounded-md border transition-colors",
+                periodPreset === preset.value
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background hover:bg-accent border-input",
+              )}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+
+        <Select
+          value={`${sortBy}-${sortOrder}`}
+          onValueChange={(v) => {
+            const [field, order] = v.split("-") as [
+              "dueDate" | "amount",
+              "asc" | "desc",
+            ];
+            setSortBy(field);
+            setSortOrder(order);
+          }}
+        >
+          <SelectTrigger className="w-[200px]" size="sm">
+            <ArrowUpDown className="h-4 w-4 mr-2" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="dueDate-desc">Hạn đóng (mới nhất)</SelectItem>
+            <SelectItem value="dueDate-asc">Hạn đóng (cũ nhất)</SelectItem>
+            <SelectItem value="amount-desc">Số tiền (cao → thấp)</SelectItem>
+            <SelectItem value="amount-asc">Số tiền (thấp → cao)</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <Tabs defaultValue="unpaid" className="w-full">
@@ -158,14 +278,18 @@ export default function BillsPage() {
               <CardDescription>Các khoản phí cần được lưu ý.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {unpaidBills.length > 0 ? (
+              {loading ? (
+                <LoadingSpinner />
+              ) : unpaidBills.length > 0 ? (
                 unpaidBills.map((bill) => (
                   <BillItem key={bill.id} bill={bill} />
                 ))
               ) : (
-                <div className="text-center py-10 text-muted-foreground">
-                  Không có hóa đơn chờ. Bạn đã hoàn thành tất cả!
-                </div>
+                <EmptyState
+                  icon={FileX}
+                  title="Không có hóa đơn chờ"
+                  description="Bạn đã hoàn thành tất cả!"
+                />
               )}
             </CardContent>
           </Card>
@@ -180,12 +304,16 @@ export default function BillsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {bills.length > 0 ? (
+              {loading ? (
+                <LoadingSpinner />
+              ) : bills.length > 0 ? (
                 bills.map((bill) => <BillItem key={bill.id} bill={bill} />)
               ) : (
-                <div className="text-center py-10 text-muted-foreground">
-                  Chưa có hóa đơn nào.
-                </div>
+                <EmptyState
+                  icon={FileX}
+                  title="Không tìm thấy hóa đơn"
+                  description="Thử thay đổi bộ lọc để xem thêm hóa đơn."
+                />
               )}
             </CardContent>
           </Card>
@@ -196,6 +324,8 @@ export default function BillsPage() {
         bill={selectedBill}
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
+        onPaymentSuccess={fetchBills}
+        testAmount={testMode ? 10000 : undefined}
       />
     </div>
   );

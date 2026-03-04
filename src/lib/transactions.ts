@@ -1,6 +1,9 @@
-// Transactions API
+// --- Transactions API ---
 
-import type { TransactionsResponse } from "@/types/api";
+import type {
+  TransactionsByMonthResponse,
+  TransactionsResponse,
+} from "@/types/api";
 import { fetchApi } from "./api-client";
 
 export async function getTransactions(params?: {
@@ -15,11 +18,10 @@ export async function getTransactions(params?: {
   return fetchApi<TransactionsResponse>(`/transactions${qs ? `?${qs}` : ""}`);
 }
 
-// month format: "YYYY-MM" e.g. "2026-02"
 export async function getTransactionsByMonth(
   month: string,
-): Promise<TransactionsResponse> {
-  return fetchApi<TransactionsResponse>(`/transactions/by-month/${month}`);
+): Promise<TransactionsByMonthResponse> {
+  return fetchApi<TransactionsByMonthResponse>(
+    `/transactions/by-month/${month}`,
+  );
 }
-
-export type { BackendTransaction, TransactionsResponse } from "@/types/api";

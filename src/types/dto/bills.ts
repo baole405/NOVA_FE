@@ -1,14 +1,5 @@
 // Backend DTOs for bills API
 
-export interface BackendFeeType {
-  id: number;
-  name: string;
-}
-
-export interface BackendFeeTypeDetail extends BackendFeeType {
-  description: string | null;
-}
-
 export interface BackendBill {
   id: number;
   title: string;
@@ -18,16 +9,25 @@ export interface BackendBill {
   status: "pending" | "paid" | "overdue" | "cancelled";
   createdAt: string;
   paidAt: string | null;
-  feeType: BackendFeeType | null;
 }
 
-export interface BackendBillDetail extends Omit<BackendBill, "feeType"> {
-  feeType: BackendFeeTypeDetail | null;
+export interface BackendBillItem {
+  id: number;
+  title: string;
+  usage: string | null;
+  unitPrice: string | null;
+  measureUnit: string | null;
+  amount: string;
+  feeType: { id: number; name: string } | null;
+}
+
+export interface BackendBillDetail extends BackendBill {
   apartment: {
     unitNumber: string;
     floor: number;
     block: string;
   } | null;
+  items: BackendBillItem[];
 }
 
 export interface BillsResponse {
@@ -46,4 +46,15 @@ export interface MarkPaidResponse {
   message: string;
   bill: { id: number; status: string; paidAt: string };
   transaction: { id: number; amount: string; method: string };
+}
+
+export interface CreatePaymentLinkPayload {
+  billId: number;
+  testAmount?: number;
+  returnUrl?: string;
+  cancelUrl?: string;
+}
+
+export interface CreatePaymentLinkResponse {
+  checkoutUrl: string;
 }
