@@ -58,7 +58,10 @@ export default function Home() {
                 <div className="flex flex-col items-center gap-4">
                   <p className="text-lg font-medium text-foreground">
                     Xin chào,{" "}
-                    <span className="text-primary">{user.fullName}</span> 👋
+                    <span className="text-primary">
+                      {user.fullName || user.username}
+                    </span>{" "}
+                    👋
                   </p>
                   <Button
                     size="lg"
@@ -208,7 +211,7 @@ export default function Home() {
             </div>
             <div className="flex-1 relative aspect-square md:aspect-video bg-muted rounded-2xl overflow-hidden shadow-xl border">
               <Image
-                src="https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?q=80&w=2000&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop"
                 alt="Minh bạch Lịch sử"
                 fill
                 className="object-cover"

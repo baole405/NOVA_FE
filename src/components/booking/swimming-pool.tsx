@@ -6,15 +6,8 @@ import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-
-interface Booking {
-  id: number;
-  slotNumber?: string;
-  startTime: string;
-  endTime: string;
-  status: string;
-  date: string;
-}
+import type { Booking } from "@/lib/bookings";
+import { getBookingsByDateService } from "@/lib/bookings";
 
 interface SwimmingPoolProps {
   selectedDate: Date | undefined;
@@ -55,17 +48,8 @@ export function SwimmingPool({
       setLoading(true);
       try {
         const dateStr = format(selectedDate, "yyyy-MM-dd");
-        const token = localStorage.getItem("accessToken");
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/bookings?date=${dateStr}&serviceType=swimming_pool`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
-        if (res.ok) {
-          const data: Booking[] = await res.json();
-          setBookedSlots(data);
-        }
+        const data = await getBookingsByDateService(dateStr, "swimming_pool");
+        setBookedSlots(data);
       } catch (error) {
         console.log("Failed to fetch pool bookings:", error);
       } finally {

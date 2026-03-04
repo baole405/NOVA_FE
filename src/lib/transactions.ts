@@ -3,7 +3,7 @@
 import type {
   TransactionsByMonthResponse,
   TransactionsResponse,
-} from "@/types/transactions";
+} from "@/types/api";
 import { fetchApi } from "./api-client";
 
 export async function getTransactions(params?: {

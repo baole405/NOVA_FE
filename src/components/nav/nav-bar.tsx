@@ -25,7 +25,6 @@ const mainNavItems = [
 
 export function NavBar() {
   const pathname = usePathname();
-
   const { user, loading } = useAuth();
 
   return (
