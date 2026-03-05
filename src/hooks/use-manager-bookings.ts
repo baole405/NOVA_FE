@@ -4,9 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import type {
   ManagerBooking,
+  UpdateBookingPayload,
   UpdateBookingStatusPayload,
 } from "@/lib/manager-bookings";
-import { getAllBookings, updateBookingStatus } from "@/lib/manager-bookings";
+import {
+  getAllBookings,
+  updateBooking,
+  updateBookingStatus,
+} from "@/lib/manager-bookings";
 
 interface UseManagerBookingsReturn {
   bookings: ManagerBooking[];
@@ -16,6 +21,10 @@ interface UseManagerBookingsReturn {
   updateStatus: (
     id: number,
     payload: UpdateBookingStatusPayload,
+  ) => Promise<void>;
+  updateBookingFields: (
+    id: number,
+    payload: UpdateBookingPayload,
   ) => Promise<void>;
 }
 
@@ -54,5 +63,16 @@ export function useManagerBookings(): UseManagerBookingsReturn {
     [],
   );
 
-  return { bookings, loading, error, refetch, updateStatus };
+  const updateBookingFields = useCallback(
+    async (id: number, payload: UpdateBookingPayload) => {
+      const updated = await updateBooking(id, payload);
+      // Optimistic update: replace booking in local state
+      setBookings((prev) =>
+        prev.map((b) => (b.id === updated.id ? updated : b)),
+      );
+    },
+    [],
+  );
+
+  return { bookings, loading, error, refetch, updateStatus, updateBookingFields };
 }
