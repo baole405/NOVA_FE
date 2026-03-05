@@ -53,8 +53,7 @@ const statusConfig: Record<
   },
   cancelled: {
     label: "Đã hủy",
-    className:
-      "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400",
+    className: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
   },
 };
 
@@ -65,14 +64,14 @@ interface BookingTableProps {
     payload: UpdateBookingStatusPayload,
   ) => Promise<void>;
   onUpdateBooking: (id: number, payload: UpdateBookingPayload) => Promise<void>;
-  role?: "manager" | "resident";
+  role: "manager" | "resident";
 }
 
 export function BookingTable({
   bookings,
   onUpdateStatus,
   onUpdateBooking,
-  role = "manager",
+  role,
 }: BookingTableProps) {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -105,6 +104,7 @@ export function BookingTable({
             <SelectItem value="pending">Đang chờ</SelectItem>
             <SelectItem value="confirmed">Đã duyệt</SelectItem>
             <SelectItem value="rejected">Từ chối</SelectItem>
+            <SelectItem value="cancelled">Đã hủy</SelectItem>
           </SelectContent>
         </Select>
 
