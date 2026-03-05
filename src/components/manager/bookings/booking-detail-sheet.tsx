@@ -12,7 +12,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import type { ManagerBooking, UpdateBookingStatusPayload } from "@/lib/manager-bookings";
+import type {
+  ManagerBooking,
+  UpdateBookingStatusPayload,
+} from "@/lib/manager-bookings";
 
 const serviceTypeLabels: Record<ManagerBooking["serviceType"], string> = {
   parking: "Bãi đậu xe",
@@ -20,20 +23,26 @@ const serviceTypeLabels: Record<ManagerBooking["serviceType"], string> = {
   swimming_pool: "Hồ bơi",
 };
 
-const serviceTypeIcons: Record<ManagerBooking["serviceType"], React.ReactNode> = {
-  parking: <Car className="h-4 w-4" />,
-  bbq: <Utensils className="h-4 w-4" />,
-  swimming_pool: <Droplets className="h-4 w-4" />,
-};
+const serviceTypeIcons: Record<ManagerBooking["serviceType"], React.ReactNode> =
+  {
+    parking: <Car className="h-4 w-4" />,
+    bbq: <Utensils className="h-4 w-4" />,
+    swimming_pool: <Droplets className="h-4 w-4" />,
+  };
 
-const statusConfig: Record<ManagerBooking["status"], { label: string; className: string }> = {
+const statusConfig: Record<
+  ManagerBooking["status"],
+  { label: string; className: string }
+> = {
   pending: {
     label: "Đang chờ",
-    className: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    className:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
   },
   confirmed: {
     label: "Đã duyệt",
-    className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+    className:
+      "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
   },
   rejected: {
     label: "Từ chối",
@@ -45,7 +54,10 @@ interface BookingDetailSheetProps {
   booking: ManagerBooking | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onUpdateStatus: (id: number, payload: UpdateBookingStatusPayload) => Promise<void>;
+  onUpdateStatus: (
+    id: number,
+    payload: UpdateBookingStatusPayload,
+  ) => Promise<void>;
 }
 
 export function BookingDetailSheet({
@@ -80,9 +92,7 @@ export function BookingDetailSheet({
             {serviceTypeIcons[booking.serviceType]}
             Chi tiết đặt chỗ
           </SheetTitle>
-          <SheetDescription>
-            Mã đặt chỗ #{booking.id}
-          </SheetDescription>
+          <SheetDescription>Mã đặt chỗ #{booking.id}</SheetDescription>
         </SheetHeader>
 
         <div className="mt-6 space-y-4">
@@ -110,7 +120,9 @@ export function BookingDetailSheet({
           <div className="space-y-2 p-3 rounded-lg bg-muted/50">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Loại tiện ích</span>
-              <span className="font-medium">{serviceTypeLabels[booking.serviceType]}</span>
+              <span className="font-medium">
+                {serviceTypeLabels[booking.serviceType]}
+              </span>
             </div>
             {booking.slotNumber && (
               <div className="flex justify-between text-sm">

@@ -2,6 +2,7 @@
 
 import {
   Building2,
+  CalendarCheck,
   FileText,
   Home,
   Megaphone,
@@ -21,6 +22,11 @@ const managerMenuItems = [
     title: "Tổng quan",
     href: "/manager",
     icon: Home,
+  },
+  {
+    title: "Quản lý đặt chỗ",
+    href: "/manager/bookings",
+    icon: CalendarCheck,
   },
   {
     title: "Quản lý cư dân",

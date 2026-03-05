@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import type { ManagerBooking, UpdateBookingStatusPayload } from "@/lib/manager-bookings";
+import type {
+  ManagerBooking,
+  UpdateBookingStatusPayload,
+} from "@/lib/manager-bookings";
 import { getAllBookings, updateBookingStatus } from "@/lib/manager-bookings";
 
 interface UseManagerBookingsReturn {
@@ -10,7 +13,10 @@ interface UseManagerBookingsReturn {
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
-  updateStatus: (id: number, payload: UpdateBookingStatusPayload) => Promise<void>;
+  updateStatus: (
+    id: number,
+    payload: UpdateBookingStatusPayload,
+  ) => Promise<void>;
 }
 
 export function useManagerBookings(): UseManagerBookingsReturn {

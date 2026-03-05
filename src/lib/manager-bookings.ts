@@ -1,7 +1,5 @@
 // Manager-facing booking API
 
-import { fetchApi } from "./api-client";
-
 export interface ManagerBooking {
   id: number;
   serviceType: "parking" | "bbq" | "swimming_pool";
