@@ -123,6 +123,7 @@ export const MOCK_MANAGER_BOOKINGS: ManagerBooking[] = [
 ];
 
 // TODO: replace mock with real API when backend adds admin endpoints
+// NOTE: also add: import { fetchApi } from "./api-client"; when uncommenting API calls below
 export async function getAllBookings(): Promise<ManagerBooking[]> {
   // TODO: return fetchApi<ManagerBooking[]>("/bookings/admin");
   return Promise.resolve(MOCK_MANAGER_BOOKINGS);
