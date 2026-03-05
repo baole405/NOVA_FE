@@ -74,5 +74,12 @@ export function useManagerBookings(): UseManagerBookingsReturn {
     [],
   );
 
-  return { bookings, loading, error, refetch, updateStatus, updateBookingFields };
+  return {
+    bookings,
+    loading,
+    error,
+    refetch,
+    updateStatus,
+    updateBookingFields,
+  };
 }
