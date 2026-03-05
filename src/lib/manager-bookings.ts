@@ -8,15 +8,21 @@ export interface ManagerBooking {
   endDate?: string;
   startTime: string;
   endTime: string;
-  status: "pending" | "confirmed" | "rejected";
+  status: "pending" | "confirmed" | "rejected" | "cancelled";
   notes?: string;
+  numberOfParticipants?: number;
   createdAt: string;
   residentName: string;
   apartmentUnit: string;
 }
 
 export interface UpdateBookingStatusPayload {
-  status: "confirmed" | "rejected";
+  status: "confirmed" | "rejected" | "cancelled";
+}
+
+export interface UpdateBookingPayload {
+  notes?: string;
+  numberOfParticipants?: number;
 }
 
 // Mock data — remove when backend admin endpoints are ready
@@ -30,6 +36,7 @@ export const MOCK_MANAGER_BOOKINGS: ManagerBooking[] = [
     endTime: "12:00",
     status: "pending",
     notes: "Khoảng 15 người",
+    numberOfParticipants: 15,
     createdAt: "2026-03-05T08:00:00Z",
     residentName: "Nguyễn Văn An",
     apartmentUnit: "A101",
@@ -42,6 +49,7 @@ export const MOCK_MANAGER_BOOKINGS: ManagerBooking[] = [
     startTime: "06:00",
     endTime: "07:00",
     status: "pending",
+    numberOfParticipants: 2,
     createdAt: "2026-03-05T09:00:00Z",
     residentName: "Trần Thị Bình",
     apartmentUnit: "B205",
@@ -68,6 +76,7 @@ export const MOCK_MANAGER_BOOKINGS: ManagerBooking[] = [
     endTime: "20:00",
     status: "rejected",
     notes: "Đã có nhóm khác đặt",
+    numberOfParticipants: 8,
     createdAt: "2026-03-03T14:00:00Z",
     residentName: "Phạm Đức Dũng",
     apartmentUnit: "D410",
@@ -80,6 +89,7 @@ export const MOCK_MANAGER_BOOKINGS: ManagerBooking[] = [
     startTime: "07:00",
     endTime: "08:00",
     status: "pending",
+    numberOfParticipants: 1,
     createdAt: "2026-03-05T11:00:00Z",
     residentName: "Hoàng Thị Em",
     apartmentUnit: "A202",
@@ -103,8 +113,9 @@ export const MOCK_MANAGER_BOOKINGS: ManagerBooking[] = [
     date: "2026-03-15",
     startTime: "11:00",
     endTime: "14:00",
-    status: "pending",
+    status: "cancelled",
     notes: "Tiệc sinh nhật",
+    numberOfParticipants: 20,
     createdAt: "2026-03-05T13:00:00Z",
     residentName: "Đặng Thị Giang",
     apartmentUnit: "C115",
@@ -122,11 +133,19 @@ export async function updateBookingStatus(
   id: number,
   payload: UpdateBookingStatusPayload,
 ): Promise<ManagerBooking> {
-  // TODO: return fetchApi<ManagerBooking>(`/bookings/${id}/status`, {
-  //   method: "PATCH",
-  //   body: JSON.stringify(payload),
-  // });
+  // TODO: return fetchApi<ManagerBooking>(`/bookings/${id}/status`, { method: "PATCH", body: JSON.stringify(payload) });
   const booking = MOCK_MANAGER_BOOKINGS.find((b) => b.id === id);
   if (!booking) throw new Error("Booking not found");
   return Promise.resolve({ ...booking, status: payload.status });
+}
+
+// TODO: replace mock with real API
+export async function updateBooking(
+  id: number,
+  payload: UpdateBookingPayload,
+): Promise<ManagerBooking> {
+  // TODO: return fetchApi<ManagerBooking>(`/bookings/${id}`, { method: "PATCH", body: JSON.stringify(payload) });
+  const booking = MOCK_MANAGER_BOOKINGS.find((b) => b.id === id);
+  if (!booking) throw new Error("Booking not found");
+  return Promise.resolve({ ...booking, ...payload });
 }

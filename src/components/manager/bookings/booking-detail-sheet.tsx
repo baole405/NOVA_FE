@@ -48,6 +48,11 @@ const statusConfig: Record<
     label: "Từ chối",
     className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
   },
+  cancelled: {
+    label: "Đã hủy",
+    className:
+      "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400",
+  },
 };
 
 interface BookingDetailSheetProps {
