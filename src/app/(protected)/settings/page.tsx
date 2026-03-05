@@ -3,7 +3,6 @@
 import { Settings } from "lucide-react";
 import { AccountSettings } from "@/components/settings/account-settings";
 import { NotificationPreferences } from "@/components/settings/notification-preferences";
-import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
@@ -32,8 +31,6 @@ export default function SettingsPage() {
         email="nhatnm@example.com"
         phone="0909123456"
       />
-
-      <ThemeToggle />
 
       <NotificationPreferences />
 

@@ -3,7 +3,6 @@
 import { Building2, Settings } from "lucide-react";
 import { AccountSettings } from "@/components/settings/account-settings";
 import { NotificationPreferences } from "@/components/settings/notification-preferences";
-import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -66,8 +65,6 @@ export default function ManagerSettingsPage() {
         email="admin@nova.vn"
         phone="1900-NOVA"
       />
-
-      <ThemeToggle />
 
       <NotificationPreferences />
 
