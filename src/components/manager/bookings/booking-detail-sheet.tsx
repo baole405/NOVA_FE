@@ -90,15 +90,15 @@ export function BookingDetailSheet({
   const [notesDirty, setNotesDirty] = useState(false);
   const [isSavingNotes, setIsSavingNotes] = useState(false);
 
-  // Sync local edit state when booking changes (different row opened)
+  // Sync local edit state when booking changes or sheet re-opens (reset unsaved edits)
   useEffect(() => {
-    if (booking) {
+    if (booking && open) {
       setParticipants(String(booking.numberOfParticipants ?? ""));
       setNotes(booking.notes ?? "");
       setParticipantsDirty(false);
       setNotesDirty(false);
     }
-  }, [booking]);
+  }, [booking, open]);
 
   if (!booking) return null;
 
