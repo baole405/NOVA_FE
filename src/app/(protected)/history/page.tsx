@@ -150,9 +150,7 @@ export default function HistoryPage() {
                       <TableCell className="text-sm text-muted-foreground">
                         {formatDate(trans.createdAt)}
                       </TableCell>
-                      <TableCell>
-                        {formatPaymentMethod(trans.method)}
-                      </TableCell>
+                      <TableCell>{formatPaymentMethod(trans.method)}</TableCell>
                       <TableCell className="text-right font-bold">
                         {formatCurrency(trans.amount)}
                       </TableCell>

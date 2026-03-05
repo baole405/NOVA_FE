@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { GoogleSignInButton } from "@/components/auth/google-button";
 import { PolicyDialog } from "@/components/policy-dialog";
@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
+import { RESIDENT_DEFAULT_ROUTE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 export function LoginForm({
@@ -24,6 +25,7 @@ export function LoginForm({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,11 +42,15 @@ export function LoginForm({
         usernameOrEmail: email,
         password,
       });
-      router.push("/dashboard");
+
+      // Redirect to the original path or default dashboard
+      // Middleware will handle role-based rerouting if needed
+      const redirectPath = searchParams.get("redirect");
+      router.push(redirectPath || RESIDENT_DEFAULT_ROUTE);
       router.refresh();
-      // biome-ignore lint/suspicious/noExplicitAny: Generic error handling
-    } catch (err: any) {
-      setError(err.message || "Đăng nhập thất bại");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Đăng nhập thất bại";
+      setError(message);
       setIsLoading(false);
     }
   };
