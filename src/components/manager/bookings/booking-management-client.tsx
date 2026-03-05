@@ -5,7 +5,8 @@ import { BookingTable } from "@/components/manager/bookings/booking-table";
 import { useManagerBookings } from "@/hooks/use-manager-bookings";
 
 export function BookingManagementClient() {
-  const { bookings, loading, error, updateStatus } = useManagerBookings();
+  const { bookings, loading, error, updateStatus, updateBookingFields } =
+    useManagerBookings();
 
   if (loading) {
     return (
@@ -34,7 +35,11 @@ export function BookingManagementClient() {
         </p>
       </div>
 
-      <BookingTable bookings={bookings} onUpdateStatus={updateStatus} />
+      <BookingTable
+        bookings={bookings}
+        onUpdateStatus={updateStatus}
+        onUpdateBooking={updateBookingFields}
+      />
     </div>
   );
 }

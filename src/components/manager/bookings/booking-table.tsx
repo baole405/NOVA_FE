@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import type {
   ManagerBooking,
+  UpdateBookingPayload,
   UpdateBookingStatusPayload,
 } from "@/lib/manager-bookings";
 
@@ -63,9 +64,16 @@ interface BookingTableProps {
     id: number,
     payload: UpdateBookingStatusPayload,
   ) => Promise<void>;
+  onUpdateBooking: (id: number, payload: UpdateBookingPayload) => Promise<void>;
+  role?: "manager" | "resident";
 }
 
-export function BookingTable({ bookings, onUpdateStatus }: BookingTableProps) {
+export function BookingTable({
+  bookings,
+  onUpdateStatus,
+  onUpdateBooking,
+  role = "manager",
+}: BookingTableProps) {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [selectedBooking, setSelectedBooking] = useState<ManagerBooking | null>(
@@ -175,7 +183,9 @@ export function BookingTable({ bookings, onUpdateStatus }: BookingTableProps) {
         booking={selectedBooking}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
+        role={role}
         onUpdateStatus={onUpdateStatus}
+        onUpdateBooking={onUpdateBooking}
       />
     </>
   );
