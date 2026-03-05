@@ -62,7 +62,7 @@ interface BookingDetailSheetProps {
   booking: ManagerBooking | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  role: "manager" | "resident";
+  userRole: "manager" | "resident";
   onUpdateStatus: (
     id: number,
     payload: UpdateBookingStatusPayload,
@@ -74,7 +74,7 @@ export function BookingDetailSheet({
   booking,
   open,
   onOpenChange,
-  role,
+  userRole,
   onUpdateStatus,
   onUpdateBooking,
 }: BookingDetailSheetProps) {
@@ -106,12 +106,13 @@ export function BookingDetailSheet({
 
   // Cancel button: manager only when confirmed; resident when pending or confirmed
   const showCancelButton =
-    (role === "manager" && booking.status === "confirmed") ||
-    (role === "resident" &&
+    (userRole === "manager" && booking.status === "confirmed") ||
+    (userRole === "resident" &&
       (booking.status === "pending" || booking.status === "confirmed"));
 
   // Approve + Reject: manager only when pending
-  const showApproveReject = role === "manager" && booking.status === "pending";
+  const showApproveReject =
+    userRole === "manager" && booking.status === "pending";
 
   const handleStatusAction = async (
     newStatus: "confirmed" | "rejected" | "cancelled",
@@ -187,7 +188,7 @@ export function BookingDetailSheet({
           </div>
 
           {/* Resident info — manager only */}
-          {role === "manager" && (
+          {userRole === "manager" && (
             <div className="p-3 rounded-lg bg-muted/50 space-y-1.5">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 Cư dân

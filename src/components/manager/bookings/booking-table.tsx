@@ -64,14 +64,14 @@ interface BookingTableProps {
     payload: UpdateBookingStatusPayload,
   ) => Promise<void>;
   onUpdateBooking: (id: number, payload: UpdateBookingPayload) => Promise<void>;
-  role: "manager" | "resident";
+  userRole: "manager" | "resident";
 }
 
 export function BookingTable({
   bookings,
   onUpdateStatus,
   onUpdateBooking,
-  role,
+  userRole,
 }: BookingTableProps) {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -183,7 +183,7 @@ export function BookingTable({
         booking={selectedBooking}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
-        role={role}
+        userRole={userRole}
         onUpdateStatus={onUpdateStatus}
         onUpdateBooking={onUpdateBooking}
       />

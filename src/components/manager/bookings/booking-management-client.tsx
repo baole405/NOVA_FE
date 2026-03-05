@@ -37,7 +37,7 @@ export function BookingManagementClient() {
 
       <BookingTable
         bookings={bookings}
-        role="manager"
+        userRole="manager"
         onUpdateStatus={updateStatus}
         onUpdateBooking={updateBookingFields}
       />
