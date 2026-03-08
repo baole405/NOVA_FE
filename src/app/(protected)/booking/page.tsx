@@ -3,7 +3,7 @@
 import { addDays, format } from "date-fns";
 import { Car, Droplets, Loader2, Users, Utensils } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { BBQArea } from "@/components/booking/bbq-area";
 import { GuestRegistration } from "@/components/booking/guest-registration";
 import { ParkingLot } from "@/components/booking/parking-lot";
@@ -16,22 +16,12 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
-
-interface Booking {
-  id: number;
-  serviceType: "parking" | "bbq" | "swimming_pool";
-  slotNumber?: string;
-  date: string;
-  endDate?: string;
-  startTime: string;
-  endTime: string;
-  status: string;
-  notes?: string;
-  createdAt: string;
-}
+import { useBookings } from "@/hooks/use-bookings";
+import type { CreateBookingPayload } from "@/lib/bookings";
+import { createBooking } from "@/lib/bookings";
 
 function BookingPageContent() {
-  const { user, loading: authLoading } = useAuth();
+  const { loading: authLoading } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -65,37 +55,12 @@ function BookingPageContent() {
 
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loadingBookings, setLoadingBookings] = useState(true);
 
-  const API_URL =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
-
-  const fetchBookings = useCallback(async () => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      if (!token) return;
-
-      const res = await fetch(`${API_URL}/bookings/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setBookings(data);
-      }
-    } catch (error) {
-      console.log("Failed to fetch bookings:", error);
-    } finally {
-      setLoadingBookings(false);
-    }
-  }, [API_URL]);
-
-  useEffect(() => {
-    if (user) {
-      fetchBookings();
-    }
-  }, [user, fetchBookings]);
+  const {
+    bookings,
+    loading: loadingBookings,
+    refetch: refetchBookings,
+  } = useBookings();
 
   const handleBooking = async (
     serviceType: "parking" | "bbq" | "swimming_pool",
@@ -130,12 +95,13 @@ function BookingPageContent() {
 
     setIsSubmitting(true);
     try {
-      const token = localStorage.getItem("accessToken");
       const formattedDate = format(date, "yyyy-MM-dd");
 
-      const payload: Record<string, string | number | undefined> = {
+      const payload: CreateBookingPayload = {
         serviceType,
         date: formattedDate,
+        startTime: "00:00",
+        endTime: "23:59",
         notes,
       };
 
@@ -158,23 +124,9 @@ function BookingPageContent() {
         payload.price = 50000;
       }
 
-      const res = await fetch(`${API_URL}/bookings`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        alert(`Booking failed: ${error.message || "Unknown error"}`);
-        return;
-      }
-
+      await createBooking(payload as CreateBookingPayload);
       alert("Đặt chỗ thành công!");
-      fetchBookings();
+      refetchBookings();
       // Reset logic
       setSelectedSlot("");
       setSelectedArea("");

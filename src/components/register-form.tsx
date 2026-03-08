@@ -1,10 +1,8 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { GoogleSignInButton } from "@/components/auth/google-button";
-import { PolicyDialog } from "@/components/policy-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,18 +15,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
-import { RESIDENT_DEFAULT_ROUTE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-export function LoginForm({
+export function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const { signIn } = useAuth();
+  const { signUp } = useAuth();
+
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -38,45 +38,58 @@ export function LoginForm({
     setError("");
 
     try {
-      await signIn({
-        usernameOrEmail: email,
-        password,
-      });
-
-      // Redirect to the original path or default dashboard
-      // Middleware will handle role-based rerouting if needed
-      const redirectPath = searchParams.get("redirect");
-      router.push(redirectPath || RESIDENT_DEFAULT_ROUTE);
+      await signUp({ username, email, password, fullName, phoneNumber });
+      router.push("/dashboard");
       router.refresh();
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Đăng nhập thất bại";
-      setError(message);
+      // biome-ignore lint/suspicious/noExplicitAny: Generic error handling
+    } catch (err: any) {
+      setError(err.message || "Đăng ký thất bại");
       setIsLoading(false);
     }
-  };
-
-  const [showPolicy, setShowPolicy] = useState(false);
-  const [policyTab, setPolicyTab] = useState<"terms" | "privacy">("terms");
-
-  const _openPolicy = (tab: "terms" | "privacy") => {
-    setPolicyTab(tab);
-    setShowPolicy(true);
   };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="border-border bg-card text-card-foreground shadow-sm">
         <CardHeader>
-          <CardTitle>Đăng nhập</CardTitle>
-          <CardDescription>Bằng Email và Mật khẩu</CardDescription>
+          <CardTitle>Tạo tài khoản</CardTitle>
+          <CardDescription>Điền thông tin để đăng ký</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="grid gap-6">
+          <form onSubmit={handleSubmit} className="grid gap-4">
             {error && (
               <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md text-sm">
                 {error}
               </div>
             )}
+
+            <div className="grid gap-2">
+              <Label htmlFor="fullName">Họ và tên</Label>
+              <Input
+                id="fullName"
+                type="text"
+                placeholder="Nguyễn Văn A"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+                disabled={isLoading}
+                className="bg-background"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="username">Tên đăng nhập</Label>
+              <Input
+                id="username"
+                type="text"
+                placeholder="nguyenvana"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                disabled={isLoading}
+                className="bg-background"
+              />
+            </div>
 
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
@@ -93,15 +106,21 @@ export function LoginForm({
             </div>
 
             <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Mật khẩu</Label>
-                <a
-                  href="/auth/forgot-password"
-                  className="ml-auto text-sm text-muted-foreground underline-offset-4 hover:underline hover:text-primary"
-                >
-                  Quên mật khẩu?
-                </a>
-              </div>
+              <Label htmlFor="phoneNumber">Số điện thoại</Label>
+              <Input
+                id="phoneNumber"
+                type="tel"
+                placeholder="+84000000000"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                required
+                disabled={isLoading}
+                className="bg-background"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="password">Mật khẩu</Label>
               <Input
                 id="password"
                 type="password"
@@ -113,39 +132,24 @@ export function LoginForm({
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full mt-2" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
+              {isLoading ? "Đang đăng ký..." : "Đăng ký"}
             </Button>
-
-            <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-              <span className="relative z-10 bg-card px-2 text-muted-foreground">
-                Hoặc tiếp tục với
-              </span>
-            </div>
-
-            <GoogleSignInButton />
           </form>
         </CardContent>
         <CardFooter className="flex flex-col gap-4 border-t pt-6">
           <p className="text-sm text-muted-foreground text-center">
-            Chưa có tài khoản?{" "}
+            Đã có tài khoản?{" "}
             <a
-              href="/auth/sign-up"
+              href="/login"
               className="text-primary underline underline-offset-4 hover:text-primary/80"
             >
-              Đăng ký tại đây
+              Đăng nhập tại đây
             </a>
           </p>
         </CardFooter>
       </Card>
-      {showPolicy && (
-        <PolicyDialog
-          open={showPolicy}
-          onOpenChange={setShowPolicy}
-          defaultTab={policyTab}
-        />
-      )}
     </div>
   );
 }

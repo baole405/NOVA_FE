@@ -1,11 +1,13 @@
 // Backend DTOs for auth API
 
+import type { AppRole } from "@/lib/constants";
+
 export interface User {
   id: number;
   username: string;
   email: string;
   fullName?: string;
-  role?: string;
+  role?: AppRole;
   phoneNumber?: string;
   image?: string;
 }
@@ -13,4 +15,17 @@ export interface User {
 export interface LoginPayload {
   usernameOrEmail: string;
   password: string;
+}
+
+export interface RegisterPayload {
+  username: string;
+  email: string;
+  password: string;
+  fullName: string;
+  phoneNumber: string;
+}
+
+export interface RegisterResponse {
+  user: User;
+  access_token: string;
 }

@@ -12,6 +12,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
+import {
+  LOGIN_ROUTE,
+  MANAGER_DEFAULT_ROUTE,
+  MANAGER_ROUTE_PREFIX,
+  RESIDENT_DEFAULT_ROUTE,
+  ROLES,
+} from "@/lib/constants";
 
 export default function ProtectedLayout({
   children,
@@ -21,13 +28,25 @@ export default function ProtectedLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { user, loading } = useAuth();
-  const isManagerRoute = pathname?.startsWith("/manager");
+  const isManagerRoute = pathname?.startsWith(MANAGER_ROUTE_PREFIX);
 
+  // Redirect to login if not authenticated
   useEffect(() => {
     if (!loading && !user) {
-      router.push(`/login?redirect=${pathname}`);
+      router.push(`${LOGIN_ROUTE}?redirect=${pathname}`);
     }
   }, [loading, user, router, pathname]);
+
+  // Role-based redirect
+  useEffect(() => {
+    if (loading || !user) return;
+
+    if (isManagerRoute && user.role !== ROLES.MANAGER) {
+      router.replace(RESIDENT_DEFAULT_ROUTE);
+    } else if (!isManagerRoute && user.role === ROLES.MANAGER) {
+      router.replace(MANAGER_DEFAULT_ROUTE);
+    }
+  }, [loading, user, router, isManagerRoute]);
 
   if (loading) {
     return (
@@ -38,6 +57,14 @@ export default function ProtectedLayout({
   }
 
   if (!user) {
+    return null;
+  }
+
+  // Block render if wrong role (prevent flash while redirecting)
+  if (isManagerRoute && user.role !== ROLES.MANAGER) {
+    return null;
+  }
+  if (!isManagerRoute && user.role === ROLES.MANAGER) {
     return null;
   }
 

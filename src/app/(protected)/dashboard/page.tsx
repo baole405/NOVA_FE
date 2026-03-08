@@ -14,6 +14,7 @@ import type { BackendBill } from "@/types/api";
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const [bills, setBills] = useState<BackendBill[]>([]);
+  const [upcomingBills, setUpcomingBills] = useState<BackendBill[]>([]);
   const [apartment, setApartment] = useState<Apartment | null>(null);
   const [paidThisMonth, setPaidThisMonth] = useState(0);
   const [loadingBills, setLoadingBills] = useState(true);
@@ -142,11 +143,11 @@ export default function DashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-7">
         <div className="col-span-7">
-          {bills.length > 0 ? (
-            <UpcomingBills bills={bills} />
+          {upcomingBills.length > 0 ? (
+            <UpcomingBills bills={upcomingBills} />
           ) : (
             <div className="text-center p-8 text-muted-foreground">
-              Không có hóa đơn nào.
+              Không có hóa đơn nào sắp đến hạn.
             </div>
           )}
         </div>

@@ -1,12 +1,3 @@
-"use client";
-
-import { useContext } from "react";
-import { AuthContext } from "@/components/providers/auth-provider";
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-}
+// Re-export useAuth from the AuthProvider context
+// All auth state is now shared via React Context
+export { useAuth } from "@/providers/auth-provider";

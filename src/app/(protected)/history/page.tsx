@@ -1,7 +1,7 @@
 "use client";
 
 import { FileX, History, Loader2 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -13,10 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useAuth } from "@/hooks/use-auth";
-import { getTransactions } from "@/lib/transactions";
+import { useTransactions } from "@/hooks/use-transactions";
 import { cn } from "@/lib/utils";
-import type { BackendTransaction } from "@/types/transactions";
 
 const PAYMENT_METHOD_LABELS: Record<string, string> = {
   bank_transfer: "Chuyển khoản",
@@ -43,38 +41,13 @@ function getCutoffDate(preset: string): Date | null {
 }
 
 export default function HistoryPage() {
-  const { user } = useAuth();
-  const [allTransactions, setAllTransactions] = useState<BackendTransaction[]>(
-    [],
-  );
-  const [loading, setLoading] = useState(true);
+  const { transactions: allTransactions, loading } = useTransactions();
   const [periodPreset, setPeriodPreset] = useState<string>("all");
-
-  const fetchTransactions = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await getTransactions({ limit: 200 });
-      setAllTransactions(res.data);
-    } catch (err) {
-      console.log(
-        "Failed to fetch transactions:",
-        err instanceof Error ? err.message : "Unknown error",
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      fetchTransactions();
-    }
-  }, [user, fetchTransactions]);
 
   const transactions = useMemo(() => {
     const cutoff = getCutoffDate(periodPreset);
     if (!cutoff) return allTransactions;
-    return allTransactions.filter((t) => new Date(t.paymentDate) >= cutoff);
+    return allTransactions.filter((t) => new Date(t.createdAt) >= cutoff);
   }, [allTransactions, periodPreset]);
 
   const formatCurrency = (amount: number | string) =>
@@ -92,8 +65,7 @@ export default function HistoryPage() {
       minute: "2-digit",
     });
 
-  const formatPaymentMethod = (method: string | null) => {
-    if (!method) return "—";
+  const formatPaymentMethod = (method: string) => {
     return PAYMENT_METHOD_LABELS[method] ?? method;
   };
 
@@ -173,14 +145,12 @@ export default function HistoryPage() {
                         {trans.transactionRef ?? "—"}
                       </TableCell>
                       <TableCell className="font-medium">
-                        {trans.billTitle ?? "—"}
+                        {trans.bill?.title ?? "—"}
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {formatDate(trans.paymentDate)}
+                        {formatDate(trans.createdAt)}
                       </TableCell>
-                      <TableCell>
-                        {formatPaymentMethod(trans.paymentMethod)}
-                      </TableCell>
+                      <TableCell>{formatPaymentMethod(trans.method)}</TableCell>
                       <TableCell className="text-right font-bold">
                         {formatCurrency(trans.amount)}
                       </TableCell>
