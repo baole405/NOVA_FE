@@ -203,5 +203,6 @@ export interface ManagerComplaint extends Complaint {
 export * from "./api";
 export * from "./auth";
 export * from "./bills";
+export * from "./fee-types";
 export * from "./notifications";
 export * from "./user";

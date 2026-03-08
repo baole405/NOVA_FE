@@ -5,6 +5,7 @@ import {
   FileText,
   Home,
   MessageSquareWarning,
+  Tags,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -28,6 +29,11 @@ const managerMenuItems = [
     title: "Quản lý căn hộ",
     href: "/manager/apartments",
     icon: Building2,
+  },
+  {
+    title: "Loại phí",
+    href: "/manager/fee-types",
+    icon: Tags,
   },
   {
     title: "Hóa đơn & Phí",
