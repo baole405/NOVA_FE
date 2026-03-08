@@ -7,6 +7,7 @@ import { UpcomingBills } from "@/components/dashboard/upcoming-bills";
 import { useAuth } from "@/hooks/use-auth";
 import { getOwnApartment } from "@/lib/apartments";
 import { getBills } from "@/lib/bills";
+import { getTransactionsByMonth } from "@/lib/transactions";
 import type { Apartment } from "@/types";
 import type { BackendBill } from "@/types/api";
 
@@ -14,14 +15,23 @@ export default function DashboardPage() {
   const { user, loading } = useAuth();
   const [bills, setBills] = useState<BackendBill[]>([]);
   const [apartment, setApartment] = useState<Apartment | null>(null);
+  const [paidThisMonth, setPaidThisMonth] = useState(0);
   const [loadingBills, setLoadingBills] = useState(true);
 
   const displayUser = user;
 
   const fetchBillsData = useCallback(async () => {
     try {
-      const res = await getBills();
-      setBills(res.data);
+      const now = new Date();
+      const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+      const [billsRes, txRes] = await Promise.all([
+        getBills(),
+        getTransactionsByMonth(currentMonth),
+      ]);
+      setBills(billsRes.data);
+      setPaidThisMonth(
+        txRes.data.reduce((sum, tx) => sum + Number(tx.amount), 0),
+      );
     } catch (error) {
       console.log("Failed to fetch bills:", error);
     } finally {
@@ -123,7 +133,7 @@ export default function DashboardPage() {
 
         <StatsCard
           title="Đã thanh toán tháng này"
-          value="0M"
+          value={formatCurrency(paidThisMonth)}
           description="Cảm ơn!"
           icon={CheckCircle2}
           trend="positive"
