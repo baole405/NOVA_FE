@@ -4,12 +4,9 @@ import {
   Building2,
   FileText,
   Home,
-  Megaphone,
   MessageSquareWarning,
-  Settings,
   TrendingUp,
   Users,
-  Warehouse,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -33,9 +30,9 @@ const managerMenuItems = [
     icon: Building2,
   },
   {
-    title: "Quản lý phản ánh",
-    href: "/manager/complaints",
-    icon: MessageSquareWarning,
+    title: "Hóa đơn & Phí",
+    href: "/manager/billing",
+    icon: FileText,
   },
   {
     title: "Báo cáo & Thống kê",
@@ -43,24 +40,9 @@ const managerMenuItems = [
     icon: TrendingUp,
   },
   {
-    title: "Hóa đơn & Phí",
-    href: "/manager/billing",
-    icon: FileText,
-  },
-  {
-    title: "Thông báo & Tin tức",
-    href: "/manager/announcements",
-    icon: Megaphone,
-  },
-  {
-    title: "Quản lý tiện ích",
-    href: "/manager/facilities",
-    icon: Warehouse,
-  },
-  {
-    title: "Cài đặt",
-    href: "/manager/settings",
-    icon: Settings,
+    title: "Quản lý phản ánh",
+    href: "/manager/complaints",
+    icon: MessageSquareWarning,
   },
 ];
 

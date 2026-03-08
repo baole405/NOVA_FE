@@ -2,12 +2,11 @@
 
 import {
   BadgeDollarSign,
-  Building2,
   FileText,
   TrendingUp,
   Wallet,
 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChartPlaceholder } from "@/components/manager/reports/chart-placeholder";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -26,29 +25,44 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getStatsOverview, getStatsRevenue } from "@/lib/stats";
+import type { RevenueMonth, StatsOverview } from "@/types/stats";
 
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
-}
-
-// Mock report data
-const revenueData = [
-  { feeType: "Phí quản lý", expected: 90000000, collected: 78000000 },
-  { feeType: "Tiền điện", expected: 120000000, collected: 95000000 },
-  { feeType: "Tiền nước", expected: 25000000, collected: 22000000 },
-  { feeType: "Phí gửi xe", expected: 35000000, collected: 33000000 },
-  { feeType: "Phí internet", expected: 15000000, collected: 14500000 },
-  { feeType: "Phí dịch vụ", expected: 20000000, collected: 18000000 },
-];
-
-const totalExpected = revenueData.reduce((sum, r) => sum + r.expected, 0);
-const totalCollected = revenueData.reduce((sum, r) => sum + r.collected, 0);
+const periodMap: Record<string, string> = {
+  this_month: "this-month",
+  last_month: "last-month",
+  this_quarter: "3-months",
+  this_year: "year",
+};
 
 export default function ManagerReportsPage() {
-  const [period, setPeriod] = useState("this_month");
+  const [period, setPeriod] = useState("this_quarter");
+  const [overview, setOverview] = useState<StatsOverview | null>(null);
+  const [months, setMonths] = useState<RevenueMonth[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [ov, rev] = await Promise.all([
+        getStatsOverview(),
+        getStatsRevenue(periodMap[period]),
+      ]);
+      setOverview(ov);
+      setMonths(rev.months);
+    } catch (error) {
+      console.log("Failed to fetch report stats:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [period]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const totalCollected = months.reduce((sum, m) => sum + m.total, 0);
+  const totalTransactions = months.reduce((sum, m) => sum + m.count, 0);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -75,169 +89,160 @@ export default function ManagerReportsPage() {
         </Select>
       </div>
 
-      {/* Stats overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Tổng doanh thu
-                </p>
-                <p className="text-2xl font-bold">
-                  {formatCurrency(totalCollected)}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Mục tiêu: {formatCurrency(totalExpected)}
-                </p>
-              </div>
-              <div className="p-3 rounded-full bg-green-50 dark:bg-green-950">
-                <Wallet className="h-5 w-5 text-green-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {loading ? (
+        <div className="flex h-32 items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Tổng đã thu
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {formatCurrency(totalCollected)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {totalTransactions} giao dịch
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-full bg-green-50 dark:bg-green-950">
+                    <Wallet className="h-5 w-5 text-green-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Tỷ lệ thu
-                </p>
-                <p className="text-2xl font-bold">
-                  {Math.round((totalCollected / totalExpected) * 100)}%
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Còn thiếu: {formatCurrency(totalExpected - totalCollected)}
-                </p>
-              </div>
-              <div className="p-3 rounded-full bg-blue-50 dark:bg-blue-950">
-                <BadgeDollarSign className="h-5 w-5 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Thu tháng này
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {formatCurrency(overview?.paidThisMonth ?? 0)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {overview?.paidThisMonthCount ?? 0} giao dịch
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-full bg-blue-50 dark:bg-blue-950">
+                    <BadgeDollarSign className="h-5 w-5 text-blue-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Tỷ lệ lấp đầy
-                </p>
-                <p className="text-2xl font-bold">87%</p>
-                <p className="text-xs text-muted-foreground">
-                  104/120 căn hộ có người ở
-                </p>
-              </div>
-              <div className="p-3 rounded-full bg-purple-50 dark:bg-purple-950">
-                <Building2 className="h-5 w-5 text-purple-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Còn nợ
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {formatCurrency(overview?.totalDue ?? 0)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {overview?.pendingCount ?? 0} chờ thanh toán
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-full bg-orange-50 dark:bg-orange-950">
+                    <Wallet className="h-5 w-5 text-orange-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Hóa đơn quá hạn
-                </p>
-                <p className="text-2xl font-bold text-destructive">15</p>
-                <p className="text-xs text-muted-foreground">
-                  Tổng giá trị: {formatCurrency(4530000)}
-                </p>
-              </div>
-              <div className="p-3 rounded-full bg-red-50 dark:bg-red-950">
-                <FileText className="h-5 w-5 text-red-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Charts placeholder */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ChartPlaceholder
-          title="Doanh thu theo tháng"
-          description="Biểu đồ cột doanh thu 12 tháng gần nhất"
-        />
-        <ChartPlaceholder
-          title="Tỷ lệ thu phí"
-          description="Biểu đồ tròn tỷ lệ thu theo loại phí"
-        />
-      </div>
-
-      {/* Revenue summary table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Bảng tổng hợp thu chi</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Loại phí</TableHead>
-                  <TableHead>Dự kiến thu</TableHead>
-                  <TableHead>Đã thu</TableHead>
-                  <TableHead>Tỷ lệ</TableHead>
-                  <TableHead>Còn thiếu</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {revenueData.map((row) => {
-                  const rate = Math.round((row.collected / row.expected) * 100);
-                  return (
-                    <TableRow key={row.feeType}>
-                      <TableCell className="font-medium">
-                        {row.feeType}
-                      </TableCell>
-                      <TableCell>{formatCurrency(row.expected)}</TableCell>
-                      <TableCell>{formatCurrency(row.collected)}</TableCell>
-                      <TableCell>
-                        <span
-                          className={
-                            rate >= 90
-                              ? "text-green-600 font-medium"
-                              : rate >= 70
-                                ? "text-amber-600 font-medium"
-                                : "text-destructive font-medium"
-                          }
-                        >
-                          {rate}%
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-destructive">
-                        {formatCurrency(row.expected - row.collected)}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-              <TableFooter>
-                <TableRow>
-                  <TableCell className="font-bold">Tổng cộng</TableCell>
-                  <TableCell className="font-bold">
-                    {formatCurrency(totalExpected)}
-                  </TableCell>
-                  <TableCell className="font-bold">
-                    {formatCurrency(totalCollected)}
-                  </TableCell>
-                  <TableCell className="font-bold">
-                    {Math.round((totalCollected / totalExpected) * 100)}%
-                  </TableCell>
-                  <TableCell className="font-bold text-destructive">
-                    {formatCurrency(totalExpected - totalCollected)}
-                  </TableCell>
-                </TableRow>
-              </TableFooter>
-            </Table>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Hóa đơn quá hạn
+                    </p>
+                    <p className="text-2xl font-bold text-destructive">
+                      {overview?.overdueCount ?? 0}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Cần nhắc thanh toán
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-full bg-red-50 dark:bg-red-950">
+                    <FileText className="h-5 w-5 text-red-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ChartPlaceholder
+              title="Doanh thu theo tháng"
+              description="Biểu đồ cột doanh thu — sẽ tích hợp sau khi có đủ dữ liệu"
+            />
+            <ChartPlaceholder
+              title="Tỷ lệ thu phí"
+              description="Biểu đồ tròn — cần dữ liệu revenue by fee type"
+            />
+          </div>
+
+          {months.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Doanh thu theo tháng</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Tháng</TableHead>
+                        <TableHead>Đã thu</TableHead>
+                        <TableHead>Số giao dịch</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {months.map((row) => (
+                        <TableRow key={row.month}>
+                          <TableCell className="font-medium">
+                            {row.month}
+                          </TableCell>
+                          <TableCell>{formatCurrency(row.total)}</TableCell>
+                          <TableCell>{row.count}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                    <TableFooter>
+                      <TableRow>
+                        <TableCell className="font-bold">Tổng cộng</TableCell>
+                        <TableCell className="font-bold">
+                          {formatCurrency(totalCollected)}
+                        </TableCell>
+                        <TableCell className="font-bold">
+                          {totalTransactions}
+                        </TableCell>
+                      </TableRow>
+                    </TableFooter>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </>
+      )}
     </div>
   );
+}
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(amount);
 }

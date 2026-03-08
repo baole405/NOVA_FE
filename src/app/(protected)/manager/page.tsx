@@ -1,3 +1,5 @@
+"use client";
+
 import {
   AlertCircle,
   Building2,
@@ -5,8 +7,8 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
-import type { Metadata } from "next";
 import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,26 +17,43 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-export const metadata: Metadata = {
-  title: "Manager Dashboard | NOVA",
-  description: "Bảng điều khiển quản lý tòa nhà",
-};
+import { getStatsActivity, getStatsOverview } from "@/lib/stats";
+import type { StatsActivity, StatsOverview } from "@/types/stats";
 
 export default function ManagerDashboardPage() {
-  // Mock data - replace with actual data from database
-  const stats = {
-    totalResidents: 248,
-    totalApartments: 120,
-    occupancyRate: 87,
-    pendingBills: 32,
-    monthlyRevenue: 450000000,
-    unpaidAmount: 85000000,
-  };
+  const [overview, setOverview] = useState<StatsOverview | null>(null);
+  const [activity, setActivity] = useState<StatsActivity | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const [ov, act] = await Promise.all([
+        getStatsOverview(),
+        getStatsActivity(),
+      ]);
+      setOverview(ov);
+      setActivity(act);
+    } catch (error) {
+      console.log("Failed to fetch stats:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">
           Bảng điều khiển quản lý
@@ -44,41 +63,39 @@ export default function ManagerDashboardPage() {
         </p>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           title="Tổng cư dân"
-          value={stats.totalResidents.toString()}
+          value={overview?.totalResidents.toString() ?? "—"}
           icon={<Users className="h-5 w-5 text-blue-600" />}
           bgColor="bg-blue-50 dark:bg-blue-950"
           href="/manager/customers"
         />
         <StatsCard
           title="Tổng căn hộ"
-          value={stats.totalApartments.toString()}
-          description={`Lấp đầy: ${stats.occupancyRate}%`}
+          value={overview?.totalApartments.toString() ?? "—"}
           icon={<Building2 className="h-5 w-5 text-green-600" />}
           bgColor="bg-green-50 dark:bg-green-950"
           href="/manager/apartments"
         />
         <StatsCard
           title="Doanh thu tháng"
-          value={formatCurrency(stats.monthlyRevenue)}
+          value={formatCurrency(overview?.paidThisMonth ?? 0)}
+          description={`${overview?.paidThisMonthCount ?? 0} giao dịch`}
           icon={<DollarSign className="h-5 w-5 text-purple-600" />}
           bgColor="bg-purple-50 dark:bg-purple-950"
           href="/manager/reports"
         />
         <StatsCard
           title="Hóa đơn chưa thanh toán"
-          value={stats.pendingBills.toString()}
-          description={formatCurrency(stats.unpaidAmount)}
+          value={(overview?.pendingCount ?? 0).toString()}
+          description={`Quá hạn: ${overview?.overdueCount ?? 0} | Nợ: ${formatCurrency(overview?.totalDue ?? 0)}`}
           icon={<AlertCircle className="h-5 w-5 text-orange-600" />}
           bgColor="bg-orange-50 dark:bg-orange-950"
           href="/manager/billing"
         />
       </div>
 
-      {/* Quick Actions */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -104,85 +121,86 @@ export default function ManagerDashboardPage() {
               </Button>
             </Link>
 
-            <Button
-              variant="outline"
-              className="w-full justify-start h-auto py-4"
-            >
-              <Building2 className="mr-2 h-4 w-4" />
-              <div className="text-left">
-                <div className="font-semibold">Quản lý căn hộ</div>
-                <div className="text-xs text-muted-foreground">
-                  Xem và cập nhật thông tin
+            <Link href="/manager/apartments">
+              <Button
+                variant="outline"
+                className="w-full justify-start h-auto py-4"
+              >
+                <Building2 className="mr-2 h-4 w-4" />
+                <div className="text-left">
+                  <div className="font-semibold">Quản lý căn hộ</div>
+                  <div className="text-xs text-muted-foreground">
+                    Xem và cập nhật thông tin
+                  </div>
                 </div>
-              </div>
-            </Button>
+              </Button>
+            </Link>
 
-            <Button
-              variant="outline"
-              className="w-full justify-start h-auto py-4"
-            >
-              <DollarSign className="mr-2 h-4 w-4" />
-              <div className="text-left">
-                <div className="font-semibold">Tạo hóa đơn</div>
-                <div className="text-xs text-muted-foreground">
-                  Phát hành phí dịch vụ
+            <Link href="/manager/billing">
+              <Button
+                variant="outline"
+                className="w-full justify-start h-auto py-4"
+              >
+                <DollarSign className="mr-2 h-4 w-4" />
+                <div className="text-left">
+                  <div className="font-semibold">Tạo hóa đơn</div>
+                  <div className="text-xs text-muted-foreground">
+                    Phát hành phí dịch vụ
+                  </div>
                 </div>
-              </div>
-            </Button>
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>
 
-      {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Hoạt động gần đây</CardTitle>
-            <CardDescription>Các thay đổi và sự kiện mới nhất</CardDescription>
+            <CardTitle>Giao dịch gần đây</CardTitle>
+            <CardDescription>Thanh toán mới nhất</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <ActivityItem
-                title="Cư dân mới đăng ký"
-                description="Nguyễn Văn A - Căn hộ A101"
-                time="2 giờ trước"
-              />
-              <ActivityItem
-                title="Thanh toán hóa đơn"
-                description="Trần Thị B - 2.500.000 VNĐ"
-                time="4 giờ trước"
-              />
-              <ActivityItem
-                title="Cập nhật thông tin căn hộ"
-                description="B205 - Thay đổi chủ sở hữu"
-                time="1 ngày trước"
-              />
+              {activity?.recentTransactions.length ? (
+                activity.recentTransactions.map((tx) => (
+                  <ActivityItem
+                    key={tx.id}
+                    title={tx.billTitle ?? "Giao dịch"}
+                    description={formatCurrency(Number(tx.amount))}
+                    time={formatDate(tx.paymentDate)}
+                  />
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Chưa có giao dịch nào.
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Cảnh báo</CardTitle>
-            <CardDescription>Các vấn đề cần chú ý</CardDescription>
+            <CardTitle>Hóa đơn mới</CardTitle>
+            <CardDescription>Hóa đơn được tạo gần đây</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <AlertItem
-                title="Hóa đơn quá hạn"
-                description="15 căn hộ chưa thanh toán phí tháng 1"
-                severity="high"
-              />
-              <AlertItem
-                title="Căn hộ trống"
-                description="8 căn hộ chưa có cư dân"
-                severity="medium"
-              />
-              <AlertItem
-                title="Bảo trì định kỳ"
-                description="Kiểm tra hệ thống điện vào tuần tới"
-                severity="low"
-              />
+              {activity?.recentBills.length ? (
+                activity.recentBills.map((bill) => (
+                  <ActivityItem
+                    key={bill.id}
+                    title={bill.title}
+                    description={`${formatCurrency(Number(bill.amount))} — ${bill.status}`}
+                    time={formatDate(bill.createdAt)}
+                  />
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Chưa có hóa đơn nào.
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -191,7 +209,6 @@ export default function ManagerDashboardPage() {
   );
 }
 
-// Helper Components
 function StatsCard({
   title,
   value,
@@ -250,35 +267,17 @@ function ActivityItem({
   );
 }
 
-function AlertItem({
-  title,
-  description,
-  severity,
-}: Readonly<{
-  title: string;
-  description: string;
-  severity: "high" | "medium" | "low";
-}>) {
-  const severityColors = {
-    high: "bg-red-100 dark:bg-red-950 border-red-200 dark:border-red-800",
-    medium:
-      "bg-yellow-100 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800",
-    low: "bg-blue-100 dark:bg-blue-950 border-blue-200 dark:border-blue-800",
-  };
-
-  return (
-    <div
-      className={`p-3 rounded-lg border ${severityColors[severity]} space-y-1`}
-    >
-      <p className="text-sm font-medium">{title}</p>
-      <p className="text-xs text-muted-foreground">{description}</p>
-    </div>
-  );
-}
-
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
   }).format(amount);
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 }
