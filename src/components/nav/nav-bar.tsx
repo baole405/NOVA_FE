@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { ThemeToggleButton } from "./theme-toggle-button";
 import { UserNav } from "./user-nav";
 
 const mainNavItems = [
@@ -87,7 +88,10 @@ export function NavBar() {
               </Button>
             </div>
           ) : (
-            <UserNav />
+            <>
+              <ThemeToggleButton />
+              <UserNav />
+            </>
           )}
         </div>
       </div>
