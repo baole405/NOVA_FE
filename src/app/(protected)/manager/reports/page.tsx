@@ -26,9 +26,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getStatsOverview, getStatsRevenue } from "@/lib/stats";
-import type { RevenueMonth, StatsOverview } from "@/types/stats";
+import type { RevenueMonth, RevenuePeriod, StatsOverview } from "@/types/stats";
 
-const periodMap: Record<string, string> = {
+const periodMap: Record<string, RevenuePeriod> = {
   this_month: "this-month",
   last_month: "last-month",
   this_quarter: "3-months",

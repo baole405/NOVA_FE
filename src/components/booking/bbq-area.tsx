@@ -1,10 +1,7 @@
 "use client";
 
-import { format } from "date-fns";
 import { Utensils } from "lucide-react";
-import { useEffect, useState } from "react";
-import type { Booking } from "@/lib/bookings";
-import { getBookingsByDateService } from "@/lib/bookings";
+import { MOCK_BBQ_SLOTS } from "@/lib/facilities";
 import { cn } from "@/lib/utils";
 
 interface BBQAreaProps {
@@ -13,72 +10,27 @@ interface BBQAreaProps {
   selectedDate: Date | undefined;
 }
 
-// Mock 5 BBQ areas
-const AREAS = [
-  { id: "Area 1", name: "Khu vực 1 (Hồ bơi)" },
-  { id: "Area 2", name: "Khu vực 2 (Sân thượng)" },
-  { id: "Area 3", name: "Khu vực 3 (Sân vườn)" },
-  { id: "Area 4", name: "Khu vực 4 (Ven sông)" },
-  { id: "Area 5", name: "Khu vực 5 (VIP)" },
-];
-
-export function BBQArea({
-  onSelectArea,
-  selectedArea,
-  selectedDate,
-}: BBQAreaProps) {
-  const [areaBookings, setAreaBookings] = useState<Record<string, Booking[]>>(
-    {},
-  );
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!selectedDate) return;
-
-    const fetchBookings = async () => {
-      setLoading(true);
-      try {
-        const dateStr = format(selectedDate, "yyyy-MM-dd");
-        const data = await getBookingsByDateService(dateStr, "bbq");
-        // Group bookings by area (slotNumber)
-        const grouped: Record<string, Booking[]> = {};
-        data.forEach((b) => {
-          if (b.slotNumber) {
-            if (!grouped[b.slotNumber]) grouped[b.slotNumber] = [];
-            grouped[b.slotNumber].push(b);
-          }
-        });
-        setAreaBookings(grouped);
-      } catch (error) {
-        console.log("Failed to fetch BBQ areas:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBookings();
-  }, [selectedDate]);
-
+export function BBQArea({ onSelectArea, selectedArea }: BBQAreaProps) {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">Chọn khu vực BBQ</h3>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {AREAS.map((area) => {
-          const bookings = areaBookings[area.id] || [];
-          const isBusy = bookings.length > 0;
+        {MOCK_BBQ_SLOTS.map((area) => {
           const isSelected = selectedArea === area.id;
+          const isDisabled = area.status === "maintenance";
 
           return (
             <button
               key={area.id}
               type="button"
-              disabled={loading}
+              disabled={isDisabled}
               onClick={() => onSelectArea(area.id)}
               className={cn(
                 "relative p-4 rounded-lg border text-left transition-all hover:shadow-md",
                 isSelected
                   ? "border-primary bg-primary/5 ring-1 ring-primary"
                   : "bg-card hover:bg-accent/50",
+                isDisabled && "opacity-50 cursor-not-allowed",
               )}
             >
               <div className="flex items-start justify-between mb-2">
@@ -90,22 +42,13 @@ export function BBQArea({
                   )}
                 />
               </div>
-
-              {isBusy ? (
-                <div className="text-xs text-orange-600 space-y-1 mt-2">
-                  <p className="font-medium">Đã có lịch đặt:</p>
-                  {bookings.map((b) => (
-                    <div
-                      key={b.id}
-                      className="bg-orange-100 px-2 py-0.5 rounded"
-                    >
-                      {b.startTime.slice(0, 5)} - {b.endTime.slice(0, 5)}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-xs text-green-600 mt-2 font-medium">
-                  Trống cả ngày
+              <div className="text-xs text-muted-foreground mt-1">
+                Sức chứa: {area.capacity} người ·{" "}
+                {area.pricePerHour.toLocaleString("vi-VN")} VNĐ/giờ
+              </div>
+              {isDisabled && (
+                <div className="text-xs text-orange-600 mt-2 font-medium">
+                  Đang bảo trì
                 </div>
               )}
             </button>

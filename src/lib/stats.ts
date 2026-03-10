@@ -1,17 +1,21 @@
-import type { StatsActivity, StatsOverview, StatsRevenue } from "@/types/stats";
+import type {
+  RevenuePeriod,
+  StatsActivity,
+  StatsOverview,
+  StatsRevenue,
+} from "@/types/stats";
 import { fetchApi } from "./api-client";
 
-export async function getStatsOverview(): Promise<StatsOverview> {
+export function getStatsOverview(): Promise<StatsOverview> {
   return fetchApi<StatsOverview>("/stats?type=overview");
 }
 
-export async function getStatsRevenue(
-  period?: string,
+export function getStatsRevenue(
+  period: RevenuePeriod = "6-months",
 ): Promise<StatsRevenue> {
-  const qs = period ? `&period=${period}` : "";
-  return fetchApi<StatsRevenue>(`/stats?type=revenue${qs}`);
+  return fetchApi<StatsRevenue>(`/stats?type=revenue&period=${period}`);
 }
 
-export async function getStatsActivity(): Promise<StatsActivity> {
+export function getStatsActivity(): Promise<StatsActivity> {
   return fetchApi<StatsActivity>("/stats?type=activity");
 }

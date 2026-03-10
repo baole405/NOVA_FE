@@ -20,10 +20,12 @@ export interface CreateBookingPayload {
   date: string;
   startTime: string;
   endTime: string;
-  slotNumber?: string;
+  slotNumber?: string; // single slot (BBQ, Pool)
+  slotNumbers?: string[]; // multiple slots (Parking multi-select)
   endDate?: string;
   notes?: string;
   price?: number;
+  numberOfParticipants?: number; // BBQ + Pool only, set at booking time, cannot edit after
 }
 
 export async function getMyBookings(): Promise<Booking[]> {

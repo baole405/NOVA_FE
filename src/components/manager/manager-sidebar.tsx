@@ -2,6 +2,7 @@
 
 import {
   Building2,
+  CalendarCheck,
   FileText,
   Home,
   MessageSquareWarning,
@@ -19,6 +20,11 @@ const managerMenuItems = [
     title: "Tổng quan",
     href: "/manager",
     icon: Home,
+  },
+  {
+    title: "Quản lý đặt chỗ",
+    href: "/manager/bookings",
+    icon: CalendarCheck,
   },
   {
     title: "Quản lý cư dân",
@@ -86,7 +92,10 @@ export function ManagerSidebar({
       {/* Navigation Menu */}
       <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
         {managerMenuItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            item.href === "/manager"
+              ? pathname === item.href
+              : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
