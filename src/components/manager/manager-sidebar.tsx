@@ -5,12 +5,10 @@ import {
   CalendarCheck,
   FileText,
   Home,
-  Megaphone,
   MessageSquareWarning,
-  Settings,
+  Tags,
   TrendingUp,
   Users,
-  Warehouse,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -39,14 +37,9 @@ const managerMenuItems = [
     icon: Building2,
   },
   {
-    title: "Quản lý phản ánh",
-    href: "/manager/complaints",
-    icon: MessageSquareWarning,
-  },
-  {
-    title: "Báo cáo & Thống kê",
-    href: "/manager/reports",
-    icon: TrendingUp,
+    title: "Loại phí",
+    href: "/manager/fee-types",
+    icon: Tags,
   },
   {
     title: "Hóa đơn & Phí",
@@ -54,19 +47,14 @@ const managerMenuItems = [
     icon: FileText,
   },
   {
-    title: "Thông báo & Tin tức",
-    href: "/manager/announcements",
-    icon: Megaphone,
+    title: "Báo cáo & Thống kê",
+    href: "/manager/reports",
+    icon: TrendingUp,
   },
   {
-    title: "Quản lý tiện ích",
-    href: "/manager/facilities",
-    icon: Warehouse,
-  },
-  {
-    title: "Cài đặt",
-    href: "/manager/settings",
-    icon: Settings,
+    title: "Quản lý phản ánh",
+    href: "/manager/complaints",
+    icon: MessageSquareWarning,
   },
 ];
 
