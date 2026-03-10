@@ -22,7 +22,7 @@ export interface UpdateBookingStatusPayload {
 
 export interface UpdateBookingPayload {
   notes?: string;
-  numberOfParticipants?: number;
+  // numberOfParticipants removed — cannot be edited after booking
 }
 
 // Mock data — remove when backend admin endpoints are ready
@@ -137,7 +137,8 @@ export async function updateBookingStatus(
   // TODO: return fetchApi<ManagerBooking>(`/bookings/${id}/status`, { method: "PATCH", body: JSON.stringify(payload) });
   const booking = MOCK_MANAGER_BOOKINGS.find((b) => b.id === id);
   if (!booking) throw new Error("Booking not found");
-  return Promise.resolve({ ...booking, status: payload.status });
+  booking.status = payload.status; // mutate so refetch persists
+  return Promise.resolve({ ...booking });
 }
 
 // TODO: replace mock with real API
@@ -148,5 +149,6 @@ export async function updateBooking(
   // TODO: return fetchApi<ManagerBooking>(`/bookings/${id}`, { method: "PATCH", body: JSON.stringify(payload) });
   const booking = MOCK_MANAGER_BOOKINGS.find((b) => b.id === id);
   if (!booking) throw new Error("Booking not found");
-  return Promise.resolve({ ...booking, ...payload });
+  if (payload.notes !== undefined) booking.notes = payload.notes;
+  return Promise.resolve({ ...booking });
 }

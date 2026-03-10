@@ -7,9 +7,19 @@ import {
   serviceTypeLabels,
   statusConfig,
 } from "@/components/manager/bookings/booking-constants";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Sheet,
@@ -53,23 +63,19 @@ export function BookingDetailSheet({
   onUpdateBooking,
 }: BookingDetailSheetProps) {
   const [isStatusSubmitting, setIsStatusSubmitting] = useState(false);
+  const [pendingAction, setPendingAction] = useState<
+    "confirmed" | "rejected" | "cancelled" | null
+  >(null);
 
-  // Inline edit — numberOfParticipants
-  const [participants, setParticipants] = useState("");
-  const [participantsDirty, setParticipantsDirty] = useState(false);
-  const [isSavingParticipants, setIsSavingParticipants] = useState(false);
-
-  // Inline edit — notes
+  // Inline edit — notes only
   const [notes, setNotes] = useState("");
   const [notesDirty, setNotesDirty] = useState(false);
   const [isSavingNotes, setIsSavingNotes] = useState(false);
 
-  // Sync local edit state when booking changes or sheet re-opens (reset unsaved edits)
+  // Sync local edit state when booking changes or sheet re-opens
   useEffect(() => {
     if (booking && open) {
-      setParticipants(String(booking.numberOfParticipants ?? ""));
       setNotes(booking.notes ?? "");
-      setParticipantsDirty(false);
       setNotesDirty(false);
     }
   }, [booking, open]);
@@ -78,14 +84,11 @@ export function BookingDetailSheet({
 
   const status = statusConfig[booking.status];
 
-  // Cancel button: manager only when confirmed; resident when pending or confirmed
-  // TODO: userRole="resident" path is wired but not yet used — wire to resident /booking page
   const showCancelButton =
     (userRole === "manager" && booking.status === "confirmed") ||
     (userRole === "resident" &&
       (booking.status === "pending" || booking.status === "confirmed"));
 
-  // Approve + Reject: manager only when pending
   const showApproveReject =
     userRole === "manager" && booking.status === "pending";
 
@@ -100,26 +103,8 @@ export function BookingDetailSheet({
       console.log("Failed to update booking status:", err);
     } finally {
       setIsStatusSubmitting(false);
+      setPendingAction(null);
     }
-  };
-
-  const handleSaveParticipants = async () => {
-    setIsSavingParticipants(true);
-    try {
-      const value =
-        participants.trim() === "" ? undefined : Number(participants);
-      await onUpdateBooking(booking.id, { numberOfParticipants: value });
-      setParticipantsDirty(false);
-    } catch (err) {
-      console.log("Failed to save participants:", err);
-    } finally {
-      setIsSavingParticipants(false);
-    }
-  };
-
-  const handleCancelParticipants = () => {
-    setParticipants(String(booking.numberOfParticipants ?? ""));
-    setParticipantsDirty(false);
   };
 
   const handleSaveNotes = async () => {
@@ -141,8 +126,8 @@ export function BookingDetailSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-        <SheetHeader>
+      <SheetContent className="w-full sm:max-w-md overflow-y-auto p-6">
+        <SheetHeader className="items-center border-b pb-4">
           <SheetTitle className="flex items-center gap-2">
             {serviceTypeIcons[booking.serviceType]}
             Chi tiết đặt chỗ
@@ -200,52 +185,16 @@ export function BookingDetailSheet({
             </div>
           </div>
 
-          {/* Number of participants — inline edit */}
-          <div className="space-y-2">
-            <Label className="flex items-center gap-1.5 text-sm font-medium">
+          {/* Number of participants — readonly display */}
+          {booking.numberOfParticipants !== undefined && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Users className="h-3.5 w-3.5" />
-              Số người tham gia
-            </Label>
-            <div className="flex items-center gap-2">
-              <Input
-                type="number"
-                min={1}
-                value={participants}
-                onChange={(e) => {
-                  setParticipants(e.target.value);
-                  setParticipantsDirty(
-                    e.target.value !==
-                      String(booking.numberOfParticipants ?? ""),
-                  );
-                }}
-                placeholder="Nhập số người..."
-                className="w-32"
-              />
-              {participantsDirty && (
-                <>
-                  <Button
-                    size="sm"
-                    disabled={isSavingParticipants}
-                    onClick={handleSaveParticipants}
-                  >
-                    {isSavingParticipants ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
-                      "Lưu"
-                    )}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    disabled={isSavingParticipants}
-                    onClick={handleCancelParticipants}
-                  >
-                    Hủy
-                  </Button>
-                </>
-              )}
+              <span>Số người:</span>
+              <span className="font-medium text-foreground">
+                {booking.numberOfParticipants} người
+              </span>
             </div>
-          </div>
+          )}
 
           {/* Notes — inline edit */}
           <div className="space-y-2">
@@ -289,28 +238,59 @@ export function BookingDetailSheet({
             Đặt lúc: {format(new Date(booking.createdAt), "dd/MM/yyyy HH:mm")}
           </p>
 
-          {/* Approve / Reject — manager + pending only */}
+          {/* Approve / Reject — manager + pending only, with AlertDialog confirm */}
           {showApproveReject && (
-            <div className="flex gap-3 pt-2">
-              <Button
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                disabled={isStatusSubmitting}
-                onClick={() => handleStatusAction("confirmed")}
-              >
-                {isStatusSubmitting && (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                )}
-                Duyệt
-              </Button>
-              <Button
-                variant="destructive"
-                className="flex-1"
-                disabled={isStatusSubmitting}
-                onClick={() => handleStatusAction("rejected")}
-              >
-                Từ chối
-              </Button>
-            </div>
+            <AlertDialog>
+              <div className="flex gap-3 pt-2">
+                <AlertDialogTrigger asChild>
+                  <Button
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                    onClick={() => setPendingAction("confirmed")}
+                  >
+                    Duyệt
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    className="flex-1"
+                    onClick={() => setPendingAction("rejected")}
+                  >
+                    Từ chối
+                  </Button>
+                </AlertDialogTrigger>
+              </div>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    {pendingAction === "confirmed"
+                      ? "Xác nhận duyệt?"
+                      : "Xác nhận từ chối?"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {pendingAction === "confirmed"
+                      ? "Booking sẽ được duyệt và cư dân sẽ được thông báo."
+                      : "Booking sẽ bị từ chối. Hành động này không thể hoàn tác."}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel onClick={() => setPendingAction(null)}>
+                    Huỷ
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    disabled={isStatusSubmitting}
+                    onClick={() =>
+                      pendingAction && handleStatusAction(pendingAction)
+                    }
+                  >
+                    {isStatusSubmitting ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : null}
+                    Xác nhận
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
 
           {/* Cancel button */}

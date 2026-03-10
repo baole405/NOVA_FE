@@ -104,7 +104,10 @@ export function ManagerSidebar({
       {/* Navigation Menu */}
       <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
         {managerMenuItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            item.href === "/manager"
+              ? pathname === item.href
+              : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}

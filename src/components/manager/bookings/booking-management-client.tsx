@@ -1,12 +1,19 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { Loader2, RotateCw } from "lucide-react";
 import { BookingTable } from "@/components/manager/bookings/booking-table";
+import { Button } from "@/components/ui/button";
 import { useManagerBookings } from "@/hooks/use-manager-bookings";
 
 export function BookingManagementClient() {
-  const { bookings, loading, error, updateStatus, updateBookingFields } =
-    useManagerBookings();
+  const {
+    bookings,
+    loading,
+    error,
+    refetch,
+    updateStatus,
+    updateBookingFields,
+  } = useManagerBookings();
 
   if (loading) {
     return (
@@ -24,6 +31,12 @@ export function BookingManagementClient() {
     );
   }
 
+  const pendingCount = bookings.filter((b) => b.status === "pending").length;
+  const confirmedCount = bookings.filter(
+    (b) => b.status === "confirmed",
+  ).length;
+  const rejectedCount = bookings.filter((b) => b.status === "rejected").length;
+
   return (
     <div className="space-y-6 p-4 md:p-8 animate-in fade-in duration-500">
       <div>
@@ -33,6 +46,26 @@ export function BookingManagementClient() {
         <p className="text-muted-foreground mt-1">
           Duyệt và từ chối các yêu cầu đặt tiện ích
         </p>
+      </div>
+
+      <div className="flex items-center gap-4 text-sm flex-wrap">
+        <span className="text-muted-foreground">
+          Đang chờ: <strong className="text-amber-600">{pendingCount}</strong>
+        </span>
+        <span className="text-muted-foreground">
+          Đã duyệt: <strong className="text-green-600">{confirmedCount}</strong>
+        </span>
+        <span className="text-muted-foreground">
+          Từ chối: <strong className="text-red-600">{rejectedCount}</strong>
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={refetch}
+          className="ml-auto gap-1.5"
+        >
+          <RotateCw className="h-3.5 w-3.5" /> Làm mới
+        </Button>
       </div>
 
       <BookingTable
