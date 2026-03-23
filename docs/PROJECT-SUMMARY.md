@@ -28,7 +28,7 @@
   - Dashboard: Total due, upcoming bills widget.
   - Bills List: Filter (Unpaid/Paid), Sort via Due Date.
   - Bill Details: Breakdown of fee types (Management, Parking, Water, etc.).
-  - **Mock Payment**: Simulate payment -> mark bill as paid -> log transaction.
+  - **Online Payment**: Tích hợp API thanh toán thật trực tiếp -> webhook cập nhật bill (`paid`) -> log transaction.
 - **Transactions**: History of past payments.
 
 ### 2. Expansion Modules (Planned/Proposed)
@@ -74,7 +74,8 @@ bookings        (id, user_id, facility_id, start_time, end_time, status)
 
 - `GET /api/bills` - List user's bills.
 - `GET /api/bills/:id` - Bill detail.
-- `PATCH /api/bills/:id/mark-paid` - Mock payment.
+- `POST /api/bills/:id/pay` - Initiate online payment via Payment Gateway.
+- `POST /api/webhooks/payment` - Webhook to update payment status.
 - `GET /api/transactions` - History.
 - `POST /api/visitors/invite` - Create guest invitation.
 - `POST /api/bookings` - Book a facility slot.
