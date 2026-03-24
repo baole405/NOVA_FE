@@ -1,15 +1,5 @@
 "use client";
 
-import {
-  AlertCircle,
-  ArrowRight,
-  ArrowUpDown,
-  CheckCircle2,
-  Clock,
-  FileX,
-} from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
 import { BillDetailDialog } from "@/components/bills/bill-detail-dialog";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -30,9 +20,19 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
-import { getBills } from "@/lib/bills";
+import { getBills, reconcileBillPayment } from "@/lib/bills";
 import { cn } from "@/lib/utils";
 import type { BackendBill } from "@/types/api";
+import {
+  AlertCircle,
+  ArrowRight,
+  ArrowUpDown,
+  CheckCircle2,
+  Clock,
+  FileX,
+} from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 function getDateRange(preset: string): { from?: string; to?: string } {
   if (preset === "all") return {};
@@ -49,6 +49,7 @@ export default function BillsPage() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const paymentStatus = searchParams.get("payment");
+  const paymentBillId = searchParams.get("billId");
   const [bills, setBills] = useState<BackendBill[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBill, setSelectedBill] = useState<BackendBill | null>(null);
@@ -87,12 +88,36 @@ export default function BillsPage() {
     }
   }, [user, fetchBills]);
 
-  // Refresh bills when redirected back from PayOS with ?payment=success
+  // Reconcile payment state when redirected back from PayOS with ?payment=success
   useEffect(() => {
-    if (paymentStatus === "success") {
-      fetchBills();
+    async function reconcileFromRedirect() {
+      if (paymentStatus !== "success") return;
+
+      const billId = Number(paymentBillId);
+      if (!Number.isFinite(billId) || billId <= 0) {
+        await fetchBills();
+        return;
+      }
+
+      const maxAttempts = 6;
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        try {
+          const result = await reconcileBillPayment(billId);
+          if (result.status === "paid") {
+            break;
+          }
+        } catch (err) {
+          console.log("Payment reconcile failed:", err);
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+      }
+
+      await fetchBills();
     }
-  }, [paymentStatus, fetchBills]);
+
+    reconcileFromRedirect();
+  }, [paymentStatus, paymentBillId, fetchBills]);
 
   const formatCurrency = (amount: number | string) =>
     new Intl.NumberFormat("vi-VN", {

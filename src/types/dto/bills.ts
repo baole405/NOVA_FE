@@ -57,4 +57,16 @@ export interface CreatePaymentLinkPayload {
 
 export interface CreatePaymentLinkResponse {
   checkoutUrl: string;
+  orderCode?: number;
+  amount?: number;
+  testMode?: boolean;
+}
+
+export interface ReconcilePaymentResponse {
+  billId: number;
+  status: "pending" | "paid" | "overdue" | "cancelled";
+  paidAt: string | null;
+  reconciled: boolean;
+  source: string;
+  payosStatus?: string;
 }

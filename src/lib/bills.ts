@@ -8,6 +8,7 @@ import type {
   CreatePaymentLinkResponse,
   MarkPaidPayload,
   MarkPaidResponse,
+  ReconcilePaymentResponse,
 } from "@/types/api";
 import { fetchApi } from "./api-client";
 
@@ -58,13 +59,21 @@ export async function createPaymentLink(
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const payload: CreatePaymentLinkPayload = {
     billId,
-    returnUrl: `${origin}/bills?payment=success`,
-    cancelUrl: `${origin}/bills?payment=cancelled`,
+    returnUrl: `${origin}/bills?payment=success&billId=${billId}`,
+    cancelUrl: `${origin}/bills?payment=cancelled&billId=${billId}`,
   };
   if (testAmount) payload.testAmount = testAmount;
   return fetchApi<CreatePaymentLinkResponse>("/payments/create-link", {
     method: "POST",
     body: JSON.stringify(payload),
+  });
+}
+
+export async function reconcileBillPayment(
+  billId: number,
+): Promise<ReconcilePaymentResponse> {
+  return fetchApi<ReconcilePaymentResponse>(`/payments/reconcile/${billId}`, {
+    method: "POST",
   });
 }
 

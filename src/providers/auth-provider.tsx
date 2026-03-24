@@ -1,5 +1,6 @@
 "use client";
 
+import type { LoginPayload, RegisterPayload, User } from "@/types/api";
 import { useRouter } from "next/navigation";
 import {
   createContext,
@@ -9,7 +10,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import type { LoginPayload, RegisterPayload, User } from "@/types/api";
 
 interface AuthContextValue {
   user: User | null;
@@ -27,7 +27,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   const API_URL =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://homix-a9d3h.ondigitalocean.app/api";
 
   const signOut = useCallback(() => {
     localStorage.removeItem("accessToken");
