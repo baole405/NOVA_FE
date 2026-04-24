@@ -45,7 +45,18 @@ export interface RecentBill {
   createdAt: string;
 }
 
+export interface RecentFeedback {
+  id: number;
+  title: string;
+  description: string;
+  createdAt: string;
+  user: {
+    fullName: string;
+  };
+}
+
 export interface StatsActivity {
   recentTransactions: RecentTransaction[];
   recentBills: RecentBill[];
+  recentFeedbacks?: RecentFeedback[];
 }
