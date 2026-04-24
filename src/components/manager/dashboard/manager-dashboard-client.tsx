@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, DollarSign, TrendingUp, Users } from "lucide-react";
+import { Building2, DollarSign, TrendingUp, Users, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -64,6 +64,36 @@ export function ManagerDashboardClient() {
           period={period}
           onPeriodChange={handlePeriodChange}
         />
+      )}
+
+      {/* Recent Feedbacks */}
+      {activity?.recentFeedbacks && activity.recentFeedbacks.length > 0 && (
+        <Card className="bg-primary/5 border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-primary" />
+              Phản hồi mới nhất từ Khách hàng
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {activity.recentFeedbacks.map((fb) => (
+              <div key={fb.id} className="flex gap-4 items-start mb-4 last:mb-0">
+                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center font-bold text-primary shrink-0 uppercase">
+                  {fb.user?.fullName?.charAt(0) || "U"}
+                </div>
+                <div>
+                  <p className="font-semibold text-sm">{fb.user?.fullName || "Người dùng ẩn danh"}</p>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    {new Date(fb.createdAt).toLocaleDateString("vi-VN")} • Gửi từ ứng dụng
+                  </p>
+                  <p className="text-sm italic text-foreground/80 bg-background p-3 rounded-lg border">
+                    "{fb.description}"
+                  </p>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
       )}
 
       {/* Quick Actions */}

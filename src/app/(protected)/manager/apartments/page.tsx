@@ -4,6 +4,7 @@ import { Building2, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ApartmentDialog } from "@/components/manager/apartments/apartment-dialog";
 import { ApartmentTable } from "@/components/manager/apartments/apartment-table";
+import { fetchApi } from "@/lib/api-client";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,20 +23,24 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { mockManagerApartments } from "@/lib/mock-data";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { ManagerApartment } from "@/types";
+import { useEffect } from "react";
 
 export default function ManagerApartmentsPage() {
-  const [apartments, setApartments] = useState<ManagerApartment[]>(
-    mockManagerApartments,
-  );
+  const [apartments, setApartments] = useState<ManagerApartment[]>([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await fetchApi<ManagerApartment[]>("/apartments");
+        setApartments(data);
+      } catch (error) {
+        console.error("Failed to load apartments:", error);
+      }
+    };
+    loadData();
+  }, []);
   const [blockFilter, setBlockFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [createOpen, setCreateOpen] = useState(false);

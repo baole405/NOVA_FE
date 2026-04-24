@@ -221,6 +221,66 @@ export default function Home() {
         </div>
       </section>
 
+      {/* --- PRICING SECTION --- */}
+      <section className="py-20 bg-background">
+        <div className="container px-4 mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight mb-4">
+              Bảng giá Dịch vụ
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Lựa chọn gói giải pháp phù hợp với quy mô quản lý của bạn.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* NOVA Plus */}
+            <div className="bg-card p-8 rounded-3xl border shadow-sm flex flex-col">
+              <h3 className="text-2xl font-bold mb-2">NOVA Plus</h3>
+              <p className="text-muted-foreground mb-6">Dành cho dãy trọ sinh viên</p>
+              <div className="mb-6">
+                <span className="text-4xl font-extrabold">59.000đ</span>
+                <span className="text-muted-foreground"> / tháng</span>
+              </div>
+              <ul className="space-y-4 mb-8 flex-1">
+                <ListItem text="Quản lý tối đa 20 phòng" />
+                <ListItem text="Tính toán điện nước tự động" />
+                <ListItem text="Gửi thông báo nhắc nợ Zalo" />
+              </ul>
+              <Button className="w-full rounded-full h-12" variant="outline">Đăng ký Plus</Button>
+            </div>
+
+            {/* NOVA Pro */}
+            <div className="bg-primary text-primary-foreground p-8 rounded-3xl shadow-xl flex flex-col relative overflow-hidden transform md:-translate-y-4 transition-transform hover:-translate-y-6">
+              <div className="absolute top-0 right-0 bg-white text-primary font-bold text-xs px-4 py-1.5 rounded-bl-xl shadow-sm">
+                ĐƯỢC YÊU THÍCH NHẤT
+              </div>
+              <h3 className="text-2xl font-bold mb-2">NOVA Pro</h3>
+              <p className="text-primary-foreground/80 mb-6">Dành cho Chung cư mini (CHMN)</p>
+              <div className="mb-6">
+                <span className="text-4xl font-extrabold text-white">99.000đ</span>
+                <span className="text-primary-foreground/80"> / tháng</span>
+              </div>
+              <ul className="space-y-4 mb-8 flex-1">
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-300 shrink-0" />
+                  <span className="text-white/90">Quản lý không giới hạn phòng</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-300 shrink-0" />
+                  <span className="text-white/90">Tích hợp thanh toán QR PayOS</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-300 shrink-0" />
+                  <span className="text-white/90">Báo cáo doanh thu nâng cao</span>
+                </li>
+              </ul>
+              <Button className="w-full rounded-full h-12 bg-white text-primary hover:bg-gray-100 font-bold">Đăng ký Pro</Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="py-20 bg-primary text-primary-foreground relative overflow-hidden">
         <div className="container px-4 mx-auto text-center relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
